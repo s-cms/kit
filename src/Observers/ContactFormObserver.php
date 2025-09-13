@@ -15,7 +15,7 @@ class ContactFormObserver
             try {
                 $admin->notify(new NewContactFormNotification($contactForm));
             } catch (\Exception $e) {
-                Log::error('Error sending contact form notification to admin: ' . [
+                Log::error('Error sending contact form notification to admin:', [
                     'message' => $e->getMessage(),
                     'admin' => $admin->id,
                     'contact_form' => $contactForm->id,
