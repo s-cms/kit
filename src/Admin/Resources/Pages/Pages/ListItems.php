@@ -34,7 +34,7 @@ class ListItems extends ListRecords
     {
         return [
             Action::make('_create')
-                ->label(__('kit::admin.create_item'))
+                ->label(__('filament-actions::create.single.label', ['label' => $this->getModelLabel()]))
                 ->schema([
                     PageNameField::make(),
                     PageSlugField::make(),

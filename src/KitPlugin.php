@@ -28,6 +28,7 @@ use SmartCms\Kit\Admin\Widgets\HealthCheck;
 use SmartCms\Kit\Admin\Widgets\InfoWidget;
 use SmartCms\Kit\Admin\Widgets\VersionsWidget;
 use SmartCms\Kit\Http\Middlewares\NoIndex;
+use SmartCms\Kit\Http\Middlewares\SetAdminLocale;
 use SmartCms\Kit\Models\Admin;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Menu\MenuPlugin;
@@ -77,6 +78,7 @@ class KitPlugin implements Plugin
             ])
             ->middleware([
                 NoIndex::class,
+                SetAdminLocale::class,
             ])
             ->renderHook(PanelsRenderHook::PAGE_END, GetVersionHtml::run())
             ->renderHook(PanelsRenderHook::HEAD_START, fn (): string => '<meta name="robots" content="noindex, nofollow" />')

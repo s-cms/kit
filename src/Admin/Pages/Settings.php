@@ -28,6 +28,11 @@ class Settings extends SettingsPage
 {
     protected static ?int $navigationSort = 0;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('kit::admin.settings');
+    }
+
     public static function getCluster(): ?string
     {
         return SystemCluster::class;

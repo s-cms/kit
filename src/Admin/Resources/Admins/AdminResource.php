@@ -29,6 +29,11 @@ class AdminResource extends Resource
         return SystemCluster::class;
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('kit::admin.admins');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return AdminForm::configure($schema);

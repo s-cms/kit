@@ -191,4 +191,8 @@ return [
     'published_pages_desc' => 'Published pages for last week',
     'draft_pages_desc' => 'Draft pages for last week',
     'scheduled_pages_desc' => 'Scheduled pages for last week',
+    'preferred_language' => 'Preferred Language',
+    'design' => 'Design',
+    'admins' => 'Admins',
+    'Translates' => 'Translates',
 ];

@@ -69,6 +69,7 @@ class KitServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_admins_table',
                 'create_pages_table',
+                'alter_admins_table',
             ])
             ->hasTranslations()
             ->hasRoute('web')

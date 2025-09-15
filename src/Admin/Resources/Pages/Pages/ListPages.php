@@ -3,6 +3,7 @@
 namespace SmartCms\Kit\Admin\Resources\Pages\Pages;
 
 use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
@@ -11,6 +12,7 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use SmartCms\Kit\Actions\Admin\GetPageNavigation;
 use SmartCms\Kit\Admin\Forms\PageNameField;
@@ -27,51 +29,6 @@ class ListPages extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // TemplateAction::make()
-            //     ->fillForm(function (): array {
-            //         return [
-            //             'template' => setting('static_page_template', []),
-            //         ];
-            //     })
-            //     ->action(function (array $data): void {
-            //         $oldTemplate = setting('static_page_template', []);
-            //         if ($data['template'] == $oldTemplate) {
-            //             return;
-            //         }
-            //         setting([
-            //             'static_page_template' => $data['template'],
-            //         ]);
-            //     })->extraModalFooterActions([
-            //         Action::make('add_section')
-            //             ->schema([
-            //                 Select::make('section_id')->options(Section::query()->pluck('name', 'id'))->label(__('kit::admin.section'))->required(),
-            //             ])->action(function (array $data): void {
-            //                 Page::query()->whereNull('parent_id')->whereNull('root_id')->each(function ($page) use ($data) {
-            //                     $maxSorting = $page->template()->max('sorting');
-            //                     $page->template()->create([
-            //                         'section_id' => $data['section_id'],
-            //                         'sorting' => $maxSorting + 1,
-            //                     ]);
-            //                 });
-            //             }),
-            //         Action::make('remove_section')->schema([
-            //             Select::make('section_id')->options(Section::query()->pluck('name', 'id'))->label(__('kit::admin.section'))->required(),
-            //         ])->action(function (array $data): void {
-            //             Page::query()->whereNull('parent_id')->whereNull('root_id')->each(function ($page) use ($data) {
-            //                 $page->template()->where('section_id', $data['section_id'])->delete();
-            //             });
-            //         }),
-            //     ])
-            //     ->schema(function ($form) {
-            //         return $form
-            //             ->schema([
-            //                 Repeater::make('template')
-            //                     ->hiddenLabel()
-            //                     ->schema([
-            //                         Select::make('section_id')->options(Section::query()->pluck('name', 'id'))->label(__('kit::admin.section'))->required(),
-            //                     ]),
-            //             ]);
-            //     }),
             Action::make('create_menu_section')
                 ->label(__('kit::admin.create_menu_section'))
                 ->color('gray')
@@ -99,7 +56,7 @@ class ListPages extends ListRecords
 
                     return redirect(ListPages::getUrl(['record' => $page->id]));
                 }),
-            Action::make('_create')->label(__('kit::admin.new_page'))
+            Action::make('_create')->label(__('filament-actions::create.single.label', ['label' => $this->getModelLabel()]))
                 ->modalWidth(Width::ExtraLarge)
                 ->modal()->color('primary')->schema([
                     PageNameField::make(),
@@ -131,8 +88,14 @@ class ListPages extends ListRecords
             return $query->where('is_root', false)->whereNull('parent_id');
         });
     }
-    // public function getMaxContentWidth(): Width
-    // {
-    //     return Width::Full;
-    // }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('kit::admin.pages');
+    }
+
+    public function getHeading(): string|Htmlable
+    {
+        return __('kit::admin.pages');
+    }
 }
