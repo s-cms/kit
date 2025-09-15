@@ -23,7 +23,10 @@ use SmartCms\Kit\Admin\Pages\Settings;
 use SmartCms\Kit\Admin\Pages\TranslatesPage;
 use SmartCms\Kit\Admin\Resources\Admins\AdminResource;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
+use SmartCms\Kit\Admin\Widgets\ContactFormStatsWidget;
 use SmartCms\Kit\Admin\Widgets\HealthCheck;
+use SmartCms\Kit\Admin\Widgets\InfoWidget;
+use SmartCms\Kit\Admin\Widgets\VersionsWidget;
 use SmartCms\Kit\Http\Middlewares\NoIndex;
 use SmartCms\Kit\Models\Admin;
 use SmartCms\Kit\Models\Page;
@@ -68,12 +71,15 @@ class KitPlugin implements Plugin
             ->resources($resources)
             ->widgets([
                 HealthCheck::class,
+                InfoWidget::class,
+                ContactFormStatsWidget::class,
+                VersionsWidget::class,
             ])
             ->middleware([
                 NoIndex::class,
             ])
             ->renderHook(PanelsRenderHook::PAGE_END, GetVersionHtml::run())
-            ->renderHook(PanelsRenderHook::HEAD_START, fn (): string => '<meta name="robots" content="noindex, nofollow" />')
+            ->renderHook(PanelsRenderHook::HEAD_START, fn(): string => '<meta name="robots" content="noindex, nofollow" />')
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetInboxButton::run())
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetViewButton::run())
             ->breadcrumbs(false)

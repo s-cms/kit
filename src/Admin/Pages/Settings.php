@@ -26,7 +26,7 @@ use SmartCms\Support\Admin\Components\Actions\HelpAction;
  */
 class Settings extends SettingsPage
 {
-    protected static ?int $navigationSort = 100;
+    protected static ?int $navigationSort = 0;
 
     public static function getCluster(): ?string
     {

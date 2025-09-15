@@ -20,7 +20,7 @@ class AdminResource extends Resource
 {
     protected static ?string $model = Admin::class;
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 100;
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedUserCircle;
 

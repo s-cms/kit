@@ -134,6 +134,7 @@ class KitServiceProvider extends PackageServiceProvider
                         if (File::exists(resource_path('views/welcome.blade.php'))) {
                             File::delete(resource_path('views/welcome.blade.php'));
                         }
+                        $this->updateGitignore();
                     });
             });
     }
@@ -149,7 +150,7 @@ class KitServiceProvider extends PackageServiceProvider
                 /** @var \Illuminate\Routing\Route $this */
                 $uri = $this->uri();
                 $cleanUri = ltrim($uri, '/');
-                $actions = array_filter($this->getAction(), fn ($key) => $key != 'as', ARRAY_FILTER_USE_KEY);
+                $actions = array_filter($this->getAction(), fn($key) => $key != 'as', ARRAY_FILTER_USE_KEY);
                 FacadesRoute::addRoute(
                     $this->methods(),
                     '{lang}/' . $cleanUri,
@@ -252,6 +253,28 @@ class KitServiceProvider extends PackageServiceProvider
     {
         if (! File::isDirectory($path)) {
             File::makeDirectory($path, 0755, true);
+        }
+    }
+
+    protected function updateGitignore()
+    {
+        $gitignorePath = base_path('.gitignore');
+        $filesToIgnore = [
+            '# Smart CMS',
+            '*.zip',
+            '*.tar.gz',
+            '', // Empty line for separation
+        ];
+
+        if (file_exists($gitignorePath)) {
+            $currentContent = file_get_contents($gitignorePath);
+
+            // Check if our entries already exist to avoid duplicates
+            $marker = '# Smart CMS';
+            if (strpos($currentContent, $marker) === false) {
+                $newContent = $currentContent . "\n" . implode("\n", $filesToIgnore);
+                file_put_contents($gitignorePath, $newContent);
+            }
         }
     }
 

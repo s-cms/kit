@@ -12,7 +12,9 @@ class Link extends Component
 
     public string $target;
 
-    public function __construct(?array $options = null)
+    public string $currentClass;
+
+    public function __construct(?array $options = null, ?string $current = null)
     {
         if (! is_array($options)) {
             $options = [];
@@ -20,6 +22,7 @@ class Link extends Component
         $this->title = $options['title'] ?? '';
         $this->url = $options['url'] ?? '';
         $this->target = $options['target'] ?? '_self';
+        $this->currentClass = $current ?? '';
     }
 
     public function render()
