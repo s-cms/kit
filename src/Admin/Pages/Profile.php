@@ -3,7 +3,6 @@
 namespace SmartCms\Kit\Admin\Pages;
 
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
 use Filament\Auth\Pages\EditProfile;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -13,7 +12,6 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use NotificationChannels\Telegram\TelegramUpdates;
@@ -97,13 +95,13 @@ class Profile extends EditProfile
                                 ->color('success'),
                         ])
                         ->compact()
-                        ->footerActionsAlignment(Alignment::End)
+                        ->footerActionsAlignment(Alignment::End),
                 ])->columns(1),
                 Tab::make(__('kit::admin.password'))->schema([
                     TextInput::make('old_password')
                         ->label('Current Password')
                         ->password()
-                        ->required(fn($get) => filled($get('password')))
+                        ->required(fn ($get) => filled($get('password')))
                         ->dehydrated(false) // Do not save to DB
                         ->rule(function () {
                             return function ($attribute, $value, $fail) {

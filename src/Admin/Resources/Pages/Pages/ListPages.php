@@ -3,9 +3,6 @@
 namespace SmartCms\Kit\Admin\Resources\Pages\Pages;
 
 use Filament\Actions\Action;
-use Filament\Actions\CreateAction;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
@@ -19,8 +16,6 @@ use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Models\Page;
-use SmartCms\Support\Admin\Components\Actions\TemplateAction;
-use SmartCms\TemplateBuilder\Models\Section;
 
 class ListPages extends ListRecords
 {
@@ -94,7 +89,7 @@ class ListPages extends ListRecords
         return __('kit::admin.pages');
     }
 
-    public function getHeading(): string|Htmlable
+    public function getHeading(): string | Htmlable
     {
         return __('kit::admin.pages');
     }

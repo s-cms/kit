@@ -12,10 +12,10 @@ use SmartCms\Forms\Models\ContactForm;
 
 class InboxButton extends Component
 {
-
     public function render()
     {
         $count = ContactForm::query()->where('status', ContactFormStatusesEnum::NEW)->count();
+
         return Blade::render('<div wire:poll.10s>{{$action}}</div>', [
             'action' => Action::make('contact_form')
                 ->label(__('kit::admin.inbox'))
