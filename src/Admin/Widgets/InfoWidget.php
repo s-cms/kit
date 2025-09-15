@@ -119,6 +119,7 @@ class InfoWidget extends StatsOverviewWidget
     {
         $updateChecker = app(UpdateCheckerInterface::class);
         $details = $updateChecker->getUpdateNotifications();
+
         return $details && ($details['has_updates'] ?? false);
     }
 

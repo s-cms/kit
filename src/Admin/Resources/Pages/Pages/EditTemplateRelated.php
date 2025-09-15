@@ -82,6 +82,7 @@ class EditTemplateRelated extends ManageRelatedRecords
             ->recordActions([
                 EditAction::make()->mutateRecordDataUsing(function (array $data, $record): array {
                     $data['value'] = $record->section?->getTranslations('value') ?? [];
+
                     return $data;
                 })
                     ->mutateDataUsing(function (array $data, $record): array {

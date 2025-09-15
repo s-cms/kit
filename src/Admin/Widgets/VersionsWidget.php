@@ -24,7 +24,7 @@ class VersionsWidget extends StatsOverviewWidget
     protected function getPhpVersion(): array
     {
         return [
-            Stat::make(__('kit::admin.php_version'), phpversion())
+            Stat::make(__('kit::admin.php_version'), phpversion()),
         ];
     }
 
@@ -33,14 +33,14 @@ class VersionsWidget extends StatsOverviewWidget
         $node = trim(shell_exec('node -v'));
 
         return [
-            Stat::make(__('kit::admin.node_version'), $node ?? 'Not installed')
+            Stat::make(__('kit::admin.node_version'), $node ?? 'Not installed'),
         ];
     }
 
     protected function getEnvironment(): array
     {
         return [
-            Stat::make(__('kit::admin.environment'), config('app.env'))
+            Stat::make(__('kit::admin.environment'), config('app.env')),
         ];
     }
 
@@ -54,7 +54,7 @@ class VersionsWidget extends StatsOverviewWidget
         $databaseVersion = $versionParts[0];
 
         return [
-            Stat::make(__('kit::admin.database_version'), $databaseName . ' ' . $databaseVersion)
+            Stat::make(__('kit::admin.database_version'), $databaseName . ' ' . $databaseVersion),
         ];
     }
 }

@@ -55,14 +55,14 @@ class UpdatePage extends Page
                         ->schema([
                             TextEntry::make('current_version')
                                 ->label(__('kit::admin.installed_version'))
-                                ->state(fn() => $this->getCurrentVersion())
+                                ->state(fn () => $this->getCurrentVersion())
                                 ->size(TextSize::Large)
                                 ->weight('bold'),
 
                             TextEntry::make('last_checked')
                                 ->label(__('kit::admin.last_checked'))
-                                ->state(fn() => $this->getLastChecked() ?? __('kit::admin.never'))
-                                ->visible(fn() => $this->getLastChecked() !== null),
+                                ->state(fn () => $this->getLastChecked() ?? __('kit::admin.never'))
+                                ->visible(fn () => $this->getLastChecked() !== null),
                         ]),
                 ]),
 
@@ -74,11 +74,11 @@ class UpdatePage extends Page
                         ->schema([
                             TextEntry::make('latest_version')
                                 ->label(__('kit::admin.latest_version'))
-                                ->state(fn() => $this->getLatestVersion() ?? __('kit::admin.unknown'))
+                                ->state(fn () => $this->getLatestVersion() ?? __('kit::admin.unknown'))
                                 ->size(TextSize::Large)
                                 ->weight('bold')
                                 ->color($this->hasUpdatesAvailable() ? 'primary' : 'success')
-                                ->visible(fn() => $this->hasUpdatesAvailable()),
+                                ->visible(fn () => $this->hasUpdatesAvailable()),
 
                             TextEntry::make('release_date')
                                 ->label(__('kit::admin.release_date'))
@@ -90,14 +90,14 @@ class UpdatePage extends Page
 
                                     return null;
                                 })
-                                ->visible(fn() => $this->hasUpdatesAvailable() && $this->getReleaseInfo() && isset($this->getReleaseInfo()['published_at'])),
+                                ->visible(fn () => $this->hasUpdatesAvailable() && $this->getReleaseInfo() && isset($this->getReleaseInfo()['published_at'])),
                         ])
-                        ->visible(fn() => $this->hasUpdatesAvailable()),
+                        ->visible(fn () => $this->hasUpdatesAvailable()),
 
                     TextEntry::make('up_to_date_message')
                         ->label('')
                         ->state(__('kit::admin.system_up_to_date_message'))
-                        ->visible(fn() => ! $this->hasUpdatesAvailable()),
+                        ->visible(fn () => ! $this->hasUpdatesAvailable()),
 
                     TextEntry::make('release_notes')
                         ->label(__('kit::admin.release_notes'))
@@ -110,7 +110,7 @@ class UpdatePage extends Page
                             return null;
                         })
                         ->markdown()
-                        ->visible(fn() => $this->hasUpdatesAvailable() && $this->getReleaseInfo() && isset($this->getReleaseInfo()['body'])),
+                        ->visible(fn () => $this->hasUpdatesAvailable() && $this->getReleaseInfo() && isset($this->getReleaseInfo()['body'])),
                 ]),
 
             Section::make(__('kit::admin.update_settings'))
@@ -145,7 +145,7 @@ class UpdatePage extends Page
                 ->icon(Heroicon::CommandLine)
                 ->action('updateAssets')
                 ->color('gray')
-                ->disabled(fn() => ! $this->canUpdateAssets())
+                ->disabled(fn () => ! $this->canUpdateAssets())
                 ->tooltip(function () {
                     if (! $this->canUpdateAssets()) {
                         $issues = $this->getAssetValidationIssues();
@@ -171,7 +171,7 @@ class UpdatePage extends Page
                 ->icon(Heroicon::CloudArrowDown)
                 ->action('updateNow')
                 ->color('primary')
-                ->visible(fn() => $this->hasUpdatesAvailable())
+                ->visible(fn () => $this->hasUpdatesAvailable())
                 ->requiresConfirmation()
                 ->modalHeading(__('kit::admin.confirm_update'))
                 ->modalDescription(__('kit::admin.confirm_update_description'))

@@ -4,11 +4,9 @@ namespace SmartCms\Kit\Admin\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use SmartCms\Forms\Models\ContactForm;
-use Illuminate\Support\Carbon;
 
 class ContactFormStatsWidget extends ChartWidget
 {
-
     protected static ?int $sort = 5;
 
     protected int | string | array $columnSpan = 'full';
