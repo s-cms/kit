@@ -13,7 +13,7 @@ class SetAdminLocale
     {
         $availableLocales = ['en', 'uk', 'pl', 'de'];
         $user = Auth::guard('admin')->user();
-        if (!$user) {
+        if (! $user) {
             return $next($request);
         }
         $adminLocale = $user->locale ?? 'en';
