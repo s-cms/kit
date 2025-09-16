@@ -12,12 +12,10 @@ class SetAdminLocale
     public function handle(Request $request, Closure $next)
     {
         $availableLocales = ['en', 'uk', 'pl', 'de'];
-        if (! Auth::guard('admin')->check()) {
-            abort(403);
-
+        $user = Auth::guard('admin')->user();
+        if (!$user) {
             return $next($request);
         }
-        $user = Auth::guard('admin')->user();
         $adminLocale = $user->locale ?? 'en';
 
         if (in_array($adminLocale, $availableLocales)) {
