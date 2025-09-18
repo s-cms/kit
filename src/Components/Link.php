@@ -21,7 +21,7 @@ class Link extends Component
         }
         $this->title = $options['title'] ?? '';
         $this->url = $options['url'] ?? '';
-        $this->target = $options['target'] ?? '_self';
+        $this->target = $options['is_external'] ? '_blank' : $options['target'] ?? '_self';
         $this->currentClass = $current ?? '';
     }
 

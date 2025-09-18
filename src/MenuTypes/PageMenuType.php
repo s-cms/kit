@@ -4,6 +4,7 @@ namespace SmartCms\Kit\MenuTypes;
 
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Utilities\Set;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Menu\MenuTypeInterface;
 
@@ -22,7 +23,14 @@ class PageMenuType implements MenuTypeInterface
     public function getSchema(): Field
     {
         return Select::make('url')
-            ->options(Page::query()->where('depth', '<', 3)->pluck('name', 'id'));
+            ->options(Page::query()->where('depth', '<', 3)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, Set $set) {
+                if ($state) {
+                    $page = Page::find($state);
+                    if ($page) {
+                        $set('title', $page->name);
+                    }
+                }
+            });
     }
 
     public function getLinkFromItem(mixed $item): string | array
