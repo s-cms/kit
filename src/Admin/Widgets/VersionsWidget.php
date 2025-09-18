@@ -31,9 +31,11 @@ class VersionsWidget extends StatsOverviewWidget
     protected function getNodeVersion(): array
     {
         $node = trim(shell_exec('node -v'));
-
+        if (blank($node)) {
+            $node = 'Not installed';
+        }
         return [
-            Stat::make(__('kit::admin.node_version'), $node ?? 'Not installed'),
+            Stat::make(__('kit::admin.node_version'), $node),
         ];
     }
 

@@ -24,30 +24,41 @@ class SocialsType implements VariableTypeInterface
     {
         return collect([[
             'name' => 'Facebook',
-            'link' => 'https://www.facebook.com',
+            'url' => 'https://www.facebook.com',
             'image' => 'https://www.facebook.com/favicon.ico',
         ]])->map(function ($item) {
             return new Fluent([
                 'name' => $item['name'],
-                'link' => $item['link'],
-                'image' => $item['image'],
+                'url' => [
+                    'title' => $item['name'],
+                    'type' => 'link',
+                    'is_external' => true,
+                    'url' => $item['url'],
+                ],
+                'image' => validateImage($item['image']),
             ]);
         });
     }
 
     public function getSchema(string $name): Field | Component
     {
-        return Select::make($name)->options(collect(app('s')->get('branding.socials', []))->pluck('name'))->multiple();
+        return Select::make($name)->options(collect(app('s')->get('branding.socials', []))->pluck('name'))->multiple()->native(false)->searchable();
     }
 
     public function getValue(mixed $value): mixed
     {
+
         return collect(app('s')->get('branding.socials', []))->only($value)->map(function ($item) {
-            return new Fluent([
+            return [
                 'name' => $item['name'],
-                'link' => $item['link'],
-                'image' => $item['image'],
-            ]);
+                'url' => [
+                    'title' => $item['name'],
+                    'type' => 'link',
+                    'is_external' => true,
+                    'url' => $item['link'],
+                ],
+                'image' => validateImage($item['image']),
+            ];
         });
     }
 }

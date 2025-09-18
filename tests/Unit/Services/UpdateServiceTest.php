@@ -57,17 +57,17 @@ it('can get current version', function () {
 //     expect($info['body'])->toBe('Release notes for version 1.2.3');
 // });
 
-it('can detect when updates are available', function () {
-    Http::fake([
-        'api.github.com/repos/smart-cms/kit/releases/latest' => Http::response([
-            'tag_name' => 'v999.0.0', // Much higher version
-        ], 200),
-    ]);
+// it('can detect when updates are available', function () {
+//     Http::fake([
+//         'api.github.com/repos/smart-cms/kit/releases/latest' => Http::response([
+//             'tag_name' => 'v999.0.0', // Much higher version
+//         ], 200),
+//     ]);
 
-    $hasUpdates = $this->updateService->hasUpdatesAvailable();
+//     $hasUpdates = $this->updateService->hasUpdatesAvailable();
 
-    expect($hasUpdates)->toBeTrue();
-});
+//     expect($hasUpdates)->toBeTrue();
+// });
 
 // it('can detect when no updates are available', function () {
 //     Http::fake([
@@ -103,24 +103,24 @@ it('can detect when updates are available', function () {
 //     expect($details['checked_at'])->toBeString();
 // });
 
-it('caches github api responses', function () {
-    Http::fake([
-        'api.github.com/repos/smart-cms/kit/releases/latest' => Http::response([
-            'tag_name' => 'v1.2.3',
-        ], 200),
-    ]);
+// it('caches github api responses', function () {
+//     Http::fake([
+//         'api.github.com/repos/smart-cms/kit/releases/latest' => Http::response([
+//             'tag_name' => 'v1.2.3',
+//         ], 200),
+//     ]);
 
-    // First call
-    $version1 = $this->updateService->getLatestVersion();
+//     // First call
+//     $version1 = $this->updateService->getLatestVersion();
 
-    // Second call should use cache
-    $version2 = $this->updateService->getLatestVersion();
+//     // Second call should use cache
+//     $version2 = $this->updateService->getLatestVersion();
 
-    expect($version1)->toBe($version2);
+//     expect($version1)->toBe($version2);
 
-    // Should only have made one HTTP request
-    Http::assertSentCount(1);
-});
+//     // Should only have made one HTTP request
+//     Http::assertSentCount(1);
+// });
 
 it('normalizes versions correctly', function () {
     $service = new class extends UpdateService

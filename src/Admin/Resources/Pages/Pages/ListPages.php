@@ -51,7 +51,7 @@ class ListPages extends ListRecords
 
                     return redirect(ListPages::getUrl(['record' => $page->id]));
                 }),
-            Action::make('_create')->label(__('filament-actions::create.single.label', ['label' => $this->getModelLabel()]))
+            Action::make('_create')->label(__('filament-actions::create.single.label', ['label' => PageResource::getModelLabel()]))
                 ->modalWidth(Width::ExtraLarge)
                 ->modal()->color('primary')->schema([
                     PageNameField::make(),

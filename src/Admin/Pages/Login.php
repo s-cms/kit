@@ -57,6 +57,7 @@ class Login extends PagesLogin
         cookie()->queue(
             cookie('maintenance_bypass', 'true', 60 * 24 * 7)
         );
+        \SmartCms\TemplateBuilder\Actions\SyncLayouts::run();
 
         return app(LoginResponse::class);
     }

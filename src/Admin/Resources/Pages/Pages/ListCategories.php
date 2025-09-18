@@ -34,7 +34,7 @@ class ListCategories extends ListRecords
     {
         return [
             Action::make('_create')
-                ->label(__('filament-actions::create.single.label', ['label' => $this->getModelLabel()]))
+                ->label(__('filament-actions::create.single.label', ['label' => PageResource::getModelLabel()]))
                 ->schema([
                     PageNameField::make(),
                     PageSlugField::make(),

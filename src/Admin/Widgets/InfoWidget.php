@@ -129,4 +129,11 @@ class InfoWidget extends StatsOverviewWidget
 
         return $updateService->getCurrentVersion();
     }
+
+    protected function getLatestVersion(): ?string
+    {
+        $updateService = app(UpdateServiceInterface::class);
+
+        return $updateService->getLatestVersion();
+    }
 }

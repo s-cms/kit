@@ -65,7 +65,7 @@ class KitPlugin implements Plugin
             ->login(Login::class)
             ->authGuard('admin')
             ->topNavigation()
-            ->brandName(app('s')->get('company_name', 'SmartCms'))
+            ->brandName(app('s')->get('company_name', 'SmartCms')) // TODO: add company name to config
             ->spa()
             ->unsavedChangesAlerts()
             ->databaseNotifications()
