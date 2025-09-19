@@ -22,9 +22,9 @@
     width: calc(var(--spacing)*4);
     height: calc(var(--spacing)*4);
 }
-.fi-section-content {
+/* .fi-section-content {
     padding: calc(var(--spacing)*4);
-}
+} */
 
 fi-sidebar-item {
     padding: 0.1rem;

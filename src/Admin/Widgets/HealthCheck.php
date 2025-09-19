@@ -30,7 +30,7 @@ class HealthCheck extends StatsOverviewWidget
                 $free = 0;
                 $used = 0;
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $total = 0;
             $free = 0;
             $used = 0;
@@ -47,12 +47,8 @@ class HealthCheck extends StatsOverviewWidget
     protected function getCpuLoad(): array
     {
         try {
-            if (function_exists('sys_getloadavg')) {
-                $load = sys_getloadavg();
-            } else {
-                $load = [0, 0, 0];
-            }
-        } catch (\Exception $e) {
+            $load = function_exists('sys_getloadavg') ? sys_getloadavg() : [0, 0, 0];
+        } catch (\Exception) {
             $load = [0, 0, 0];
         }
         $icon = $load[0] > 80 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down';
@@ -75,7 +71,7 @@ class HealthCheck extends StatsOverviewWidget
             } else {
                 $matches = [0, 0];
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $matches = [0, 0];
         }
 

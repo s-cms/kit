@@ -44,16 +44,14 @@ class UpdateExecutor
                     'message' => 'Update completed successfully',
                     'output' => $this->output,
                 ];
-            } else {
-                $this->addOutput('❌ Update failed with exit code: ' . $exitCode);
-                Log::error('Update failed via admin panel', ['exit_code' => $exitCode]);
-
-                return [
-                    'success' => false,
-                    'message' => 'Update failed',
-                    'output' => $this->output,
-                ];
             }
+            $this->addOutput('❌ Update failed with exit code: ' . $exitCode);
+            Log::error('Update failed via admin panel', ['exit_code' => $exitCode]);
+            return [
+                'success' => false,
+                'message' => 'Update failed',
+                'output' => $this->output,
+            ];
         } catch (\Exception $e) {
             $this->addOutput('❌ Update failed with exception: ' . $e->getMessage());
 
@@ -109,13 +107,12 @@ class UpdateExecutor
                     'version' => trim($process->getOutput()),
                     'message' => 'Composer is available',
                 ];
-            } else {
-                return [
-                    'available' => false,
-                    'version' => null,
-                    'message' => 'Composer command failed: ' . $process->getErrorOutput(),
-                ];
             }
+            return [
+                'available' => false,
+                'version' => null,
+                'message' => 'Composer command failed: ' . $process->getErrorOutput(),
+            ];
         } catch (\Exception $e) {
             return [
                 'available' => false,
@@ -154,7 +151,7 @@ class UpdateExecutor
         }
 
         return [
-            'valid' => empty($issues),
+            'valid' => $issues === [],
             'issues' => $issues,
         ];
     }

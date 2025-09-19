@@ -4,12 +4,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use SmartCms\Kit\Services\UpdateService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->updateService = new UpdateService;
     Cache::flush();
 });
 
-it('can get current version', function () {
+it('can get current version', function (): void {
     $version = $this->updateService->getCurrentVersion();
 
     expect($version)->toBeString();
@@ -122,7 +122,7 @@ it('can get current version', function () {
 //     Http::assertSentCount(1);
 // });
 
-it('normalizes versions correctly', function () {
+it('normalizes versions correctly', function (): void {
     $service = new class extends UpdateService
     {
         public function testNormalizeVersion(string $version): string

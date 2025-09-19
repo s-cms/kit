@@ -26,18 +26,16 @@ class SocialsType implements VariableTypeInterface
             'name' => 'Facebook',
             'url' => 'https://www.facebook.com',
             'image' => 'https://www.facebook.com/favicon.ico',
-        ]])->map(function ($item) {
-            return new Fluent([
-                'name' => $item['name'],
-                'url' => [
-                    'title' => $item['name'],
-                    'type' => 'link',
-                    'is_external' => true,
-                    'url' => $item['url'],
-                ],
-                'image' => validateImage($item['image']),
-            ]);
-        });
+        ]])->map(fn($item): \Illuminate\Support\Fluent => new Fluent([
+            'name' => $item['name'],
+            'url' => [
+                'title' => $item['name'],
+                'type' => 'link',
+                'is_external' => true,
+                'url' => $item['url'],
+            ],
+            'image' => validateImage($item['image']),
+        ]));
     }
 
     public function getSchema(string $name): Field | Component
@@ -48,17 +46,15 @@ class SocialsType implements VariableTypeInterface
     public function getValue(mixed $value): mixed
     {
 
-        return collect(app('s')->get('branding.socials', []))->only($value)->map(function ($item) {
-            return [
-                'name' => $item['name'],
-                'url' => [
-                    'title' => $item['name'],
-                    'type' => 'link',
-                    'is_external' => true,
-                    'url' => $item['link'],
-                ],
-                'image' => validateImage($item['image']),
-            ];
-        });
+        return collect(app('s')->get('branding.socials', []))->only($value)->map(fn($item): array => [
+            'name' => $item['name'],
+            'url' => [
+                'title' => $item['name'],
+                'type' => 'link',
+                'is_external' => true,
+                'url' => $item['link'],
+            ],
+            'image' => validateImage($item['image']),
+        ]);
     }
 }

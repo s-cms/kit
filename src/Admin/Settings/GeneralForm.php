@@ -23,11 +23,11 @@ class GeneralForm
                 ->required(),
             Select::make('main_language')
                 ->label(__('kit::admin.main_language'))
-                ->live()->afterStateUpdated(function (mixed $state, Set $set, Get $get) {
+                ->live()->afterStateUpdated(function (mixed $state, Set $set, Get $get): void {
                     $additionalLanguages = $get('additional_languages') ?? [];
                     $frontLanguages = $get('front_languages') ?? [];
-                    $set('additional_languages', array_filter($additionalLanguages, fn ($language) => $language !== $state));
-                    $set('front_languages', array_filter($frontLanguages, fn ($language) => $language !== $state));
+                    $set('additional_languages', array_filter($additionalLanguages, fn ($language): bool => $language !== $state));
+                    $set('front_languages', array_filter($frontLanguages, fn ($language): bool => $language !== $state));
                 })
                 ->options(Language::query()->pluck('name', 'id')->toArray())
                 ->required(),
@@ -43,9 +43,7 @@ class GeneralForm
                 })
                 ->multiple()
                 ->live()
-                ->required()->hidden(function ($get) {
-                    return ! $get('is_multi_lang');
-                }),
+                ->required()->hidden(fn($get): bool => ! $get('is_multi_lang')),
             Select::make('front_languages')
                 ->label(__('kit::admin.front_languages'))
                 ->options(function ($get) {
@@ -55,16 +53,14 @@ class GeneralForm
                 })
                 ->live()
                 ->multiple()
-                ->required()->hidden(function ($get) {
-                    return ! $get('is_multi_lang');
-                }),
+                ->required()->hidden(fn($get): bool => ! $get('is_multi_lang')),
             Flex::make([
                 ImageUpload::make('branding.logo', 'branding', __('kit::admin.logo')),
                 FileUpload::make('branding.favicon')->disk('public')
                     ->image()
                     ->imagePreviewHeight('150')
                     ->maxSize(1024)
-                    ->getUploadedFileNameForStorageUsing(fn ($file) => 'favicon.ico'),
+                    ->getUploadedFileNameForStorageUsing(fn ($file): string => 'favicon.ico'),
                 ImageUpload::make('no_image', 'no_image', __('kit::admin.no_image')),
             ])->columns(2),
         ]);

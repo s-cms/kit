@@ -12,7 +12,7 @@ class ActivatePages extends Command
 
     protected $description = 'Activate scheduled pages';
 
-    public function handle()
+    public function handle(): void
     {
         $now = now();
         Page::query()

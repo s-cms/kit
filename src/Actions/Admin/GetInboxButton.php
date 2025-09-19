@@ -15,10 +15,8 @@ class GetInboxButton
     {
         Livewire::component('scms-inbox-button', InboxButton::class);
 
-        return function (): string {
+        return fn(): string =>
             // $count = ContactForm::query()->where('status', ContactFormStatusesEnum::NEW)->count();
-
-            return Blade::render('@livewire(\'scms-inbox-button\')');
-        };
+            Blade::render('@livewire(\'scms-inbox-button\')');
     }
 }

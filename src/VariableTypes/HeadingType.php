@@ -42,14 +42,10 @@ class HeadingType implements VariableTypeInterface
                         'none' => 'None',
                     ])
                     ->required()
-                    ->default('h2')->formatStateUsing(function ($state) {
-                        return $state ?? 'h2';
-                    }),
+                    ->default('h2')->formatStateUsing(fn($state) => $state ?? 'h2'),
                 TextInput::make($name . '.title')->label(__('kit::admin.title'))->required(),
             ]),
-            TextInput::make($name . '.heading')->label(__('kit::admin.heading'))->required()->hidden(function ($get) use ($name) {
-                return $get($name . '.scope') != 'custom';
-            })->columnSpanFull(),
+            TextInput::make($name . '.heading')->label(__('kit::admin.heading'))->required()->hidden(fn($get): bool => $get($name . '.scope') != 'custom')->columnSpanFull(),
         ])->columns(2);
     }
 

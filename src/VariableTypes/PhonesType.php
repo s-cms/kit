@@ -31,11 +31,9 @@ class PhonesType implements VariableTypeInterface
 
     public function getValue(mixed $value): mixed
     {
-        return collect(app('s')->get('company_info.phones', []))->mapWithKeys(function ($item, $key) {
-            return [
-                'id' => $key,
-                'value' => $item['value'],
-            ];
-        })->whereIn('id', $value)->pluck('value')->toArray();
+        return collect(app('s')->get('company_info.phones', []))->mapWithKeys(fn($item, $key): array => [
+            'id' => $key,
+            'value' => $item['value'],
+        ])->whereIn('id', $value)->pluck('value')->toArray();
     }
 }

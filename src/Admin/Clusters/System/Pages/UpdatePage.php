@@ -55,14 +55,14 @@ class UpdatePage extends Page
                         ->schema([
                             TextEntry::make('current_version')
                                 ->label(__('kit::admin.installed_version'))
-                                ->state(fn () => $this->getCurrentVersion())
+                                ->state(fn (): string => $this->getCurrentVersion())
                                 ->size(TextSize::Large)
                                 ->weight('bold'),
 
                             TextEntry::make('last_checked')
                                 ->label(__('kit::admin.last_checked'))
-                                ->state(fn () => $this->getLastChecked() ?? __('kit::admin.never'))
-                                ->visible(fn () => $this->getLastChecked() !== null),
+                                ->state(fn (): string|array|null => $this->getLastChecked() ?? __('kit::admin.never'))
+                                ->visible(fn (): bool => $this->getLastChecked() !== null),
                         ]),
                 ]),
 
@@ -74,15 +74,15 @@ class UpdatePage extends Page
                         ->schema([
                             TextEntry::make('latest_version')
                                 ->label(__('kit::admin.latest_version'))
-                                ->state(fn () => $this->getLatestVersion() ?? __('kit::admin.unknown'))
+                                ->state(fn (): string|array|null => $this->getLatestVersion() ?? __('kit::admin.unknown'))
                                 ->size(TextSize::Large)
                                 ->weight('bold')
                                 ->color($this->hasUpdatesAvailable() ? 'primary' : 'success')
-                                ->visible(fn () => $this->hasUpdatesAvailable()),
+                                ->visible(fn (): bool => $this->hasUpdatesAvailable()),
 
                             TextEntry::make('release_date')
                                 ->label(__('kit::admin.release_date'))
-                                ->state(function () {
+                                ->state(function (): ?string {
                                     $releaseInfo = $this->getReleaseInfo();
                                     if ($releaseInfo && isset($releaseInfo['published_at'])) {
                                         return \Carbon\Carbon::parse($releaseInfo['published_at'])->format('M j, Y');
@@ -90,14 +90,14 @@ class UpdatePage extends Page
 
                                     return null;
                                 })
-                                ->visible(fn () => $this->hasUpdatesAvailable() && $this->getReleaseInfo() && isset($this->getReleaseInfo()['published_at'])),
+                                ->visible(fn (): bool => $this->hasUpdatesAvailable() && $this->getReleaseInfo() && isset($this->getReleaseInfo()['published_at'])),
                         ])
-                        ->visible(fn () => $this->hasUpdatesAvailable()),
+                        ->visible(fn (): bool => $this->hasUpdatesAvailable()),
 
                     TextEntry::make('up_to_date_message')
                         ->label('')
                         ->state(__('kit::admin.system_up_to_date_message'))
-                        ->visible(fn () => ! $this->hasUpdatesAvailable()),
+                        ->visible(fn (): bool => ! $this->hasUpdatesAvailable()),
 
                     TextEntry::make('release_notes')
                         ->label(__('kit::admin.release_notes'))
@@ -110,7 +110,7 @@ class UpdatePage extends Page
                             return null;
                         })
                         ->markdown()
-                        ->visible(fn () => $this->hasUpdatesAvailable() && $this->getReleaseInfo() && isset($this->getReleaseInfo()['body'])),
+                        ->visible(fn (): bool => $this->hasUpdatesAvailable() && $this->getReleaseInfo() && isset($this->getReleaseInfo()['body'])),
                 ]),
 
             Section::make(__('kit::admin.update_settings'))
@@ -125,7 +125,7 @@ class UpdatePage extends Page
 
                             TextEntry::make('check_frequency')
                                 ->label(__('kit::admin.check_frequency'))
-                                ->state(ucfirst(config('kit.updates.check_frequency', 'login'))),
+                                ->state(ucfirst((string) config('kit.updates.check_frequency', 'login'))),
                         ]),
 
                     TextEntry::make('settings_note')
@@ -145,8 +145,8 @@ class UpdatePage extends Page
                 ->icon(Heroicon::CommandLine)
                 ->action('updateAssets')
                 ->color('gray')
-                ->disabled(fn () => ! $this->canUpdateAssets())
-                ->tooltip(function () {
+                ->disabled(fn (): bool => ! $this->canUpdateAssets())
+                ->tooltip(function (): ?string {
                     if (! $this->canUpdateAssets()) {
                         $issues = $this->getAssetValidationIssues();
 
@@ -171,7 +171,7 @@ class UpdatePage extends Page
                 ->icon(Heroicon::CloudArrowDown)
                 ->action('updateNow')
                 ->color('primary')
-                ->visible(fn () => $this->hasUpdatesAvailable())
+                ->visible(fn (): bool => $this->hasUpdatesAvailable())
                 ->requiresConfirmation()
                 ->modalHeading(__('kit::admin.confirm_update'))
                 ->modalDescription(__('kit::admin.confirm_update_description'))
@@ -330,7 +330,7 @@ class UpdatePage extends Page
     public function getLastChecked(): ?string
     {
         $details = $this->getUpdateDetails();
-        if (! $details || ! isset($details['checked_at'])) {
+        if ($details === null || $details === [] || ! isset($details['checked_at'])) {
             return null;
         }
 

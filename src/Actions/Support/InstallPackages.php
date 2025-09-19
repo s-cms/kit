@@ -11,7 +11,7 @@ class InstallPackages
 
     public function __construct(private Command $command) {}
 
-    public function handle()
+    public function handle(): void
     {
         $this->command->call('settings:install');
         $this->command->call('lang:install');

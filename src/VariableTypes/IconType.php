@@ -27,15 +27,13 @@ class IconType implements VariableTypeInterface
 
     public function getSchema(string $name): Field | Component
     {
-        $options = collect(Heroicon::cases())->mapWithKeys(function (Heroicon $icon) {
+        $options = collect(Heroicon::cases())->mapWithKeys(function (Heroicon $icon): array {
             $iconHtml = \Filament\Support\generate_icon_html($icon)->toHtml();
 
             return [$icon->value => "<div style='display: flex; gap: 10px; align-items: center;'> $iconHtml <span class='text-sm'>{$icon->name}</span></div>"];
         });
 
-        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(function () {
-            return str()->of("You can use any icon from <a href='https://heroicons.com' target='_blank'>Heroicons</a> set")->toHtmlString();
-        });
+        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(fn() => str()->of("You can use any icon from <a href='https://heroicons.com' target='_blank'>Heroicons</a> set")->toHtmlString());
     }
 
     public function getValue(mixed $value): mixed

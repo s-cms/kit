@@ -71,7 +71,7 @@ class AssetUpdater
         $process->setEnv($this->getNpmEnv());
         $process->setTimeout(300); // 5 minutes timeout
 
-        $process->run(function ($type, $buffer) {
+        $process->run(function ($type, $buffer): void {
             $this->addOutput(trim($buffer));
         });
 
@@ -95,7 +95,7 @@ class AssetUpdater
         $process->setEnv($this->getNpmEnv());
         $process->setTimeout(600); // 10 minutes timeout for build
 
-        $process->run(function ($type, $buffer) {
+        $process->run(function ($type, $buffer): void {
             $this->addOutput(trim($buffer));
         });
 
@@ -125,13 +125,12 @@ class AssetUpdater
                     'version' => trim($process->getOutput()),
                     'message' => 'npm is available',
                 ];
-            } else {
-                return [
-                    'available' => false,
-                    'version' => null,
-                    'message' => 'npm command failed',
-                ];
             }
+            return [
+                'available' => false,
+                'version' => null,
+                'message' => 'npm command failed',
+            ];
         } catch (\Exception $e) {
             return [
                 'available' => false,
@@ -168,14 +167,14 @@ class AssetUpdater
         }
 
         return [
-            'valid' => empty($issues),
+            'valid' => $issues === [],
             'issues' => $issues,
         ];
     }
 
     protected function addOutput(string $message): void
     {
-        if (trim($message)) {
+        if (trim($message) !== '' && trim($message) !== '0') {
             $this->output[] = [
                 'timestamp' => now()->toISOString(),
                 'message' => $message,
@@ -191,7 +190,7 @@ class AssetUpdater
     public function getNpmEnv(): array
     {
         $npmPath = $this->findExecutable('npm');
-        if (! $npmPath) {
+        if ($npmPath === null || $npmPath === '' || $npmPath === '0') {
             return [];
         }
         // Update command with full path

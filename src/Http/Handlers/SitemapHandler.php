@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 
 class SitemapHandler
 {
-    private $replace = [
+    private array $replace = [
         '/<!--[\s\S]*?-->/' => '', // remove comments
         "/<\?php/" => '<?php ',
         "/\n([\S])/" => '$1',

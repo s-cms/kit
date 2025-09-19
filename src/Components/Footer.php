@@ -21,6 +21,6 @@ class Footer extends Component
 
     public function shouldRender()
     {
-        return $this->layout !== null;
+        return $this->layout instanceof \SmartCms\TemplateBuilder\Models\Layout;
     }
 }

@@ -17,9 +17,7 @@ class ThemeForm
                 foreach ($theme as $key => $value) {
                     $schema[] = ColorPicker::make('theme.' . $key)
                         ->label(ucfirst($key))
-                        ->formatStateUsing(function ($state) {
-                            return $state ?? '#000000';
-                        })
+                        ->formatStateUsing(fn($state) => $state ?? '#000000')
                         ->default($value);
                 }
 

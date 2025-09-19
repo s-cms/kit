@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use SmartCms\Kit\Contracts\UpdateServiceInterface;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Config::set('kit.updates.enabled', true);
 });
 
-it('can check for updates without installing', function () {
+it('can check for updates without installing', function (): void {
     $mockUpdateService = Mockery::mock(UpdateServiceInterface::class);
     $mockUpdateService->shouldReceive('getCurrentVersion')->andReturn('1.0.0');
     $mockUpdateService->shouldReceive('getLatestVersion')->andReturn('1.1.0');
@@ -22,7 +22,7 @@ it('can check for updates without installing', function () {
     expect(Artisan::output())->toContain('Update Available');
 });
 
-it('shows up to date message when no updates available', function () {
+it('shows up to date message when no updates available', function (): void {
     $mockUpdateService = Mockery::mock(UpdateServiceInterface::class);
     $mockUpdateService->shouldReceive('getCurrentVersion')->andReturn('1.0.0');
     $mockUpdateService->shouldReceive('getLatestVersion')->andReturn('1.0.0');
@@ -36,7 +36,7 @@ it('shows up to date message when no updates available', function () {
     expect(Artisan::output())->toContain('up to date');
 });
 
-it('handles update service errors gracefully during check', function () {
+it('handles update service errors gracefully during check', function (): void {
     $mockUpdateService = Mockery::mock(UpdateServiceInterface::class);
     $mockUpdateService->shouldReceive('getCurrentVersion')->andThrow(new \Exception('Service error'));
 
@@ -48,7 +48,7 @@ it('handles update service errors gracefully during check', function () {
     expect(Artisan::output())->toContain('Failed to check for updates');
 });
 
-it('can force update even when no updates detected', function () {
+it('can force update even when no updates detected', function (): void {
     $mockUpdateService = Mockery::mock(UpdateServiceInterface::class);
     $mockUpdateService->shouldReceive('hasUpdatesAvailable')->andReturn(false);
     $mockUpdateService->shouldReceive('getCurrentVersion')->andReturn('1.0.0');
@@ -61,7 +61,7 @@ it('can force update even when no updates detected', function () {
         ->assertExitCode(1);
 });
 
-it('shows no updates message when not forced', function () {
+it('shows no updates message when not forced', function (): void {
     $mockUpdateService = Mockery::mock(UpdateServiceInterface::class);
     $mockUpdateService->shouldReceive('hasUpdatesAvailable')->andReturn(false);
 

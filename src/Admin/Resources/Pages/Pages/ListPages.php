@@ -29,13 +29,11 @@ class ListPages extends ListRecords
                 ->color('gray')
                 ->modal()
                 ->modalWidth(Width::TwoExtraLarge)
-                ->schema(function (Schema $form) {
-                    return $form->schema([
-                        PageNameField::make(),
-                        PageSlugField::make(),
-                        Toggle::make('is_categories')->label(__('kit::admin.is_categories'))->default(false),
-                    ]);
-                })->action(function ($data) {
+                ->schema(fn(Schema $form): \Filament\Schemas\Schema => $form->schema([
+                    PageNameField::make(),
+                    PageSlugField::make(),
+                    Toggle::make('is_categories')->label(__('kit::admin.is_categories'))->default(false),
+                ]))->action(function ($data): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse {
                     if (! isset($data['slug'])) {
                         $data['slug'] = \Illuminate\Support\Str::slug($data['name'][main_lang()]);
                     }
@@ -56,7 +54,7 @@ class ListPages extends ListRecords
                 ->modal()->color('primary')->schema([
                     PageNameField::make(),
                     PageSlugField::make(),
-                ])->action(function (array $data) {
+                ])->action(function (array $data): void {
                     Page::query()->create([
                         'name' => $data['name'],
                         'slug' => $data['slug'],
@@ -79,9 +77,7 @@ class ListPages extends ListRecords
 
     public function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(function (Builder $query) {
-            return $query->where('is_root', false)->whereNull('parent_id');
-        });
+        return $table->modifyQueryUsing(fn(Builder $query) => $query->where('is_root', false)->whereNull('parent_id'));
     }
 
     public static function getNavigationLabel(): string

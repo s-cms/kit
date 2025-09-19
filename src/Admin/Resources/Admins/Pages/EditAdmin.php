@@ -18,7 +18,7 @@ class EditAdmin extends EditRecord
             \Filament\Actions\ActionGroup::make([
                 SaveAction::make($this),
                 SaveAndClose::make($this, AdminResource::getUrl('index')),
-                DeleteAction::make()->hidden(fn ($record) => $record->id == 1),
+                DeleteAction::make()->hidden(fn ($record): bool => $record->id == 1),
             ])->link()->label('Actions')
                 ->icon(\Filament\Support\Icons\Heroicon::ChevronDown)
                 ->size(\Filament\Support\Enums\Size::Small)

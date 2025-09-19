@@ -5,41 +5,41 @@ use Illuminate\Support\Facades\Config;
 use SmartCms\Kit\Contracts\UpdateServiceInterface;
 use SmartCms\Kit\Services\UpdateChecker;
 
-beforeEach(function () {
+beforeEach(function (): void {
     Cache::flush();
 
     $this->mockUpdateService = Mockery::mock(UpdateServiceInterface::class);
     $this->updateChecker = new UpdateChecker($this->mockUpdateService);
 });
 
-it('should check for updates when enabled and frequency is login', function () {
+it('should check for updates when enabled and frequency is login', function (): void {
     Config::set('kit.updates.enabled', true);
     Config::set('kit.updates.check_frequency', 'login');
 
     expect($this->updateChecker->shouldCheck())->toBeTrue();
 });
 
-it('should not check when updates are disabled', function () {
+it('should not check when updates are disabled', function (): void {
     Config::set('kit.updates.enabled', false);
 
     expect($this->updateChecker->shouldCheck())->toBeFalse();
 });
 
-it('should not check when frequency is disabled', function () {
+it('should not check when frequency is disabled', function (): void {
     Config::set('kit.updates.enabled', true);
     Config::set('kit.updates.check_frequency', 'disabled');
 
     expect($this->updateChecker->shouldCheck())->toBeFalse();
 });
 
-it('should check daily when frequency is daily and no previous check', function () {
+it('should check daily when frequency is daily and no previous check', function (): void {
     Config::set('kit.updates.enabled', true);
     Config::set('kit.updates.check_frequency', 'daily');
 
     expect($this->updateChecker->shouldCheck())->toBeTrue();
 });
 
-it('should not check daily when already checked today', function () {
+it('should not check daily when already checked today', function (): void {
     Config::set('kit.updates.enabled', true);
     Config::set('kit.updates.check_frequency', 'daily');
 
@@ -48,7 +48,7 @@ it('should not check daily when already checked today', function () {
     expect($this->updateChecker->shouldCheck())->toBeFalse();
 });
 
-it('can store and retrieve update notifications', function () {
+it('can store and retrieve update notifications', function (): void {
     $updateInfo = [
         'current_version' => '1.0.0',
         'latest_version' => '1.1.0',
@@ -63,7 +63,7 @@ it('can store and retrieve update notifications', function () {
     expect($stored)->toBe($updateInfo);
 });
 
-it('can clear update notifications', function () {
+it('can clear update notifications', function (): void {
     $updateInfo = [
         'current_version' => '1.0.0',
         'latest_version' => '1.1.0',
@@ -76,7 +76,7 @@ it('can clear update notifications', function () {
     expect($this->updateChecker->getUpdateNotifications())->toBeNull();
 });
 
-it('checks for updates on login when updates are available', function () {
+it('checks for updates on login when updates are available', function (): void {
     Config::set('kit.updates.enabled', true);
     Config::set('kit.updates.check_frequency', 'login');
 
@@ -98,7 +98,7 @@ it('checks for updates on login when updates are available', function () {
     expect($stored)->toBe($updateDetails);
 });
 
-it('clears notifications when no updates are available', function () {
+it('clears notifications when no updates are available', function (): void {
     Config::set('kit.updates.enabled', true);
     Config::set('kit.updates.check_frequency', 'login');
 
@@ -121,7 +121,7 @@ it('clears notifications when no updates are available', function () {
     expect($this->updateChecker->getUpdateNotifications())->toBeNull();
 });
 
-it('does not check when shouldCheck returns false', function () {
+it('does not check when shouldCheck returns false', function (): void {
     Config::set('kit.updates.enabled', false);
 
     $this->mockUpdateService

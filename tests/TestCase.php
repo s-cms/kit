@@ -26,7 +26,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'SmartCms\\Kit\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            fn (string $modelName): string => 'SmartCms\\Kit\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
@@ -50,7 +50,7 @@ class TestCase extends Orchestra
         ];
     }
 
-    public function getEnvironmentSetUp($app)
+    public function getEnvironmentSetUp($app): void
     {
         config()->set('database.default', 'testing');
 
@@ -62,19 +62,15 @@ class TestCase extends Orchestra
         $pagesMigration->up();
 
         // Mock the 's' service that's used in KitPlugin
-        $app->singleton('s', function () {
-            return new class
+        $app->singleton('s', fn(): object => new class
+        {
+            public function get($key, $default = null)
             {
-                public function get($key, $default = null)
-                {
-                    return $default;
-                }
-            };
+                return $default;
+            }
         });
 
         // Mock the 'lang' service that's used in helpers
-        $app->singleton('lang', function () {
-            return new Languages;
-        });
+        $app->singleton('lang', fn(): \SmartCms\Lang\Languages => new Languages);
     }
 }

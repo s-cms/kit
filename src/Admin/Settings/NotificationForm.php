@@ -22,7 +22,7 @@ class NotificationForm
                     Action::make('test_notification')
                         ->label(__('kit::admin.test_notification'))
                         ->icon('heroicon-o-envelope')
-                        ->action(function () {
+                        ->action(function (): void {
                             try {
                                 /**
                                  * @var Admin $user
@@ -53,61 +53,47 @@ class NotificationForm
                             'smtp' => 'SMTP',
                             'sendmail' => 'Sendmail',
                         ])
-                        ->formatStateUsing(function ($state) {
-                            return $state ?? 'sendmail';
-                        })
+                        ->formatStateUsing(fn($state) => $state ?? 'sendmail')
                         ->live()
                         ->default('sendmail'),
                     TextInput::make('mail.host')
                         ->label(__('kit::admin.mail_host'))
-                        ->hidden(function ($get) {
-                            return $get('mail.provider') != 'smtp';
-                        })->required(),
+                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
                     TextInput::make('mail.port')
                         ->label(__('kit::admin.mail_port'))
-                        ->hidden(function ($get) {
-                            return $get('mail.provider') != 'smtp';
-                        })->required(),
+                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
                     TextInput::make('mail.username')
                         ->label(__('kit::admin.mail_username'))
-                        ->hidden(function ($get) {
-                            return $get('mail.provider') != 'smtp';
-                        })->required(),
+                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
                     TextInput::make('mail.password')
                         ->label(__('kit::admin.mail_password'))
                         ->password()
                         ->revealable(false)
-                        ->hidden(function ($get) {
-                            return $get('mail.provider') != 'smtp';
-                        })->required(),
+                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
                     Select::make('mail.encryption')
                         ->label(__('kit::admin.mail_encryption'))
                         ->options([
                             'ssl' => 'SSL',
                             'tls' => 'TLS',
                         ])
-                        ->hidden(function ($get) {
-                            return $get('mail.provider') != 'smtp';
-                        })->required(),
+                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
                 ])->collapsible(),
             Section::make(__('kit::admin.telegram'))->schema([
                 TextInput::make('telegram.token')
                     ->label(__('kit::admin.bot_token'))
                     ->password()
-                    ->revealable(false)->readOnly(fn ($get, $state) => ! $get('is_token_deleted') || $state)->suffixAction(Action::make('delete_token')->icon('heroicon-o-trash')->action(function ($set) {
+                    ->revealable(false)->readOnly(fn ($get, $state): bool => ! $get('is_token_deleted') || $state)->suffixAction(Action::make('delete_token')->icon('heroicon-o-trash')->action(function ($set): void {
                         $set('is_token_deleted', true);
                         $set('telegram.token', null);
                     })),
                 TextInput::make('telegram.bot_username')
                     ->label(__('kit::admin.bot_username'))
-                    ->required(function ($state) {
-                        return strlen($state) > 0;
-                    }),
+                    ->required(fn($state): bool => strlen((string) $state) > 0),
             ])->collapsible()->headerActions([
                 Action::make('test_notification')
                     ->label(__('kit::admin.test_notification'))
                     ->icon('heroicon-o-envelope')
-                    ->action(function () {
+                    ->action(function (): void {
                         /**
                          * @var Admin $user
                          */
@@ -134,9 +120,7 @@ class NotificationForm
                                 ->danger()
                                 ->send();
                         }
-                    })->disabled(function ($get) {
-                        return ! $get('telegram.token') || ! $get('telegram.bot_username');
-                    }),
+                    })->disabled(fn($get): bool => ! $get('telegram.token') || ! $get('telegram.bot_username')),
             ]),
         ]);
     }

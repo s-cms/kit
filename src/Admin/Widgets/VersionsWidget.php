@@ -51,8 +51,8 @@ class VersionsWidget extends StatsOverviewWidget
         $database = DB::connection()->getPdo();
         $driver = DB::connection()->getDriverName();
         $serverVersion = $database->getAttribute(PDO::ATTR_SERVER_VERSION);
-        $versionParts = explode('-', $serverVersion);
-        $databaseName = isset($versionParts[1]) ? $versionParts[1] : ucfirst($driver);
+        $versionParts = explode('-', (string) $serverVersion);
+        $databaseName = $versionParts[1] ?? ucfirst($driver);
         $databaseVersion = $versionParts[0];
 
         return [

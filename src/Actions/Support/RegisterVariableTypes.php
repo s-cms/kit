@@ -31,7 +31,7 @@ class RegisterVariableTypes
 
     public function __construct(private VariableTypeRegistry $registry) {}
 
-    public function handle()
+    public function handle(): void
     {
         $this->registry->register(PhoneType::class);
         $this->registry->register(PhonesType::class);

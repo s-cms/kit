@@ -14,7 +14,7 @@ class MakeHomePage extends Command
 
     protected $description = 'Make scms home page';
 
-    public function handle()
+    public function handle(): void
     {
         if (Language::query()->count() === 0) {
             LanguageFactory::new()->create([

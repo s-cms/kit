@@ -67,9 +67,7 @@ class EditTemplateRelated extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function ($query) {
-                return $query->withoutGlobalScopes()->orderBy('sorting', 'asc');
-            })
+            ->modifyQueryUsing(fn($query) => $query->withoutGlobalScopes()->orderBy('sorting', 'asc'))
             ->recordTitleAttribute('name')
             ->reorderable('sorting')
             ->columns([
@@ -87,7 +85,7 @@ class EditTemplateRelated extends ManageRelatedRecords
                 })
                     ->mutateDataUsing(function (array $data, $record): array {
                         $originValue = $record->section?->value ?? [];
-                        if (json_encode($originValue) == json_encode($data['value'])) {
+                        if (json_encode($originValue) === json_encode($data['value'])) {
                             return [];
                         }
                         $isUsed = $record->section->templates()->count() > 1;
@@ -99,7 +97,7 @@ class EditTemplateRelated extends ManageRelatedRecords
                             return [];
                         }
                         $newSection = $record->section->replicate();
-                        $freshName = explode(' - ', $newSection->name)[0];
+                        $freshName = explode(' - ', (string) $newSection->name)[0];
 
                         $newSection->name = $freshName . ' - ' . $this->record->name;
                         if (ModelsSection::query()->where('name', $newSection->name)->exists()) {
@@ -109,8 +107,6 @@ class EditTemplateRelated extends ManageRelatedRecords
                         $newSection->save();
                         $record->section_id = $newSection->id;
                         $record->save();
-
-                        return [];
 
                         return [];
                     }),

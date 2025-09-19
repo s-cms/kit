@@ -11,19 +11,17 @@ class GetViewButton
 {
     public static function run(): Closure
     {
-        return function (): string {
-            return Blade::render('{{$action}}', [
-                'action' => Action::make('view')
-                    ->link()
-                    ->label(__('filament-actions::view.single.label'))
-                    ->icon('heroicon-o-eye')
-                    ->iconPosition(IconPosition::After)
-                    ->iconSize('sm')
-                    ->size('sm')
-                    ->color('gray')
-                    ->url(url('/'))
-                    ->openUrlInNewTab(),
-            ]);
-        };
+        return fn(): string => Blade::render('{{$action}}', [
+            'action' => Action::make('view')
+                ->link()
+                ->label(__('filament-actions::view.single.label'))
+                ->icon('heroicon-o-eye')
+                ->iconPosition(IconPosition::After)
+                ->iconSize('sm')
+                ->size('sm')
+                ->color('gray')
+                ->url(url('/'))
+                ->openUrlInNewTab(),
+        ]);
     }
 }

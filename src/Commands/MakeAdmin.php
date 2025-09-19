@@ -11,7 +11,7 @@ class MakeAdmin extends Command
 
     protected $description = 'Make scms admin';
 
-    public function handle()
+    public function handle(): void
     {
         $name = $this->ask('Enter admin username');
         if (Admin::query()->where('username', $name)->exists()) {

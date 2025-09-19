@@ -32,7 +32,7 @@ class PageForm
                         LeftGrid::make()->schema([
                             Section::make([
                                 PageNameField::make(),
-                                PageSlugField::make()->hidden(fn ($record) => $record?->id == 1),
+                                PageSlugField::make()->hidden(fn ($record): bool => $record?->id == 1),
                             ]),
                             ...RelatedSeoForm::configure($schema)->getComponents(),
 

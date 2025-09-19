@@ -9,15 +9,12 @@ use SmartCms\Kit\Contracts\UpdateServiceInterface;
 
 class UpdateChecker implements UpdateCheckerInterface
 {
-    protected UpdateServiceInterface $updateService;
-
     protected string $cacheKey = 'kit_update_notifications';
 
     protected int $cacheDuration;
 
-    public function __construct(UpdateServiceInterface $updateService)
+    public function __construct(protected UpdateServiceInterface $updateService)
     {
-        $this->updateService = $updateService;
         $this->cacheDuration = config('kit.updates.cache_duration', 3600);
     }
 
@@ -31,7 +28,7 @@ class UpdateChecker implements UpdateCheckerInterface
             $retryHandler = new UpdateRetryHandler;
 
             $updateDetails = $retryHandler->executeWithRetry(
-                fn () => $this->updateService->getUpdateDetails(),
+                fn (): ?array => $this->updateService->getUpdateDetails(),
                 'github_update_check'
             );
 

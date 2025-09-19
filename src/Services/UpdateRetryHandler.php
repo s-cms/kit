@@ -7,17 +7,11 @@ use Illuminate\Support\Facades\Log;
 
 class UpdateRetryHandler
 {
-    protected int $maxRetries;
+    // milliseconds
+    protected string $cachePrefix = 'kit_update_retry_';
 
-    protected int $baseDelay;
-
-    protected string $cachePrefix;
-
-    public function __construct(int $maxRetries = 3, int $baseDelay = 1000)
+    public function __construct(protected int $maxRetries = 3, protected int $baseDelay = 1000)
     {
-        $this->maxRetries = $maxRetries;
-        $this->baseDelay = $baseDelay; // milliseconds
-        $this->cachePrefix = 'kit_update_retry_';
     }
 
     public function executeWithRetry(callable $operation, string $operationId): mixed
@@ -75,7 +69,7 @@ class UpdateRetryHandler
         $errorMessage = strtolower($e->getMessage());
 
         foreach ($nonRetryableErrors as $nonRetryable) {
-            if (strpos($errorMessage, $nonRetryable) !== false) {
+            if (str_contains($errorMessage, $nonRetryable)) {
                 return false;
             }
         }
@@ -108,7 +102,7 @@ class UpdateRetryHandler
     protected function calculateDelay(int $attempt): int
     {
         // Exponential backoff: base_delay * 2^(attempt-1)
-        return $this->baseDelay * pow(2, $attempt - 1);
+        return $this->baseDelay * 2 ** ($attempt - 1);
     }
 
     public function getNextRetryTime(string $operationId): ?\Carbon\Carbon
@@ -128,7 +122,7 @@ class UpdateRetryHandler
     {
         $nextRetryTime = $this->getNextRetryTime($operationId);
 
-        if (! $nextRetryTime) {
+        if (!$nextRetryTime instanceof \Carbon\Carbon) {
             return false;
         }
 

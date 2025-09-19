@@ -16,8 +16,8 @@ if (! function_exists('validateImage')) {
 
             return no_image();
         }
-        if (! str_contains($source, 'storage')) {
-            if (! str_starts_with($source, '/')) {
+        if (! str_contains((string) $source, 'storage')) {
+            if (! str_starts_with((string) $source, '/')) {
                 $source = '/' . $source;
             }
             $source = asset('storage' . $source);
@@ -71,9 +71,7 @@ if (! function_exists('host')) {
 if (! function_exists('hostname')) {
     function hostname(): string
     {
-        return once(function () {
-            return Page::query()->first()->name ?? __('Hostname');
-        });
+        return once(fn() => Page::query()->first()->name ?? __('Hostname'));
     }
 }
 
@@ -97,7 +95,7 @@ if (! function_exists('language_routes')) {
             }
             if ($lang->slug === main_lang()) {
                 $path = preg_replace('#/' . $currentLocale . '(/|$)#', '/', $currentPath);
-                $path = rtrim($path, '/');
+                $path = rtrim((string) $path, '/');
             } else {
                 $parts = parse_url($currentPath);
                 $base = $parts['scheme'] . '://' . $parts['host'];

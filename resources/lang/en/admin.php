@@ -72,7 +72,6 @@ return [
     'get_telegram_id' => 'Get Telegram ID',
     'update' => 'Update',
     'new_contact_form' => 'New Contact Form',
-    'design' => 'Design',
     'pages' => 'Pages',
     'items' => 'Items',
     'categories' => 'Categories',

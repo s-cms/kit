@@ -13,12 +13,9 @@ class Update extends Command
 
     protected $description = 'Update Smart CMS Kit package';
 
-    protected UpdateServiceInterface $updateService;
-
-    public function __construct(UpdateServiceInterface $updateService)
+    public function __construct(protected UpdateServiceInterface $updateService)
     {
         parent::__construct();
-        $this->updateService = $updateService;
     }
 
     public function handle(): int
@@ -102,7 +99,7 @@ class Update extends Command
         try {
             $newVersion = $this->updateService->getCurrentVersion();
             $this->info("Updated to version: {$newVersion}");
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // Don't fail the update if we can't get the version
         }
 
@@ -147,7 +144,7 @@ class Update extends Command
         $progressBar->setFormat('verbose');
         $progressBar->start();
 
-        $process->run(function ($type, $buffer) use ($progressBar) {
+        $process->run(function ($type, $buffer) use ($progressBar): void {
             if ($this->output->isVerbose()) {
                 $this->output->write($buffer);
             } else {

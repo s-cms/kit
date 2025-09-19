@@ -18,7 +18,7 @@ class FrontPage extends Page
 
     protected static function booted(): void
     {
-        static::addGlobalScope('published_only', function (Builder $builder) {
+        static::addGlobalScope('published_only', function (Builder $builder): void {
             $builder->where('status', PageStatus::Published->value);
         });
     }
@@ -95,14 +95,14 @@ class FrontPage extends Page
     public function breadcrumbs(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->getBreadcrumbs(),
+            get: fn (): array => $this->getBreadcrumbs(),
         );
     }
 
     public function url(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->route(),
+            get: fn (): string => $this->route(),
         );
     }
 }

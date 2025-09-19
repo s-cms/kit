@@ -80,11 +80,7 @@ class AdminResource extends Resource
         if ($record->id == 1) {
             return false;
         }
-        if ($user->id != 1) {
-            return false;
-        }
-
-        return true;
+        return $user->id == 1;
     }
 
     public static function canDelete(Model $record): bool

@@ -21,10 +21,10 @@ class TestNotification extends Notification
     public function via(object $notifiable): array
     {
         $via = [];
-        if ($this->type == 'telegram' && $notifiable->telegram_id) {
+        if ($this->type === 'telegram' && $notifiable->telegram_id) {
             $via[] = 'telegram';
         }
-        if ($this->type == 'mail') {
+        if ($this->type === 'mail') {
             $via[] = 'mail';
         }
 

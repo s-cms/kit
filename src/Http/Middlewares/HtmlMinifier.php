@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
  */
 class HtmlMinifier
 {
-    private $replace = [
+    private array $replace = [
         '/<!--[\s\S]*?-->/' => '', // remove comments
         "/<\?php/" => '<?php ',
         "/\n([\S])/" => '$1',
@@ -31,10 +31,9 @@ class HtmlMinifier
 
     public function handle(Request $request, Closure $next)
     {
-        $response = $next($request);
         // wire:ignore dont work with that, so temporary disabled
         // $response->setContent($this->minify($response->getContent()));
 
-        return $response;
+        return $next($request);
     }
 }

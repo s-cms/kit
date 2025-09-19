@@ -16,8 +16,14 @@ class Layout extends Component
 
     public string $og_type;
 
+    /**
+     * @var array{prefix: mixed, suffix: mixed}
+     */
     public $titleMod;
 
+    /**
+     * @var array{prefix: mixed, suffix: mixed}
+     */
     public $descriptionMod;
 
     public string $stylePath;
@@ -31,8 +37,8 @@ class Layout extends Component
         $meta_tags = app('s')->get('custom_meta', []);
         $this->meta_tags = $meta_tags;
         $fav = app('s')->get('branding.favicon', '/favicon.ico');
-        if (str_starts_with($fav, '/')) {
-            $fav = substr($fav, 1);
+        if (str_starts_with((string) $fav, '/')) {
+            $fav = substr((string) $fav, 1);
         }
         $this->favicon = asset('/storage/' . $fav);
         $this->og_type = app('s')->get('og_type', 'website') ?? 'website';

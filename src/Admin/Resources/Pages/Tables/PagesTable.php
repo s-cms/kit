@@ -25,14 +25,10 @@ class PagesTable
                 NameColumn::make()->getStateUsing(fn ($record) => $record->getTranslation('name', main_lang())),
                 ImageColumn::make('image.source')
                     ->square()
-                    ->getStateUsing(fn ($record) => validateImage(ltrim($record?->image['source'] ?? '', '/')))
+                    ->getStateUsing(fn ($record): string|array => validateImage(ltrim($record?->image['source'] ?? '', '/')))
                     ->defaultImageUrl(no_image()['source'] ?? '')
                     ->default(no_image()['source']),
-                TextColumn::make('status')->badge()->color(function (mixed $state) {
-                    return PageStatus::tryFrom($state)?->getColor();
-                })->formatStateUsing(function (mixed $state) {
-                    return PageStatus::tryFrom($state)?->getLabel();
-                }),
+                TextColumn::make('status')->badge()->color(fn(mixed $state) => PageStatus::tryFrom($state)?->getColor())->formatStateUsing(fn(mixed $state) => PageStatus::tryFrom($state)?->getLabel()),
                 // SortingColumn::make(),
                 ViewsColumn::make(),
                 UpdatedAtColumn::make(),

@@ -40,8 +40,8 @@ class CompanyInfoForm
                             ->label(__('kit::admin.branch_name'))
                             ->required()->suffixAction(Action::make('translate')
                             ->icon('heroicon-o-language')
-                            ->hidden(fn ($get) => ! $get('is_multi_lang'))
-                            ->fillForm(function ($get) {
+                            ->hidden(fn ($get): bool => ! $get('is_multi_lang'))
+                            ->fillForm(function ($get): array {
                                 $values = [];
                                 foreach (get_active_languages() as $language) {
                                     $values[$language->slug] = $get($language->slug);
@@ -57,7 +57,7 @@ class CompanyInfoForm
                                 }
 
                                 return $form->schema($schema);
-                            })->action(function ($data, $set) {
+                            })->action(function ($data, $set): void {
                                 foreach ($data as $key => $value) {
                                     $set($key, $value);
                                 }

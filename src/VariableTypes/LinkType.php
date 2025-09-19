@@ -53,7 +53,7 @@ class LinkType implements VariableTypeInterface
                     }
                 })
                 ->required(),
-            Flex::make(function (Get $get) use ($name) {
+            Flex::make(function (Get $get) use ($name): array {
                 $type = $get($name . '.type');
                 if (! $type) {
                     return [];

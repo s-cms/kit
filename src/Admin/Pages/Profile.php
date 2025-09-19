@@ -40,9 +40,7 @@ class Profile extends EditProfile
                         ])
                         ->default('en')
                         ->required(),
-                    TextInput::make('telegram_token')->disabled()->hidden()->formatStateUsing(function ($get) {
-                        return \Illuminate\Support\Str::random(32);
-                    }),
+                    TextInput::make('telegram_token')->disabled()->hidden()->formatStateUsing(fn($get) => \Illuminate\Support\Str::random(32)),
                     Section::make(__('kit::admin.telegram'))->schema([
                         TextInput::make('telegram_id')
                             ->label(__('kit::admin.telegram_chat_id'))
@@ -54,18 +52,17 @@ class Profile extends EditProfile
                             Action::make('copy_telegram_link')
                                 ->label(__('kit::admin.copy_telegram_link'))
                                 ->icon('heroicon-o-link')
-                                ->url(function ($get) {
+                                ->url(function ($get): string {
                                     $token = $get('telegram_token');
                                     $botUsername = setting('telegram.bot_username');
                                     $botUsername = str_replace('@', '', $botUsername);
-                                    $url = "https://t.me/{$botUsername}?start={$token}";
 
-                                    return $url;
+                                    return "https://t.me/{$botUsername}?start={$token}";
                                 })
                                 ->openUrlInNewTab(),
                             Action::make('get_telegram_id')
                                 ->label(__('kit::admin.get_telegram_id'))
-                                ->action(function ($set, $get) {
+                                ->action(function ($set, $get): void {
                                     $token = $get('telegram_token');
                                     $updates = TelegramUpdates::create()
                                         ->latest()
@@ -101,18 +98,16 @@ class Profile extends EditProfile
                     TextInput::make('old_password')
                         ->label('Current Password')
                         ->password()
-                        ->required(fn ($get) => filled($get('password')))
+                        ->required(fn ($get): bool => filled($get('password')))
                         ->dehydrated(false) // Do not save to DB
-                        ->rule(function () {
-                            return function ($attribute, $value, $fail) {
-                                /**
-                                 * @var Admin $user
-                                 */
-                                $user = auth()->user();
-                                if (! Hash::check($value, $user->password)) {
-                                    $fail('The current password is incorrect.');
-                                }
-                            };
+                        ->rule(fn(): \Closure => function ($attribute, $value, $fail): void {
+                            /**
+                             * @var Admin $user
+                             */
+                            $user = auth()->user();
+                            if (! Hash::check($value, $user->password)) {
+                                $fail('The current password is incorrect.');
+                            }
                         }),
                     $this->getPasswordFormComponent(),
                     $this->getPasswordConfirmationFormComponent(),
@@ -127,9 +122,7 @@ class Profile extends EditProfile
 
     public function getNotificationsSchema($channel): array
     {
-        return collect(config('kit.notifications'))->map(function ($value, $key) use ($channel) {
-            return Toggle::make("notifications.{$channel}.{$key}")->label(__($value))->default(true);
-        })->toArray();
+        return collect(config('kit.notifications'))->map(fn($value, $key): \Filament\Forms\Components\Toggle => Toggle::make("notifications.{$channel}.{$key}")->label(__($value))->default(true))->toArray();
     }
 
     public function afterSave(): void

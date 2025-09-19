@@ -22,7 +22,7 @@ class PageSummary extends Page
         $imagePath = '';
 
         return [
-            Section::make('Status')->icon(function (Get $get) {
+            Section::make('Status')->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
                 $status = $get('status');
 
                 return match ($status) {
@@ -33,11 +33,9 @@ class PageSummary extends Page
             })->compact()
                 ->schema([
                     Radio::make('status')->hiddenLabel()
-                        ->disabled(function ($record) {
-                            return $record->id == 1;
-                        })
+                        ->disabled(fn($record): bool => $record->id == 1)
                         ->options(PageStatus::class)->default('active')->reactive(),
-                    DateTimePicker::make('published_at')->reactive()->seconds(false)->default(now())->hidden(fn ($get) => $get('status')?->value != 'scheduled'),
+                    DateTimePicker::make('published_at')->reactive()->seconds(false)->default(now())->hidden(fn ($get): bool => $get('status')?->value != 'scheduled'),
                 ]),
             Section::make()->compact()->schema([
                 ImageUpload::make('image', $imagePath, __('kit::admin.image')),
@@ -45,19 +43,13 @@ class PageSummary extends Page
             ])->columns(1),
             Section::make()->compact()->schema([
                 Select::make('layout_id')
-                    ->options(function (Model $record) {
-                        return Layout::query()
-                            ->when($record->is_root, function ($query) {
-                                return $query->where('path', 'like', '%divisions%');
-                            })
-                            ->when(! $record->is_root, function ($query) {
-                                return $query->where('path', 'like', '%pages%');
-                            })
-                            ->pluck('name', 'id');
-                    })
+                    ->options(fn(Model $record) => Layout::query()
+                        ->when($record->is_root, fn($query) => $query->where('path', 'like', '%divisions%'))
+                        ->when(! $record->is_root, fn($query) => $query->where('path', 'like', '%pages%'))
+                        ->pluck('name', 'id'))
                     ->label(__('kit::admin.layout')),
             ])->columns(1),
-            Section::make(__('kit::admin.indexation'))->icon(function (Get $get) {
+            Section::make(__('kit::admin.indexation'))->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
                 $index = $get('is_index') ?? true;
 
                 return match ($index) {

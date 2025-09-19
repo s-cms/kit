@@ -12,8 +12,8 @@ class PageNameField
 {
     public static function make(?string $name = 'name'): TextInput
     {
-        return NameField::make($name)->live(onBlur: true)->afterStateUpdated(function (string $state, string $operation, Set $set, Get $get) {
-            if ($operation == 'edit') {
+        return NameField::make($name)->live(onBlur: true)->afterStateUpdated(function (string $state, string $operation, Set $set, Get $get): void {
+            if ($operation === 'edit') {
                 return;
             }
             $slug = Str::slug($state);

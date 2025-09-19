@@ -92,7 +92,7 @@ class Page extends Model
 
     public function getBreadcrumbs(): array
     {
-        return once(function () {
+        return once(function (): array {
             $breadcrumbs = [
                 [
                     'name' => $this->name,
@@ -112,7 +112,7 @@ class Page extends Model
 
     public function route(): string
     {
-        return once(function () {
+        return once(function (): string {
             $slugs = [];
             $current = $this;
 
@@ -148,11 +148,11 @@ class Page extends Model
     protected static function boot()
     {
         parent::boot();
-        static::creating(function (Page $page) {
+        static::creating(function (Page $page): void {
             $page->created_by = auth()?->id();
             $page->updated_by = auth()?->id();
         });
-        static::created(function (Page $page) {
+        static::created(function (Page $page): void {
             $template = app('s')->get('static_page_template', []);
             if ($page->root_id) {
                 $root = Page::find($page->root_id);
@@ -163,11 +163,7 @@ class Page extends Model
                 if ($page->parent_id && $page->parent_id == $root->id && $root->settings['is_categories']) {
                     $isCategory = true;
                 }
-                if ($isCategory) {
-                    $template = $root->settings['categories_template'] ?? [];
-                } else {
-                    $template = $root->settings['items_template'] ?? [];
-                }
+                $template = $isCategory ? $root->settings['categories_template'] ?? [] : $root->settings['items_template'] ?? [];
             }
             foreach ($template as $key => $item) {
                 $page->template()->create([
@@ -186,7 +182,7 @@ class Page extends Model
                 $page->save();
             }
         });
-        static::updating(function (Page $page) {
+        static::updating(function (Page $page): void {
             $page->updated_by = auth()?->id();
         });
     }

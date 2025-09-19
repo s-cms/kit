@@ -40,7 +40,7 @@ class ListItems extends ListRecords
                     PageSlugField::make(),
                     Select::make('parent_id')->hidden(! $this->rootPage->settings['is_categories'])
                         ->options(Page::query()->where('parent_id', $this->rootPage->id)->pluck('name', 'id')->toArray())->required(),
-                ])->action(function (array $data) {
+                ])->action(function (array $data): void {
                     Page::query()->create([
                         'name' => $data['name'],
                         'slug' => $data['slug'],
@@ -63,12 +63,6 @@ class ListItems extends ListRecords
 
     public function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(function (Builder $query) {
-            return $query->when($this->rootPage->settings['is_categories'], function (Builder $query) {
-                return $query->where('root_id', $this->rootPage->id)->where('parent_id', '!=', $this->rootPage->id);
-            }, function (Builder $query) {
-                return $query->where('parent_id', $this->rootPage->id);
-            });
-        });
+        return $table->modifyQueryUsing(fn(Builder $query) => $query->when($this->rootPage->settings['is_categories'], fn(Builder $query) => $query->where('root_id', $this->rootPage->id)->where('parent_id', '!=', $this->rootPage->id), fn(Builder $query) => $query->where('parent_id', $this->rootPage->id)));
     }
 }

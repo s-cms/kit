@@ -11,7 +11,7 @@ class CreateLanguages extends Command
 {
     protected $signature = 'kit:create-languages';
 
-    public function handle()
+    public function handle(): void
     {
         if (! Schema::hasTable('languages')) {
             $this->error('Languages table does not exist');

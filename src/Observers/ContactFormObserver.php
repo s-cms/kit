@@ -9,7 +9,7 @@ use SmartCms\Kit\Notifications\NewContactFormNotification;
 
 class ContactFormObserver
 {
-    public function saved(ContactForm $contactForm)
+    public function saved(ContactForm $contactForm): void
     {
         foreach (Admin::all() as $admin) {
             try {

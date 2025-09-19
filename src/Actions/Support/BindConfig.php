@@ -10,7 +10,7 @@ class BindConfig
 {
     use AsAction;
 
-    public function handle()
+    public function handle(): void
     {
         if (! Schema::hasTable(config('settings.database_table_name', 'settings'))) {
             return;
@@ -20,7 +20,7 @@ class BindConfig
         $this->bindName();
     }
 
-    public function bindMailer()
+    public function bindMailer(): void
     {
         $mailConfig = [
             'transport' => 'smtp',
@@ -46,12 +46,12 @@ class BindConfig
         }
     }
 
-    public function bindTelegram()
+    public function bindTelegram(): void
     {
         Config::set('services.telegram-bot-api.token', app('s')->get('telegram.token', ''));
     }
 
-    public function bindName()
+    public function bindName(): void
     {
         Config::set('app.name', company_name());
     }

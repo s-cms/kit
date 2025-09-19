@@ -2,7 +2,7 @@
 
 use SmartCms\Kit\Services\UpdateErrorHandler;
 
-it('can identify dependency conflict errors', function () {
+it('can identify dependency conflict errors', function (): void {
     $errorOutput = 'Your requirements could not be resolved to an installable set of packages.';
 
     $result = UpdateErrorHandler::handleComposerError($errorOutput, 1);
@@ -12,7 +12,7 @@ it('can identify dependency conflict errors', function () {
     expect($result['troubleshooting'])->not->toBeEmpty();
 });
 
-it('can identify permission errors', function () {
+it('can identify permission errors', function (): void {
     $errorOutput = 'Permission denied when trying to write to /path/to/file';
 
     $result = UpdateErrorHandler::handleComposerError($errorOutput, 1);
@@ -23,7 +23,7 @@ it('can identify permission errors', function () {
     expect($result['troubleshooting'])->toContain('Ensure the web server user has write permissions to the project directory');
 });
 
-it('can identify network errors', function () {
+it('can identify network errors', function (): void {
     $errorOutput = 'Could not fetch package information from repository';
 
     $result = UpdateErrorHandler::handleComposerError($errorOutput, 1);
@@ -34,7 +34,7 @@ it('can identify network errors', function () {
     expect($result['troubleshooting'])->toContain('Check your internet connection');
 });
 
-it('can identify memory limit errors', function () {
+it('can identify memory limit errors', function (): void {
     $errorOutput = 'Fatal error: Allowed memory size of 134217728 bytes exhausted';
 
     $result = UpdateErrorHandler::handleComposerError($errorOutput, 1);
@@ -43,7 +43,7 @@ it('can identify memory limit errors', function () {
     expect($result['troubleshooting'])->not->toBeEmpty();
 });
 
-it('can identify composer not found errors', function () {
+it('can identify composer not found errors', function (): void {
     $errorOutput = 'composer: command not found';
 
     $result = UpdateErrorHandler::handleComposerError($errorOutput, 1);
@@ -55,7 +55,7 @@ it('can identify composer not found errors', function () {
     expect($result['troubleshooting'])->toBeArray()->toContain('Install Composer from https://getcomposer.org/');
 });
 
-it('handles unknown composer errors gracefully', function () {
+it('handles unknown composer errors gracefully', function (): void {
     $errorOutput = 'Some unknown error occurred';
 
     $result = UpdateErrorHandler::handleComposerError($errorOutput, 1);
@@ -65,7 +65,7 @@ it('handles unknown composer errors gracefully', function () {
     expect($result['troubleshooting'])->toBeArray();
 });
 
-it('can handle github rate limit errors', function () {
+it('can handle github rate limit errors', function (): void {
     $exception = new \Exception('GitHub API rate limit exceeded. Resets at: 2024-01-15 10:00:00');
 
     $result = UpdateErrorHandler::handleGithubError($exception);
@@ -75,7 +75,7 @@ it('can handle github rate limit errors', function () {
     expect($result['troubleshooting'])->toContain('Wait for the rate limit to reset (usually within an hour)');
 });
 
-it('can handle github connection errors', function () {
+it('can handle github connection errors', function (): void {
     $exception = new \Exception('Unable to connect to GitHub API. Please check your internet connection.');
 
     $result = UpdateErrorHandler::handleGithubError($exception);
@@ -86,7 +86,7 @@ it('can handle github connection errors', function () {
     expect($result['troubleshooting'])->toContain('Check your internet connection');
 });
 
-it('can handle github repository not found errors', function () {
+it('can handle github repository not found errors', function (): void {
     $exception = new \Exception('Repository not found. Please check the repository configuration.');
 
     $result = UpdateErrorHandler::handleGithubError($exception);
@@ -95,7 +95,7 @@ it('can handle github repository not found errors', function () {
     expect($result['message'])->toContain('repository was not found');
 });
 
-it('provides technical details in all error responses', function () {
+it('provides technical details in all error responses', function (): void {
     $errorOutput = 'Some technical error message';
 
     $result = UpdateErrorHandler::handleComposerError($errorOutput, 1);
@@ -104,7 +104,7 @@ it('provides technical details in all error responses', function () {
     expect($result['technical_details'])->toBe($errorOutput);
 });
 
-it('logs errors when handling them', function () {
+it('logs errors when handling them', function (): void {
     $errorOutput = 'Test error for logging';
 
     UpdateErrorHandler::handleComposerError($errorOutput, 1);

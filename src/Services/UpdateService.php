@@ -11,7 +11,7 @@ use SmartCms\Kit\Contracts\UpdateServiceInterface;
 
 class UpdateService implements UpdateServiceInterface
 {
-    protected string $packageName;
+    protected string $packageName = 'smart-cms/kit';
 
     protected string $githubRepository;
 
@@ -21,7 +21,6 @@ class UpdateService implements UpdateServiceInterface
 
     public function __construct()
     {
-        $this->packageName = 'smart-cms/kit';
         $this->githubRepository = config('kit.updates.github_repository', 'smart-cms/kit');
         $this->cacheDuration = config('kit.updates.cache_duration', 3600);
         $this->timeout = config('kit.updates.timeout', 30);
@@ -55,7 +54,7 @@ class UpdateService implements UpdateServiceInterface
                 Log::warning('Failed to fetch latest version from GitHub', ['error' => $e->getMessage()]);
 
                 // For rate limiting, we might want to extend cache duration
-                if (strpos($e->getMessage(), 'rate limit') !== false) {
+                if (str_contains($e->getMessage(), 'rate limit')) {
                     // Cache the failure for a shorter time to retry sooner
                     Cache::put($cacheKey . '_error', $e->getMessage(), 300); // 5 minutes
                 }
@@ -92,7 +91,7 @@ class UpdateService implements UpdateServiceInterface
         $current = $this->getCurrentVersion();
         $latest = $this->getLatestVersion();
 
-        if (! $latest || $current === 'unknown') {
+        if ($latest === null || $latest === '' || $latest === '0' || $current === 'unknown') {
             return false;
         }
 
@@ -104,7 +103,7 @@ class UpdateService implements UpdateServiceInterface
         $current = $this->getCurrentVersion();
         $latest = $this->getLatestVersion();
 
-        if (! $latest) {
+        if ($latest === null || $latest === '' || $latest === '0') {
             return null;
         }
 
@@ -173,16 +172,16 @@ class UpdateService implements UpdateServiceInterface
                 'error' => $e->getMessage(),
             ]);
 
-            throw new \Exception('Unable to connect to GitHub API. Please check your internet connection.');
+            throw new \Exception('Unable to connect to GitHub API. Please check your internet connection.', $e->getCode(), $e);
         } catch (\Illuminate\Http\Client\RequestException $e) {
             Log::warning('GitHub API request failed', [
                 'url' => $url,
                 'error' => $e->getMessage(),
             ]);
 
-            throw new \Exception('GitHub API request failed: ' . $e->getMessage());
+            throw new \Exception('GitHub API request failed: ' . $e->getMessage(), $e->getCode(), $e);
         } catch (\Exception $e) {
-            if (strpos($e->getMessage(), 'rate limit') !== false) {
+            if (str_contains($e->getMessage(), 'rate limit')) {
                 throw $e; // Re-throw rate limit exceptions as-is
             }
 
@@ -191,7 +190,7 @@ class UpdateService implements UpdateServiceInterface
                 'error' => $e->getMessage(),
             ]);
 
-            throw new \Exception('Failed to fetch update information from GitHub: ' . $e->getMessage());
+            throw new \Exception('Failed to fetch update information from GitHub: ' . $e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -222,8 +221,8 @@ class UpdateService implements UpdateServiceInterface
         $version = ltrim($version, 'v');
 
         // Handle dev versions and other suffixes
-        if (strpos($version, '-') !== false) {
-            $version = explode('-', $version)[0];
+        if (str_contains($version, '-')) {
+            return explode('-', $version)[0];
         }
 
         return $version;

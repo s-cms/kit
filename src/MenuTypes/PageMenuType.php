@@ -23,8 +23,8 @@ class PageMenuType implements MenuTypeInterface
     public function getSchema(): Field
     {
         return Select::make('url')
-            ->options(Page::query()->where('depth', '<', 3)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, Set $set) {
-                if ($state) {
+            ->options(Page::query()->where('depth', '<', 3)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, Set $set): void {
+                if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
                     if ($page) {
                         $set('title', $page->name);

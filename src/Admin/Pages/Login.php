@@ -24,7 +24,7 @@ class Login extends PagesLogin
                     'seconds' => $exception->secondsUntilAvailable,
                     'minutes' => ceil($exception->secondsUntilAvailable / 60),
                 ]))
-                ->body(array_key_exists('body', __('filament-panels::pages/auth/login.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/login.notifications.throttled.body', [
+                ->body(array_key_exists('body', !in_array(__('filament-panels::pages/auth/login.notifications.throttled'), ['', '0'], true) && __('filament-panels::pages/auth/login.notifications.throttled') !== [] ? __('filament-panels::pages/auth/login.notifications.throttled') : []) ? __('filament-panels::pages/auth/login.notifications.throttled.body', [
                     'seconds' => $exception->secondsUntilAvailable,
                     'minutes' => ceil($exception->secondsUntilAvailable / 60),
                 ]) : null)
@@ -79,7 +79,7 @@ class Login extends PagesLogin
         try {
             $updateChecker = app(\SmartCms\Kit\Contracts\UpdateCheckerInterface::class);
             $updateChecker->checkOnLogin();
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // Silently fail - update checking should not interrupt login
         }
     }

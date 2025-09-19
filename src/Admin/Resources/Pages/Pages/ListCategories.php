@@ -38,7 +38,7 @@ class ListCategories extends ListRecords
                 ->schema([
                     PageNameField::make(),
                     PageSlugField::make(),
-                ])->action(function (array $data) {
+                ])->action(function (array $data): void {
                     Page::query()->create([
                         'name' => $data['name'],
                         'slug' => $data['slug'],
@@ -61,8 +61,6 @@ class ListCategories extends ListRecords
 
     public function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(function (Builder $query) {
-            return $query->where('parent_id', $this->rootPage->id);
-        });
+        return $table->modifyQueryUsing(fn(Builder $query) => $query->where('parent_id', $this->rootPage->id));
     }
 }

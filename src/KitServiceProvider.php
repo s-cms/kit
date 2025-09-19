@@ -75,10 +75,10 @@ class KitServiceProvider extends PackageServiceProvider
             ->hasRoute('web')
             ->hasViews('kit')
             ->hasViewComponents('kit', Layout::class, Footer::class, Theme::class, Gtm::class, Header::class, PageComponent::class, Heading::class, Image::class, Link::class)
-            ->hasInstallCommand(function (InstallCommand $command) {
+            ->hasInstallCommand(function (InstallCommand $command): void {
                 $command
                     ->publish('images')
-                    ->startWith(function (InstallCommand $command) {
+                    ->startWith(function (InstallCommand $command): void {
                         $command->callSilently('vendor:publish', [
                             '--tag' => 'settings-migrations',
                         ]);
@@ -112,7 +112,7 @@ class KitServiceProvider extends PackageServiceProvider
                     ->publishMigrations()
                     ->askToRunMigrations()
                     ->askToStarRepoOnGitHub('smart-cms/kit')
-                    ->endWith(function (InstallCommand $command) {
+                    ->endWith(function (InstallCommand $command): void {
                         $command->call('vendor:publish', ['--tag' => 'kit-images']);
                         $command->call('vendor:publish', ['--tag' => 'kit-css']);
                         $command->call('kit:create-languages');
@@ -151,7 +151,7 @@ class KitServiceProvider extends PackageServiceProvider
                 /** @var \Illuminate\Routing\Route $this */
                 $uri = $this->uri();
                 $cleanUri = ltrim($uri, '/');
-                $actions = array_filter($this->getAction(), fn ($key) => $key != 'as', ARRAY_FILTER_USE_KEY);
+                $actions = array_filter($this->getAction(), fn ($key): bool => $key != 'as', ARRAY_FILTER_USE_KEY);
                 FacadesRoute::addRoute(
                     $this->methods(),
                     '{lang}/' . $cleanUri,
@@ -168,34 +168,20 @@ class KitServiceProvider extends PackageServiceProvider
         Testable::mixin(new TestsKit);
         $this->configureDefaults();
         RegisterVariableTypes::run();
-        $this->app->singleton('seo', function () {
-            return new Seo;
-        });
-        $this->app->singleton(MicrodataManager::class, function () {
-            return new MicrodataManager;
-        });
+        $this->app->singleton('seo', fn(): \SmartCms\Kit\Support\Seo => new Seo);
+        $this->app->singleton(MicrodataManager::class, fn(): \SmartCms\Kit\Support\MicrodataManager => new MicrodataManager);
         $this->app->alias(MicrodataManager::class, 'microdata');
-        $this->app->singleton(AssetManager::class, function () {
-            return new AssetManager;
-        });
+        $this->app->singleton(AssetManager::class, fn(): \SmartCms\Kit\Support\AssetManager => new AssetManager);
         $this->app->alias(AssetManager::class, 'assets');
-        $this->app->singleton(\SmartCms\Kit\Contracts\UpdateServiceInterface::class, function () {
-            return new \SmartCms\Kit\Services\UpdateService;
-        });
-        $this->app->singleton(\SmartCms\Kit\Contracts\UpdateCheckerInterface::class, function () {
-            return new \SmartCms\Kit\Services\UpdateChecker(
-                $this->app->make(\SmartCms\Kit\Contracts\UpdateServiceInterface::class)
-            );
-        });
-        $this->app->singleton(\SmartCms\Kit\Services\UpdateExecutor::class, function () {
-            return new \SmartCms\Kit\Services\UpdateExecutor;
-        });
-        $this->app->singleton(\SmartCms\Kit\Services\AssetUpdater::class, function () {
-            return new \SmartCms\Kit\Services\AssetUpdater;
-        });
+        $this->app->singleton(\SmartCms\Kit\Contracts\UpdateServiceInterface::class, fn(): \SmartCms\Kit\Services\UpdateService => new \SmartCms\Kit\Services\UpdateService);
+        $this->app->singleton(\SmartCms\Kit\Contracts\UpdateCheckerInterface::class, fn(): \SmartCms\Kit\Services\UpdateChecker => new \SmartCms\Kit\Services\UpdateChecker(
+            $this->app->make(\SmartCms\Kit\Contracts\UpdateServiceInterface::class)
+        ));
+        $this->app->singleton(\SmartCms\Kit\Services\UpdateExecutor::class, fn(): \SmartCms\Kit\Services\UpdateExecutor => new \SmartCms\Kit\Services\UpdateExecutor);
+        $this->app->singleton(\SmartCms\Kit\Services\AssetUpdater::class, fn(): \SmartCms\Kit\Services\AssetUpdater => new \SmartCms\Kit\Services\AssetUpdater);
         app(MenuRegistry::class)->register(PageMenuType::class);
         ContactForm::observe(ContactFormObserver::class);
-        $this->app->booted(function () {
+        $this->app->booted(function (): void {
             BindConfig::run();
             $this->mergeAuthConfigFrom(__DIR__ . '/../config/auth.php');
         });
@@ -208,7 +194,7 @@ class KitServiceProvider extends PackageServiceProvider
                 __DIR__ . '/../resources/dist/custom.css' => public_path('kit/css/custom.css'),
             ], 'kit-css');
         }
-        View::composer('*', function ($view) {
+        View::composer('*', function ($view): void {
             $vars = $this->getSharedVariables();
             foreach ($vars as $key => $value) {
                 $view->with($key, $value);
@@ -250,7 +236,7 @@ class KitServiceProvider extends PackageServiceProvider
         }
     }
 
-    public function createDirectory($path)
+    public function createDirectory($path): void
     {
         if (! File::isDirectory($path)) {
             File::makeDirectory($path, 0755, true);
@@ -272,7 +258,7 @@ class KitServiceProvider extends PackageServiceProvider
 
             // Check if our entries already exist to avoid duplicates
             $marker = '# Smart CMS';
-            if (strpos($currentContent, $marker) === false) {
+            if (in_array(str_contains($currentContent, $marker), [0, false], true)) {
                 $newContent = $currentContent . "\n" . implode("\n", $filesToIgnore);
                 file_put_contents($gitignorePath, $newContent);
             }
@@ -281,7 +267,7 @@ class KitServiceProvider extends PackageServiceProvider
 
     protected function getSharedVariables(): array
     {
-        if (static::$viewShare) {
+        if (static::$viewShare !== null && static::$viewShare !== []) {
             return static::$viewShare;
         }
         $data = [

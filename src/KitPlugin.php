@@ -45,10 +45,10 @@ class KitPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $resources = [];
-        if (! $panel->getModelResource(Page::class)) {
+        if (in_array($panel->getModelResource(Page::class), [null, '', '0'], true)) {
             $resources[] = PageResource::class;
         }
-        if (! $panel->getModelResource(Admin::class)) {
+        if (in_array($panel->getModelResource(Admin::class), [null, '', '0'], true)) {
             $resources[] = AdminResource::class;
         }
         FilamentAsset::register([
@@ -92,14 +92,14 @@ class KitPlugin implements Plugin
                 TranslatesPage::class,
             ]);
 
-        Table::configureUsing(function (Table $table) {
+        Table::configureUsing(function (Table $table): void {
             $table->defaultSort('updated_at', 'desc');
         });
     }
 
     public function boot(Panel $panel): void
     {
-        Action::configureUsing(function (Action $action) {
+        Action::configureUsing(function (Action $action): void {
             $action->size('sm');
             if ($action->getIcon()) {
                 $action->iconPosition(IconPosition::After)->iconSize('xs');
