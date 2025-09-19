@@ -31,6 +31,6 @@ class MicrodataManager
 
     public function render(): string
     {
-        return collect($this->microdata)->map(fn($microdata): string => '<script type="application/ld+json">' . json_encode($microdata) . '</script>')->implode("\n");
+        return collect($this->microdata)->map(fn ($microdata): string => '<script type="application/ld+json">' . json_encode($microdata) . '</script>')->implode("\n");
     }
 }

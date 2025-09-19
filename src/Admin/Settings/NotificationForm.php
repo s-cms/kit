@@ -53,30 +53,30 @@ class NotificationForm
                             'smtp' => 'SMTP',
                             'sendmail' => 'Sendmail',
                         ])
-                        ->formatStateUsing(fn($state) => $state ?? 'sendmail')
+                        ->formatStateUsing(fn ($state) => $state ?? 'sendmail')
                         ->live()
                         ->default('sendmail'),
                     TextInput::make('mail.host')
                         ->label(__('kit::admin.mail_host'))
-                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
+                        ->hidden(fn ($get): bool => $get('mail.provider') != 'smtp')->required(),
                     TextInput::make('mail.port')
                         ->label(__('kit::admin.mail_port'))
-                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
+                        ->hidden(fn ($get): bool => $get('mail.provider') != 'smtp')->required(),
                     TextInput::make('mail.username')
                         ->label(__('kit::admin.mail_username'))
-                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
+                        ->hidden(fn ($get): bool => $get('mail.provider') != 'smtp')->required(),
                     TextInput::make('mail.password')
                         ->label(__('kit::admin.mail_password'))
                         ->password()
                         ->revealable(false)
-                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
+                        ->hidden(fn ($get): bool => $get('mail.provider') != 'smtp')->required(),
                     Select::make('mail.encryption')
                         ->label(__('kit::admin.mail_encryption'))
                         ->options([
                             'ssl' => 'SSL',
                             'tls' => 'TLS',
                         ])
-                        ->hidden(fn($get): bool => $get('mail.provider') != 'smtp')->required(),
+                        ->hidden(fn ($get): bool => $get('mail.provider') != 'smtp')->required(),
                 ])->collapsible(),
             Section::make(__('kit::admin.telegram'))->schema([
                 TextInput::make('telegram.token')
@@ -88,7 +88,7 @@ class NotificationForm
                     })),
                 TextInput::make('telegram.bot_username')
                     ->label(__('kit::admin.bot_username'))
-                    ->required(fn($state): bool => strlen((string) $state) > 0),
+                    ->required(fn ($state): bool => strlen((string) $state) > 0),
             ])->collapsible()->headerActions([
                 Action::make('test_notification')
                     ->label(__('kit::admin.test_notification'))
@@ -120,7 +120,7 @@ class NotificationForm
                                 ->danger()
                                 ->send();
                         }
-                    })->disabled(fn($get): bool => ! $get('telegram.token') || ! $get('telegram.bot_username')),
+                    })->disabled(fn ($get): bool => ! $get('telegram.token') || ! $get('telegram.bot_username')),
             ]),
         ]);
     }

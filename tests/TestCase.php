@@ -62,7 +62,7 @@ class TestCase extends Orchestra
         $pagesMigration->up();
 
         // Mock the 's' service that's used in KitPlugin
-        $app->singleton('s', fn(): object => new class
+        $app->singleton('s', fn (): object => new class
         {
             public function get($key, $default = null)
             {
@@ -71,6 +71,6 @@ class TestCase extends Orchestra
         });
 
         // Mock the 'lang' service that's used in helpers
-        $app->singleton('lang', fn(): \SmartCms\Lang\Languages => new Languages);
+        $app->singleton('lang', fn (): \SmartCms\Lang\Languages => new Languages);
     }
 }

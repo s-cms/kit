@@ -35,7 +35,7 @@ class EditPage extends EditRecord
                 SaveAction::make($this),
                 SaveAndClose::make($this, GetPageListUrl::run($this->getRecord())),
                 ViewRecord::make(),
-                DeleteAction::make()->hidden(fn(Page $record): bool => $record->is_system || $record->is_root),
+                DeleteAction::make()->hidden(fn (Page $record): bool => $record->is_system || $record->is_root),
                 Action::make('show info')->label(__('kit::admin.show_info'))->icon(Heroicon::InformationCircle)->color('primary')->schema([
                     Group::make([
                         TextEntry::make('created_at')->icon(Heroicon::OutlinedClock)->date(),

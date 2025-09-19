@@ -67,7 +67,7 @@ class EditTemplateRelated extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn($query) => $query->withoutGlobalScopes()->orderBy('sorting', 'asc'))
+            ->modifyQueryUsing(fn ($query) => $query->withoutGlobalScopes()->orderBy('sorting', 'asc'))
             ->recordTitleAttribute('name')
             ->reorderable('sorting')
             ->columns([

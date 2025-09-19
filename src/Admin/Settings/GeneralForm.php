@@ -43,7 +43,7 @@ class GeneralForm
                 })
                 ->multiple()
                 ->live()
-                ->required()->hidden(fn($get): bool => ! $get('is_multi_lang')),
+                ->required()->hidden(fn ($get): bool => ! $get('is_multi_lang')),
             Select::make('front_languages')
                 ->label(__('kit::admin.front_languages'))
                 ->options(function ($get) {
@@ -53,7 +53,7 @@ class GeneralForm
                 })
                 ->live()
                 ->multiple()
-                ->required()->hidden(fn($get): bool => ! $get('is_multi_lang')),
+                ->required()->hidden(fn ($get): bool => ! $get('is_multi_lang')),
             Flex::make([
                 ImageUpload::make('branding.logo', 'branding', __('kit::admin.logo')),
                 FileUpload::make('branding.favicon')->disk('public')

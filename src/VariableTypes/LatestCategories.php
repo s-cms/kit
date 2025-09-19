@@ -34,7 +34,7 @@ class LatestCategories implements VariableTypeInterface
     {
         return Group::make([
             Select::make($name . '.root_id')->options(Page::query()->whereJsonContains('settings->is_categories', true)->where('parent_id', null)->where('is_root', true)->pluck('name', 'id'))->required(),
-            TextInput::make($name . '.limit')->default(self::DEFAULT_LIMIT)->numeric()->formatStateUsing(fn($state) => $state ?? self::DEFAULT_LIMIT),
+            TextInput::make($name . '.limit')->default(self::DEFAULT_LIMIT)->numeric()->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
         ]);
     }
 

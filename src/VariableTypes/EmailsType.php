@@ -31,7 +31,7 @@ class EmailsType implements VariableTypeInterface
 
     public function getValue(mixed $value): mixed
     {
-        return collect(app('s')->get('company_info.emails', []))->mapWithKeys(fn($item, $key): array => [
+        return collect(app('s')->get('company_info.emails', []))->mapWithKeys(fn ($item, $key): array => [
             'id' => $key,
             'value' => $item['value'],
         ])->whereIn('id', $value)->pluck('value')->toArray();

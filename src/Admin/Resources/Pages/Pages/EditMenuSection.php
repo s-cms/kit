@@ -89,9 +89,9 @@ class EditMenuSection extends EditRecord
             ActionGroup::make([
                 Action::make('delete_menu_section')->label(__('kit::admin.delete'))->icon('heroicon-o-trash')
                     ->color('danger')
-                    ->disabled(fn($record) => Page::query()->where('root_id', $this->record->id)->exists())
+                    ->disabled(fn ($record) => Page::query()->where('root_id', $this->record->id)->exists())
                     ->requiresConfirmation()
-                    ->action(function ($record): \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse {
+                    ->action(function ($record): \Illuminate\Routing\Redirector | \Illuminate\Http\RedirectResponse {
                         $record->delete();
                         Notification::make()->title(__('kit::admin.success'))->success()->send();
 
@@ -99,7 +99,7 @@ class EditMenuSection extends EditRecord
                     }),
                 Action::make('transfer')->label(__('kit::admin.transfer'))->icon('heroicon-o-arrows-right-left')
                     ->color('danger')
-                    ->schema(fn($form) => $form->schema([
+                    ->schema(fn ($form) => $form->schema([
                         Select::make('root_id')
                             ->label(__('kit::admin.menu_section'))
                             ->options(Page::query()->where('id', '!=', $this->record->id)->whereJsonContains('settings->is_categories', $this->record->settings['is_categories'])->pluck('name', 'id')->toArray())

@@ -26,7 +26,7 @@ class SocialsType implements VariableTypeInterface
             'name' => 'Facebook',
             'url' => 'https://www.facebook.com',
             'image' => 'https://www.facebook.com/favicon.ico',
-        ]])->map(fn($item): \Illuminate\Support\Fluent => new Fluent([
+        ]])->map(fn ($item): \Illuminate\Support\Fluent => new Fluent([
             'name' => $item['name'],
             'url' => [
                 'title' => $item['name'],
@@ -46,7 +46,7 @@ class SocialsType implements VariableTypeInterface
     public function getValue(mixed $value): mixed
     {
 
-        return collect(app('s')->get('branding.socials', []))->only($value)->map(fn($item): array => [
+        return collect(app('s')->get('branding.socials', []))->only($value)->map(fn ($item): array => [
             'name' => $item['name'],
             'url' => [
                 'title' => $item['name'],

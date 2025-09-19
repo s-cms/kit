@@ -61,7 +61,7 @@ class UpdatePage extends Page
 
                             TextEntry::make('last_checked')
                                 ->label(__('kit::admin.last_checked'))
-                                ->state(fn (): string|array|null => $this->getLastChecked() ?? __('kit::admin.never'))
+                                ->state(fn (): string | array | null => $this->getLastChecked() ?? __('kit::admin.never'))
                                 ->visible(fn (): bool => $this->getLastChecked() !== null),
                         ]),
                 ]),
@@ -74,7 +74,7 @@ class UpdatePage extends Page
                         ->schema([
                             TextEntry::make('latest_version')
                                 ->label(__('kit::admin.latest_version'))
-                                ->state(fn (): string|array|null => $this->getLatestVersion() ?? __('kit::admin.unknown'))
+                                ->state(fn (): string | array | null => $this->getLatestVersion() ?? __('kit::admin.unknown'))
                                 ->size(TextSize::Large)
                                 ->weight('bold')
                                 ->color($this->hasUpdatesAvailable() ? 'primary' : 'success')

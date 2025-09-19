@@ -126,6 +126,7 @@ class AssetUpdater
                     'message' => 'npm is available',
                 ];
             }
+
             return [
                 'available' => false,
                 'version' => null,

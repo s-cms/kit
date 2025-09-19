@@ -18,7 +18,7 @@ class SystemForm
             Toggle::make('system.maintenance')
                 ->label(__('kit::admin.maintenance'))
                 ->helperText(__('kit::admin.maintenance_hint'))
-                ->formatStateUsing(fn($state) => $state ?? false)
+                ->formatStateUsing(fn ($state) => $state ?? false)
                 ->required(),
             // Toggle::make('system.debug')
             //     ->label(__('kit::admin.debug'))
@@ -31,7 +31,7 @@ class SystemForm
                 Action::make('download_logs')
                     ->label(__('kit::admin.download_logs'))
                     ->icon('heroicon-m-arrow-down-tray')
-                    ->action(fn() => response()->download(storage_path('logs/laravel.log'))),
+                    ->action(fn () => response()->download(storage_path('logs/laravel.log'))),
 
                 Action::make('clear_logs')
                     ->label(__('kit::admin.clear_logs'))

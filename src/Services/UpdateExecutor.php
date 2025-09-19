@@ -47,6 +47,7 @@ class UpdateExecutor
             }
             $this->addOutput('❌ Update failed with exit code: ' . $exitCode);
             Log::error('Update failed via admin panel', ['exit_code' => $exitCode]);
+
             return [
                 'success' => false,
                 'message' => 'Update failed',
@@ -108,6 +109,7 @@ class UpdateExecutor
                     'message' => 'Composer is available',
                 ];
             }
+
             return [
                 'available' => false,
                 'version' => null,

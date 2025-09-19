@@ -33,7 +33,7 @@ class PageSummary extends Page
             })->compact()
                 ->schema([
                     Radio::make('status')->hiddenLabel()
-                        ->disabled(fn($record): bool => $record->id == 1)
+                        ->disabled(fn ($record): bool => $record->id == 1)
                         ->options(PageStatus::class)->default('active')->reactive(),
                     DateTimePicker::make('published_at')->reactive()->seconds(false)->default(now())->hidden(fn ($get): bool => $get('status')?->value != 'scheduled'),
                 ]),
@@ -43,9 +43,9 @@ class PageSummary extends Page
             ])->columns(1),
             Section::make()->compact()->schema([
                 Select::make('layout_id')
-                    ->options(fn(Model $record) => Layout::query()
-                        ->when($record->is_root, fn($query) => $query->where('path', 'like', '%divisions%'))
-                        ->when(! $record->is_root, fn($query) => $query->where('path', 'like', '%pages%'))
+                    ->options(fn (Model $record) => Layout::query()
+                        ->when($record->is_root, fn ($query) => $query->where('path', 'like', '%divisions%'))
+                        ->when(! $record->is_root, fn ($query) => $query->where('path', 'like', '%pages%'))
                         ->pluck('name', 'id'))
                     ->label(__('kit::admin.layout')),
             ])->columns(1),

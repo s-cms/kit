@@ -80,6 +80,7 @@ class AdminResource extends Resource
         if ($record->id == 1) {
             return false;
         }
+
         return $user->id == 1;
     }
 

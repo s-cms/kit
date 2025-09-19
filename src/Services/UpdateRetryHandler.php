@@ -10,9 +10,7 @@ class UpdateRetryHandler
     // milliseconds
     protected string $cachePrefix = 'kit_update_retry_';
 
-    public function __construct(protected int $maxRetries = 3, protected int $baseDelay = 1000)
-    {
-    }
+    public function __construct(protected int $maxRetries = 3, protected int $baseDelay = 1000) {}
 
     public function executeWithRetry(callable $operation, string $operationId): mixed
     {
@@ -122,7 +120,7 @@ class UpdateRetryHandler
     {
         $nextRetryTime = $this->getNextRetryTime($operationId);
 
-        if (!$nextRetryTime instanceof \Carbon\Carbon) {
+        if (! $nextRetryTime instanceof \Carbon\Carbon) {
             return false;
         }
 

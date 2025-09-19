@@ -61,6 +61,6 @@ class ListCategories extends ListRecords
 
     public function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn(Builder $query) => $query->where('parent_id', $this->rootPage->id));
+        return $table->modifyQueryUsing(fn (Builder $query) => $query->where('parent_id', $this->rootPage->id));
     }
 }

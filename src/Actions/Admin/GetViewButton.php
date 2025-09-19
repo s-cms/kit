@@ -11,7 +11,7 @@ class GetViewButton
 {
     public static function run(): Closure
     {
-        return fn(): string => Blade::render('{{$action}}', [
+        return fn (): string => Blade::render('{{$action}}', [
             'action' => Action::make('view')
                 ->link()
                 ->label(__('filament-actions::view.single.label'))
