@@ -13,7 +13,7 @@ use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class PopularItems implements VariableTypeInterface
 {
-    public const DEFAULT_LIMIT = 3;
+    public const int DEFAULT_LIMIT = 3;
 
     public static function make(): self
     {

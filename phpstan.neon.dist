@@ -11,4 +11,11 @@ parameters:
     checkOctaneCompatibility: false
     checkModelProperties: true
     noEnvCallsOutsideOfConfig: false
+    type_coverage:
+        return: 50
+        param: 35.5
+        property: 70
+
+        # since PHP 8.3
+        constant: 85
 

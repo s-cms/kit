@@ -6,6 +6,7 @@ use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Utilities\Set;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Menu\MenuTypeInterface;
 
 class PageMenuType implements MenuTypeInterface
@@ -23,7 +24,7 @@ class PageMenuType implements MenuTypeInterface
     public function getSchema(): Field
     {
         return Select::make('url')
-            ->options(Page::query()->where('depth', '<', 3)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, Set $set): void {
+            ->options(Page::query()->where('status', PageStatus::Published->value)->where('depth', '<', 3)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, Set $set): void {
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
                     if ($page) {
