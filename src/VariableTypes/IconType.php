@@ -33,7 +33,7 @@ class IconType implements VariableTypeInterface
             return [$icon->value => "<div style='display: flex; gap: 10px; align-items: center;'> $iconHtml <span class='text-sm'>{$icon->name}</span></div>"];
         });
 
-        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(fn() => str()->of("You can use any icon from <a href='https://heroicons.com' target='_blank'>Heroicons</a> set")->toHtmlString());
+        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(fn () => str()->of("You can use any icon from <a href='https://heroicons.com' target='_blank'>Heroicons</a> set")->toHtmlString());
     }
 
     public function getValue(mixed $value): mixed
@@ -44,6 +44,7 @@ class IconType implements VariableTypeInterface
         if (str_starts_with($value, 'o-')) {
             return svg("heroicon-{$value}");
         }
+
         return 'heroicon-m-' . $value;
 
         return svg('heroicon-m-' . $value);
