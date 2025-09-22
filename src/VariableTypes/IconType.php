@@ -2,12 +2,12 @@
 
 namespace SmartCms\Kit\VariableTypes;
 
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Component;
 use Filament\Support\Icons\Heroicon;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
-use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class IconType implements VariableTypeInterface
 {
@@ -34,7 +34,7 @@ class IconType implements VariableTypeInterface
             return [$icon->value => "<div style='display: flex; gap: 10px; align-items: center;'> $iconHtml <span class='text-sm'>{$icon->name}</span></div>"];
         });
 
-        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(fn() => str()->of("You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set")->toHtmlString());
+        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(fn () => str()->of("You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set")->toHtmlString());
     }
 
     public function getValue(mixed $value): mixed
@@ -42,6 +42,7 @@ class IconType implements VariableTypeInterface
         if (! $value || ! is_string($value)) {
             return $this->getDefaultValue();
         }
+
         return 'lucide-' . $value;
 
         return svg('heroicon-m-' . $value);
