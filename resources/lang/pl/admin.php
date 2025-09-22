@@ -58,4 +58,5 @@ return [
     'Translates' => 'Tłumaczenia',
     'create_menu_section' => 'Utwórz dział',
     'new_page' => 'Nowa strona',
+    'heading_type' => 'Typ nagłówka',
 ];

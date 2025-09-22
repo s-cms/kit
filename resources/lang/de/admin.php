@@ -58,4 +58,5 @@ return [
     'Translates' => 'Übersetzungen',
     'create_menu_section' => 'Abteilung erstellen',
     'new_page' => 'Neue Seite',
+    'heading_type' => 'Überschriftenart',
 ];

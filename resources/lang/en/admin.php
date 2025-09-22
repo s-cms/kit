@@ -194,4 +194,5 @@ return [
     'design' => 'Design',
     'admins' => 'Admins',
     'Translates' => 'Translates',
+    'heading_type' => 'Heading Type',
 ];

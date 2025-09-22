@@ -60,4 +60,5 @@ return [
     'new_page' => 'Нова сторінка',
     'categories' => 'Категорії',
     'items' => 'Елементи',
+    'heading_type' => 'Тип заголовка',
 ];
