@@ -21,6 +21,7 @@
     ],
     "require": {
         "php": "^8.2",
+        "codewithdennis/filament-lucide-icons": "^4.0",
         "filament/filament": "^4.0",
         "laravel-notification-channels/telegram": "^6.0",
         "lorisleiva/laravel-actions": "^2.8",

@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Component;
 use Filament\Support\Icons\Heroicon;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class IconType implements VariableTypeInterface
 {
@@ -27,13 +28,13 @@ class IconType implements VariableTypeInterface
 
     public function getSchema(string $name): Field | Component
     {
-        $options = collect(Heroicon::cases())->mapWithKeys(function (Heroicon $icon): array {
+        $options = collect(LucideIcon::cases())->mapWithKeys(function (LucideIcon $icon): array {
             $iconHtml = \Filament\Support\generate_icon_html($icon)->toHtml();
 
             return [$icon->value => "<div style='display: flex; gap: 10px; align-items: center;'> $iconHtml <span class='text-sm'>{$icon->name}</span></div>"];
         });
 
-        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(fn () => str()->of("You can use any icon from <a href='https://heroicons.com' target='_blank'>Heroicons</a> set")->toHtmlString());
+        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(fn() => str()->of("You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set")->toHtmlString());
     }
 
     public function getValue(mixed $value): mixed
@@ -41,11 +42,7 @@ class IconType implements VariableTypeInterface
         if (! $value || ! is_string($value)) {
             return $this->getDefaultValue();
         }
-        if (str_starts_with($value, 'o-')) {
-            return svg("heroicon-{$value}");
-        }
-
-        return 'heroicon-m-' . $value;
+        return 'lucide-' . $value;
 
         return svg('heroicon-m-' . $value);
     }
