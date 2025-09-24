@@ -8,6 +8,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -23,7 +24,9 @@ use SmartCms\Support\Admin\Components\Actions\ViewRecord;
 use SmartCms\Support\Admin\Components\Tables\SortingColumn;
 use SmartCms\Support\Admin\Components\Tables\StatusColumn;
 use SmartCms\Support\Admin\Components\Tables\UpdatedAtColumn;
+use SmartCms\TemplateBuilder\Actions\TemplateParser;
 use SmartCms\TemplateBuilder\Models\Section as ModelsSection;
+use SmartCms\TemplateBuilder\Support\TemplateTypeEnum;
 
 class EditTemplateRelated extends ManageRelatedRecords
 {
@@ -67,7 +70,7 @@ class EditTemplateRelated extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->withoutGlobalScopes()->orderBy('sorting', 'asc'))
+            ->modifyQueryUsing(fn($query) => $query->withoutGlobalScopes()->orderBy('sorting', 'asc'))
             ->recordTitleAttribute('name')
             ->reorderable('sorting')
             ->columns([
@@ -122,6 +125,27 @@ class EditTemplateRelated extends ManageRelatedRecords
                         Select::make('sections')
                             ->options(ModelsSection::query()->pluck('name', 'id')->toArray())
                             ->multiple()
+                            ->createOptionForm(function (): array {
+                                $components = TemplateParser::make(TemplateTypeEnum::SECTION)->getAll();
+
+                                return [
+                                    TextInput::make('name')->required(),
+                                    Select::make('path')
+                                        ->label(__('template-builder::admin.template_path'))
+                                        ->options(
+                                            $components
+                                                ->pluck('name', 'path')
+                                                ->toArray()
+                                        )
+                                        ->required()
+                                        ->live(),
+                                ];
+                            })
+                            // ->createAnother(false)
+                            ->createOptionUsing(function (array $data): int {
+                                $section = \SmartCms\TemplateBuilder\Models\Section::query()->create($data);
+                                return $section->id;
+                            })
                             ->label(__('kit::admin.section'))
                             ->required(),
                     ])->createAnother(false)

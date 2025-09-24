@@ -23,6 +23,7 @@ use SmartCms\Kit\VariableTypes\RandomCategories;
 use SmartCms\Kit\VariableTypes\RandomItems;
 use SmartCms\Kit\VariableTypes\SocialsType;
 use SmartCms\Kit\VariableTypes\StringType;
+use SmartCms\Kit\VariableTypes\KeyValueType;
 use SmartCms\TemplateBuilder\Support\VariableTypeRegistry;
 
 class RegisterVariableTypes
@@ -53,5 +54,6 @@ class RegisterVariableTypes
         $this->registry->register(FileType::class);
         $this->registry->register(FormType::class);
         $this->registry->register(StringType::class);
+        $this->registry->register(KeyValueType::class);
     }
 }
