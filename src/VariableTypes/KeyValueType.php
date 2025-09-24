@@ -33,7 +33,7 @@ class KeyValueType implements VariableTypeInterface
 
     public function getValue(mixed $value): mixed
     {
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             return $this->getDefaultValue();
         }
 

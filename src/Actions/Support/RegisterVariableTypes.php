@@ -11,6 +11,7 @@ use SmartCms\Kit\VariableTypes\FormType;
 use SmartCms\Kit\VariableTypes\HeadingType;
 use SmartCms\Kit\VariableTypes\IconType;
 use SmartCms\Kit\VariableTypes\ImageType;
+use SmartCms\Kit\VariableTypes\KeyValueType;
 use SmartCms\Kit\VariableTypes\LatestCategories;
 use SmartCms\Kit\VariableTypes\LatestItems;
 use SmartCms\Kit\VariableTypes\LinkType;
@@ -23,7 +24,6 @@ use SmartCms\Kit\VariableTypes\RandomCategories;
 use SmartCms\Kit\VariableTypes\RandomItems;
 use SmartCms\Kit\VariableTypes\SocialsType;
 use SmartCms\Kit\VariableTypes\StringType;
-use SmartCms\Kit\VariableTypes\KeyValueType;
 use SmartCms\TemplateBuilder\Support\VariableTypeRegistry;
 
 class RegisterVariableTypes

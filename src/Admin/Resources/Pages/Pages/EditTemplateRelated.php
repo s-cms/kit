@@ -70,7 +70,7 @@ class EditTemplateRelated extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn($query) => $query->withoutGlobalScopes()->orderBy('sorting', 'asc'))
+            ->modifyQueryUsing(fn ($query) => $query->withoutGlobalScopes()->orderBy('sorting', 'asc'))
             ->recordTitleAttribute('name')
             ->reorderable('sorting')
             ->columns([
@@ -144,6 +144,7 @@ class EditTemplateRelated extends ManageRelatedRecords
                             // ->createAnother(false)
                             ->createOptionUsing(function (array $data): int {
                                 $section = \SmartCms\TemplateBuilder\Models\Section::query()->create($data);
+
                                 return $section->id;
                             })
                             ->label(__('kit::admin.section'))
