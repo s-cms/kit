@@ -10,7 +10,10 @@ use SmartCms\Kit\Support\Contracts\PageStatus;
 
 class FrontPage extends Page
 {
-    public static $staticCasts = [];
+    public static $staticCasts = [
+        // maybe reserved word, doesnt work without it
+        'settings' => 'array',
+    ];
 
     protected $casts = [
         'image' => ImageCast::class,
@@ -69,7 +72,7 @@ class FrontPage extends Page
                     return FrontPage::query()->where('id', 0);
                 }
 
-                return FrontPage::query()->where('root_id', $this->id)->where('parent_id', '!=', $this->id);
+                return FrontPage::query()->where('root_id', $this->id)->where('parent_id', '=', $this->id);
             }
         );
     }
@@ -78,16 +81,13 @@ class FrontPage extends Page
     {
         return new Attribute(
             get: function () {
-                if ($this->parent_id) {
-                    return FrontPage::query()->where('id', 0);
-                }
                 $settings = $this->settings ?? [];
                 $isCategories = $settings['is_categories'] ?? false;
                 if (! $isCategories) {
-                    return FrontPage::query()->where('root_id', $this->id)->where('parent_id', $this->id);
+                    return FrontPage::query()->where('root_id', $this->is_root ? $this->id : $this->root_id)->where('parent_id', $this->id);
                 }
 
-                return FrontPage::query()->where('root_id', $this->id)->where('parent_id', '!=', $this->id);
+                return FrontPage::query()->where('root_id', $this->is_root ? $this->id : $this->root_id)->where('parent_id', '!=', $this->id);
             }
         );
     }
@@ -95,14 +95,14 @@ class FrontPage extends Page
     public function breadcrumbs(): Attribute
     {
         return new Attribute(
-            get: fn (): array => $this->getBreadcrumbs(),
+            get: fn(): array => $this->getBreadcrumbs(),
         );
     }
 
     public function url(): Attribute
     {
         return new Attribute(
-            get: fn (): string => $this->route(),
+            get: fn(): string => $this->route(),
         );
     }
 }
