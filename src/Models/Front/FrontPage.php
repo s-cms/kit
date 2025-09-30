@@ -95,14 +95,14 @@ class FrontPage extends Page
     public function breadcrumbs(): Attribute
     {
         return new Attribute(
-            get: fn(): array => $this->getBreadcrumbs(),
+            get: fn (): array => $this->getBreadcrumbs(),
         );
     }
 
     public function url(): Attribute
     {
         return new Attribute(
-            get: fn(): string => $this->route(),
+            get: fn (): string => $this->route(),
         );
     }
 }
