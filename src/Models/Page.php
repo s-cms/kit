@@ -96,7 +96,11 @@ class Page extends Model
             $breadcrumbs = [
                 [
                     'name' => $this->name,
-                    'link' => $this->route(),
+                    'url' => [
+                        'title' => $this->name,
+                        'is_external' => false,
+                        'url' => $this->route(),
+                    ],
                 ],
             ];
             if ($this->parent_id) {
