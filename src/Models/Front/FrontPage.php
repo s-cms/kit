@@ -10,7 +10,6 @@ use SmartCms\Kit\Support\Contracts\PageStatus;
 
 class FrontPage extends Page
 {
-
     public static $staticCasts = [
         'settings' => 'array',
         'image' => ImageCast::class,
@@ -70,14 +69,14 @@ class FrontPage extends Page
     public function breadcrumbs(): Attribute
     {
         return new Attribute(
-            get: fn(): array => $this->getBreadcrumbs(),
+            get: fn (): array => $this->getBreadcrumbs(),
         );
     }
 
     public function url(): Attribute
     {
         return new Attribute(
-            get: fn(): array => [
+            get: fn (): array => [
                 'title' => $this->name,
                 'is_external' => false,
                 'url' => $this->route(),

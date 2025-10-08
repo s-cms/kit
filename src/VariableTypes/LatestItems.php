@@ -35,8 +35,8 @@ class LatestItems implements VariableTypeInterface
     {
         return Group::make([
             Select::make($name . '.root_id')->options(Page::query()->where('parent_id', null)->whereJsonContains('settings->is_categories', true)->where('is_root', true)->pluck('name', 'id'))->required()->live(),
-            Select::make($name . '.categories')->label(__('kit::admin.categories'))->options(fn(Get $get) => Page::query()->where('is_root', false)->where('parent_id', $get($name . '.root_id') ?? 0)->pluck('name', 'id'))->live()->multiple()->visible(fn(Get $get) => Page::query()->find($get($name . '.root_id'))?->settings['is_categories'] ?? false)->helperText(__('kit::admin.categories_helper_text')),
-            TextInput::make($name . '.limit')->default(self::DEFAULT_LIMIT)->numeric()->formatStateUsing(fn($state) => $state ?? self::DEFAULT_LIMIT),
+            Select::make($name . '.categories')->label(__('kit::admin.categories'))->options(fn (Get $get) => Page::query()->where('is_root', false)->where('parent_id', $get($name . '.root_id') ?? 0)->pluck('name', 'id'))->live()->multiple()->visible(fn (Get $get) => Page::query()->find($get($name . '.root_id'))?->settings['is_categories'] ?? false)->helperText(__('kit::admin.categories_helper_text')),
+            TextInput::make($name . '.limit')->default(self::DEFAULT_LIMIT)->numeric()->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
         ]);
     }
 
@@ -51,6 +51,7 @@ class LatestItems implements VariableTypeInterface
         }
         $categories = $value['categories'] ?? [];
         $isCategories = $root->settings['is_categories'] ?? false;
+
         return FrontPage::query()->where('root_id', $value['root_id'] ?? 0)
             ->when($isCategories, function ($query) use ($root) {
                 $query->where('parent_id', '!=', $root->id);
