@@ -10,13 +10,11 @@ use SmartCms\Kit\Support\Contracts\PageStatus;
 
 class FrontPage extends Page
 {
-    public static $staticCasts = [
-        // maybe reserved word, doesnt work without it
-        'settings' => 'array',
-    ];
 
-    protected $casts = [
+    public static $staticCasts = [
+        'settings' => 'array',
         'image' => ImageCast::class,
+        'banner' => ImageCast::class,
     ];
 
     protected static function booted(): void
@@ -33,31 +31,8 @@ class FrontPage extends Page
 
     public function getCasts(): array
     {
-        return array_merge(self::$staticCasts, $this->casts, parent::getCasts());
+        return array_merge(parent::getCasts(), $this->casts, self::$staticCasts);
     }
-
-    // public function heading(): Attribute
-    // {
-    //     return new Attribute(
-    //         get: fn() => $this->heading ?? $this?->name ?? '',
-    //     );
-    // }
-
-    // public function summary(): Attribute
-    // {
-    //     dd($this);
-    //     return new Attribute(
-    //         get: fn() => $this->summary ?? $this?->name ?? '',
-    //     );
-    // }
-
-    // public function content(): Attribute
-    // {
-    //     dd($this->getTranslation('content', config('app.locale')));
-    //     return new Attribute(
-    //         get: fn() => str($this->content ?? '')->toHtmlString(),
-    //     );
-    // }
 
     public function categories(): Attribute
     {
@@ -95,14 +70,14 @@ class FrontPage extends Page
     public function breadcrumbs(): Attribute
     {
         return new Attribute(
-            get: fn (): array => $this->getBreadcrumbs(),
+            get: fn(): array => $this->getBreadcrumbs(),
         );
     }
 
     public function url(): Attribute
     {
         return new Attribute(
-            get: fn (): array => [
+            get: fn(): array => [
                 'title' => $this->name,
                 'is_external' => false,
                 'url' => $this->route(),

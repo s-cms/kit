@@ -198,6 +198,7 @@ class Page extends Model
 
     public function render(): string
     {
+        app()->instance('page', $this);
         return Blade::renderComponent(new PageComponent($this));
     }
 

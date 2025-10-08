@@ -59,4 +59,5 @@ return [
     'create_menu_section' => 'Utwórz dział',
     'new_page' => 'Nowa strona',
     'heading_type' => 'Typ nagłówka',
+    'categories_helper_text' => 'Możesz wybrać kategorie, aby wyświetlić elementy z tych kategorii, lub pozostawić je puste, aby wyświetlić elementy z wszystkich kategorii',
 ];

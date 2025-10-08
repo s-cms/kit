@@ -195,4 +195,5 @@ return [
     'admins' => 'Admins',
     'Translates' => 'Translates',
     'heading_type' => 'Heading Type',
+    'categories_helper_text' => 'You can select categories to display items from or leave it empty to display items from all categories',
 ];
