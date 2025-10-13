@@ -61,10 +61,10 @@ class MakeAugmentationCommand extends Command
         // Show registration instructions
         $this->newLine();
         $this->components->info('Next steps:');
-        $this->line("  1. Register in config/augmentations.php:");
+        $this->line('  1. Register in config/augmentations.php:');
         $this->line("     '{$this->option('model')}' => [");
         $this->line("         \\App\\Augmentations\\{$className}::class,");
-        $this->line("     ],");
+        $this->line('     ],');
         $this->newLine();
         $this->line("  2. Implement the methods in {$path}");
 
@@ -96,7 +96,7 @@ class MakeAugmentationCommand extends Command
 
     protected function getStub(): string
     {
-        return __DIR__.'/../../../stubs/augmentation.stub';
+        return __DIR__ . '/../../../stubs/augmentation.stub';
     }
 
     protected function replaceNamespace(string &$stub, string $className): self
@@ -150,7 +150,7 @@ class MakeAugmentationCommand extends Command
             $uses[] = 'use SmartCms\Kit\Support\Augmentation\Concerns\ModifiesRelationManagers;';
         }
 
-        $usesString = empty($uses) ? '' : implode("\n", $uses)."\n";
+        $usesString = empty($uses) ? '' : implode("\n", $uses) . "\n";
 
         $stub = str_replace('{{ uses }}', $usesString, $stub);
 
@@ -203,7 +203,7 @@ class MakeAugmentationCommand extends Command
 
         $traitsString = '';
         if (! empty($traits)) {
-            $traitsString = '    use '.implode(";\n    use ", $traits).";\n\n";
+            $traitsString = '    use ' . implode(";\n    use ", $traits) . ";\n\n";
         }
 
         $stub = str_replace('{{ traits }}', $traitsString, $stub);

@@ -235,8 +235,7 @@ trait HasAugmentations
      * Apply all augmentation transformations to the context.
      * Transform is ALWAYS available (in base AbstractAugmentation).
      *
-     * @param \SmartCms\Kit\Support\Transformers\TransformContext $context
-     * @return void
+     * @param  \SmartCms\Kit\Support\Transformers\TransformContext  $context
      */
     public static function applyAugmentedTransformations($context): void
     {

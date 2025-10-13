@@ -4,7 +4,6 @@ namespace SmartCms\Kit\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Support\Transformers\PageTransformer;
 
 class FrontPageResource extends JsonResource
@@ -41,6 +40,7 @@ class FrontPageResource extends JsonResource
         if (! empty($relations)) {
             $page->load($relations);
         }
+
         // @phpstan-ignore-next-line
         return new static($page);
     }

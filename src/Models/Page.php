@@ -51,12 +51,12 @@ use Spatie\Translatable\HasTranslations;
  */
 class Page extends Model
 {
+    use HasAugmentations;
     use HasBreadcrumbs;
     use HasFactory;
     use HasLayout;
     use HasParent;
     use HasRoute;
-    use HasAugmentations;
 
     // use HasSorting;
     use HasSlug;

@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use SmartCms\Kit\Casts\ImageCast;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Support\Augmentation\HasAugmentations;
-use SmartCms\Kit\Support\Contracts\Augmentable;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 
 class FrontPage extends Page
 {
     use HasAugmentations;
+
     public static $staticCasts = [
         'settings' => 'array',
         'image' => ImageCast::class,
@@ -72,14 +72,14 @@ class FrontPage extends Page
     public function breadcrumbs(): Attribute
     {
         return new Attribute(
-            get: fn(): array => $this->getBreadcrumbs(),
+            get: fn (): array => $this->getBreadcrumbs(),
         );
     }
 
     public function url(): Attribute
     {
         return new Attribute(
-            get: fn(): array => [
+            get: fn (): array => [
                 'title' => $this->name,
                 'is_external' => false,
                 'url' => $this->route(),
