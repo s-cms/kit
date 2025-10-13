@@ -1,0 +1,26 @@
+<?php
+
+namespace {{ namespace }};
+
+use SmartCms\Kit\Support\Augmentation\AbstractAugmentation;
+{{ uses }}
+/**
+ * {{ class }} Augmentation
+ *
+ * Extends page functionality with custom capabilities.
+ * Only include the traits you need!
+ */
+class {{ class }} extends AbstractAugmentation
+{
+{{ traits }}
+{{ methods }}
+    /**
+     * Transform page data for frontend serialization.
+     * This method is always available.
+     */
+    public static function transform($context): void
+    {
+        // Add custom data to the frontend
+        // $context->add('key', 'value');
+    }
+}

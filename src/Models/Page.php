@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
 use SmartCms\Kit\Casts\PageStatusCast;
 use SmartCms\Kit\Components\PageComponent;
+use SmartCms\Kit\Support\Augmentation\HasAugmentations;
 use SmartCms\Support\Traits\HasBreadcrumbs;
 use SmartCms\Support\Traits\HasParent;
 use SmartCms\Support\Traits\HasRoute;
@@ -55,6 +56,7 @@ class Page extends Model
     use HasLayout;
     use HasParent;
     use HasRoute;
+    use HasAugmentations;
 
     // use HasSorting;
     use HasSlug;

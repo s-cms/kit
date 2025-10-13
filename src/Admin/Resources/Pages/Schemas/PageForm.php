@@ -35,7 +35,8 @@ class PageForm
                                 PageSlugField::make()->hidden(fn ($record): bool => $record?->id == 1),
                             ]),
                             ...RelatedSeoForm::configure($schema)->getComponents(),
-
+                            // Add augmented schema from augmentations
+                            ...Page::getAugmentedSchema(),
                         ]),
                         RightGrid::make()->schema(PageSummary::make()),
                     ]),
