@@ -76,6 +76,7 @@ class ListItems extends ListRecords
                         ->pluck('name', 'id')->toArray()
                 )->multiple(),
         ]);
-        return $table->modifyQueryUsing(fn(Builder $query) => $query->when($this->rootPage->settings['is_categories'], fn(Builder $query) => $query->where('root_id', $this->rootPage->id)->where('parent_id', '!=', $this->rootPage->id), fn(Builder $query) => $query->where('parent_id', $this->rootPage->id)));
+
+        return $table->modifyQueryUsing(fn (Builder $query) => $query->when($this->rootPage->settings['is_categories'], fn (Builder $query) => $query->where('root_id', $this->rootPage->id)->where('parent_id', '!=', $this->rootPage->id), fn (Builder $query) => $query->where('parent_id', $this->rootPage->id)));
     }
 }
