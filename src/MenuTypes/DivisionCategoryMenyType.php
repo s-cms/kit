@@ -23,9 +23,10 @@ class DivisionCategoryMenyType extends PageMenuType
     public function getSchema(): Field
     {
         $roots = Page::query()->where('status', PageStatus::Published->value)->whereJsonContains('settings->is_categories', true)->where('is_root', true)->get();
+
         return Select::make('url')
-            ->options($roots->mapWithKeys(fn($root) => [
-                $root->name => Page::query()->where('status', PageStatus::Published->value)->where('parent_id', $root->id)->pluck('name', 'id')->toArray()
+            ->options($roots->mapWithKeys(fn ($root) => [
+                $root->name => Page::query()->where('status', PageStatus::Published->value)->where('parent_id', $root->id)->pluck('name', 'id')->toArray(),
             ]))->live()->afterStateUpdated(function (string $state, Set $set): void {
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);

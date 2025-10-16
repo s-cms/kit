@@ -14,6 +14,7 @@ class IconInput extends Select
 
             return [$icon->value => "<div style='display: flex; gap: 10px; align-items: center;'> $iconHtml <span class='text-sm'>{$icon->name}</span></div>"];
         });
-        return parent::make($name)->options($icons)->wrapOptionLabels(false)->allowHtml()->searchable()->hint(fn() => str()->of("You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set")->toHtmlString());
+
+        return parent::make($name)->options($icons)->wrapOptionLabels(false)->allowHtml()->searchable()->hint(fn () => str()->of("You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set")->toHtmlString());
     }
 }

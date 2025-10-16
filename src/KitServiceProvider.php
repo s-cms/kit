@@ -38,9 +38,9 @@ use SmartCms\Kit\Console\Commands\MakeAugmentationCommand;
 use SmartCms\Kit\Http\Middlewares\HtmlMinifier;
 use SmartCms\Kit\Http\Middlewares\Maintenance;
 use SmartCms\Kit\Http\Middlewares\UserIdentifierMiddleware;
+use SmartCms\Kit\MenuTypes\DivisionCategoryMenyType;
 use SmartCms\Kit\MenuTypes\DivisionMenuType;
 use SmartCms\Kit\MenuTypes\PageMenuType;
-use SmartCms\Kit\MenuTypes\DivisionCategoryMenyType;
 use SmartCms\Kit\Observers\ContactFormObserver;
 use SmartCms\Kit\Support\AssetManager;
 use SmartCms\Kit\Support\MicrodataManager;
@@ -157,7 +157,7 @@ class KitServiceProvider extends PackageServiceProvider
                 /** @var \Illuminate\Routing\Route $this */
                 $uri = $this->uri();
                 $cleanUri = ltrim($uri, '/');
-                $actions = array_filter($this->getAction(), fn($key): bool => $key != 'as', ARRAY_FILTER_USE_KEY);
+                $actions = array_filter($this->getAction(), fn ($key): bool => $key != 'as', ARRAY_FILTER_USE_KEY);
                 FacadesRoute::addRoute(
                     $this->methods(),
                     '{lang}/' . $cleanUri,
@@ -169,10 +169,10 @@ class KitServiceProvider extends PackageServiceProvider
         }
 
         // Register non-dependent singletons early
-        $this->app->singleton('seo', fn(): \SmartCms\Kit\Support\Seo => new Seo);
-        $this->app->singleton(MicrodataManager::class, fn(): \SmartCms\Kit\Support\MicrodataManager => new MicrodataManager);
+        $this->app->singleton('seo', fn (): \SmartCms\Kit\Support\Seo => new Seo);
+        $this->app->singleton(MicrodataManager::class, fn (): \SmartCms\Kit\Support\MicrodataManager => new MicrodataManager);
         $this->app->alias(MicrodataManager::class, 'microdata');
-        $this->app->singleton(AssetManager::class, fn(): \SmartCms\Kit\Support\AssetManager => new AssetManager);
+        $this->app->singleton(AssetManager::class, fn (): \SmartCms\Kit\Support\AssetManager => new AssetManager);
         $this->app->alias(AssetManager::class, 'assets');
     }
 
@@ -183,12 +183,12 @@ class KitServiceProvider extends PackageServiceProvider
         RegisterVariableTypes::run();
 
         // Register dependent services that rely on other services/config
-        $this->app->singleton(\SmartCms\Kit\Contracts\UpdateServiceInterface::class, fn(): \SmartCms\Kit\Services\UpdateService => new \SmartCms\Kit\Services\UpdateService);
-        $this->app->singleton(\SmartCms\Kit\Contracts\UpdateCheckerInterface::class, fn(): \SmartCms\Kit\Services\UpdateChecker => new \SmartCms\Kit\Services\UpdateChecker(
+        $this->app->singleton(\SmartCms\Kit\Contracts\UpdateServiceInterface::class, fn (): \SmartCms\Kit\Services\UpdateService => new \SmartCms\Kit\Services\UpdateService);
+        $this->app->singleton(\SmartCms\Kit\Contracts\UpdateCheckerInterface::class, fn (): \SmartCms\Kit\Services\UpdateChecker => new \SmartCms\Kit\Services\UpdateChecker(
             $this->app->make(\SmartCms\Kit\Contracts\UpdateServiceInterface::class)
         ));
-        $this->app->singleton(\SmartCms\Kit\Services\UpdateExecutor::class, fn(): \SmartCms\Kit\Services\UpdateExecutor => new \SmartCms\Kit\Services\UpdateExecutor);
-        $this->app->singleton(\SmartCms\Kit\Services\AssetUpdater::class, fn(): \SmartCms\Kit\Services\AssetUpdater => new \SmartCms\Kit\Services\AssetUpdater);
+        $this->app->singleton(\SmartCms\Kit\Services\UpdateExecutor::class, fn (): \SmartCms\Kit\Services\UpdateExecutor => new \SmartCms\Kit\Services\UpdateExecutor);
+        $this->app->singleton(\SmartCms\Kit\Services\AssetUpdater::class, fn (): \SmartCms\Kit\Services\AssetUpdater => new \SmartCms\Kit\Services\AssetUpdater);
 
         app(MenuRegistry::class)->register(PageMenuType::class);
         app(MenuRegistry::class)->register(DivisionMenuType::class);

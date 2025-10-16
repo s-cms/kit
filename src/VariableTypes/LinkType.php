@@ -82,9 +82,10 @@ class LinkType implements VariableTypeInterface
             return $this->getDefaultValue();
         }
         $value['url'] = app(MenuRegistry::class)->getLinkByType($value);
-        if (!isset($value['icon'])) {
+        if (! isset($value['icon'])) {
             $value['icon'] = LucideIcon::Image->value;
         }
+
         return $value;
     }
 }

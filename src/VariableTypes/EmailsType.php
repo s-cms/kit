@@ -32,7 +32,7 @@ class EmailsType implements VariableTypeInterface
 
     public function getValue(mixed $value): mixed
     {
-        return collect(app('s')->get('company_info.emails', []))->only($value)->map(fn($item): array => [
+        return collect(app('s')->get('company_info.emails', []))->only($value)->map(fn ($item): array => [
             'title' => $item['value'],
             'type' => 'email',
             'is_external' => false,

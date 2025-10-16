@@ -29,7 +29,7 @@ class PhonesType implements VariableTypeInterface
                 'is_external' => false,
                 'icon' => LucideIcon::Image->value,
                 'url' => 'tel:+11111111111',
-            ]
+            ],
         ];
     }
 
@@ -40,7 +40,7 @@ class PhonesType implements VariableTypeInterface
 
     public function getValue(mixed $value): mixed
     {
-        return collect(app('s')->get('company_info.phones', []))->only($value)->map(fn($item): array => [
+        return collect(app('s')->get('company_info.phones', []))->only($value)->map(fn ($item): array => [
             'title' => $item['value'],
             'type' => 'tel',
             'is_external' => false,
