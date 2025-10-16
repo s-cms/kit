@@ -63,4 +63,5 @@ return [
     'division' => 'Abteilung',
     'division_category' => 'Abteilungskategorie',
     'phone' => 'Telefon',
+    'category' => 'Kategorie',
 ];

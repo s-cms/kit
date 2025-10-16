@@ -65,4 +65,5 @@ return [
     'division' => 'Розділ',
     'division_category' => 'Категорія розділу',
     'phone' => 'Телефон',
+    'category' => 'Категорія',
 ];

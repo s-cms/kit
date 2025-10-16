@@ -34,7 +34,7 @@ class ListCategories extends ListRecords
     {
         return [
             Action::make('_create')
-                ->label(__('filament-actions::create.single.label', ['label' => PageResource::getModelLabel()]))
+                ->label(__('filament-actions::create.single.label', ['label' => __('kit::admin.category')]))
                 ->schema([
                     PageNameField::make(),
                     PageSlugField::make(),
@@ -61,6 +61,6 @@ class ListCategories extends ListRecords
 
     public function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn (Builder $query) => $query->where('parent_id', $this->rootPage->id));
+        return $table->modifyQueryUsing(fn(Builder $query) => $query->where('parent_id', $this->rootPage->id));
     }
 }

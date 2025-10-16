@@ -199,4 +199,5 @@ return [
     'division' => 'Division',
     'division_category' => 'Division Category',
     'phone' => 'Phone',
+    'category' => 'Category',
 ];

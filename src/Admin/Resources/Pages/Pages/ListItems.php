@@ -5,6 +5,8 @@ namespace SmartCms\Kit\Admin\Resources\Pages\Pages;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
@@ -63,6 +65,17 @@ class ListItems extends ListRecords
 
     public function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn (Builder $query) => $query->when($this->rootPage->settings['is_categories'], fn (Builder $query) => $query->where('root_id', $this->rootPage->id)->where('parent_id', '!=', $this->rootPage->id), fn (Builder $query) => $query->where('parent_id', $this->rootPage->id)));
+        $table->pushColumns([
+            TextColumn::make('parent.name')->label(__('kit::admin.category')),
+        ]);
+        $table->pushFilters([
+            SelectFilter::make('parent_id')
+                ->label(__('kit::admin.category'))
+                ->options(
+                    Page::query()->where('root_id', $this->rootPage->id)->where('parent_id', $this->rootPage->id)
+                        ->pluck('name', 'id')->toArray()
+                )->multiple(),
+        ]);
+        return $table->modifyQueryUsing(fn(Builder $query) => $query->when($this->rootPage->settings['is_categories'], fn(Builder $query) => $query->where('root_id', $this->rootPage->id)->where('parent_id', '!=', $this->rootPage->id), fn(Builder $query) => $query->where('parent_id', $this->rootPage->id)));
     }
 }
