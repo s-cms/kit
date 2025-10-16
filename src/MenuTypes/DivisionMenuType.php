@@ -4,28 +4,26 @@ namespace SmartCms\Kit\MenuTypes;
 
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Support\Contracts\PageStatus;
-use SmartCms\Menu\MenuTypeInterface;
 
-class PageMenuType implements MenuTypeInterface
+class DivisionMenuType extends PageMenuType
 {
     public function getType(): string
     {
-        return 'page';
+        return 'division';
     }
 
     public function getLabel(): string
     {
-        return __('kit::admin.page');
+        return __('kit::admin.division');
     }
 
     public function getSchema(): Field
     {
         return Select::make('url')
-            ->options(Page::query()->where('status', PageStatus::Published->value)->where('parent_id', null)->where('is_root', false)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, Set $set, Get $get): void {
+            ->options(Page::query()->where('status', PageStatus::Published->value)->where('is_root', true)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, Set $set): void {
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
                     if ($page) {
@@ -33,10 +31,5 @@ class PageMenuType implements MenuTypeInterface
                     }
                 }
             });
-    }
-
-    public function getLinkFromItem(mixed $item): string | array
-    {
-        return Page::find($item['url'] ?? 0)?->route() ?? url('/');
     }
 }

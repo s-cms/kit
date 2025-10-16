@@ -60,4 +60,7 @@ return [
     'new_page' => 'Nowa strona',
     'heading_type' => 'Typ nagłówka',
     'categories_helper_text' => 'Możesz wybrać kategorie, aby wyświetlić elementy z tych kategorii, lub pozostawić je puste, aby wyświetlić elementy z wszystkich kategorii',
+    'division' => 'Dział',
+    'division_category' => 'Kategoria działu',
+    'phone' => 'Telefon',
 ];

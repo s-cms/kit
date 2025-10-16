@@ -60,4 +60,7 @@ return [
     'new_page' => 'Neue Seite',
     'heading_type' => 'Überschriftenart',
     'categories_helper_text' => 'Sie können Kategorien auswählen, um Elemente aus diesen anzuzeigen, oder lassen Sie es leer, um Elemente aus allen Kategorien anzuzeigen',
+    'division' => 'Abteilung',
+    'division_category' => 'Abteilungskategorie',
+    'phone' => 'Telefon',
 ];

@@ -2,6 +2,7 @@
 
 namespace SmartCms\Kit\VariableTypes;
 
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Component;
@@ -25,8 +26,9 @@ class SocialsType implements VariableTypeInterface
         return collect([[
             'name' => 'Facebook',
             'url' => 'https://www.facebook.com',
+            'icon' => 'facebook',
             'image' => 'https://www.facebook.com/favicon.ico',
-        ]])->map(fn ($item): \Illuminate\Support\Fluent => new Fluent([
+        ]])->map(fn($item): \Illuminate\Support\Fluent => new Fluent([
             'name' => $item['name'],
             'url' => [
                 'title' => $item['name'],
@@ -34,19 +36,19 @@ class SocialsType implements VariableTypeInterface
                 'is_external' => true,
                 'url' => $item['url'],
             ],
+            'icon' => $item['icon'],
             'image' => validateImage($item['image']),
         ]));
     }
 
     public function getSchema(string $name): Field | Component
     {
-        return Select::make($name)->options(collect(app('s')->get('branding.socials', []))->pluck('name'))->multiple()->native(false)->searchable();
+        return Select::make($name)->options(collect(app('s')->get('branding.socials', []))->pluck('name'))->multiple()->searchable();
     }
 
     public function getValue(mixed $value): mixed
     {
-
-        return collect(app('s')->get('branding.socials', []))->only($value)->map(fn ($item): array => [
+        return collect(app('s')->get('branding.socials', []))->only($value)->map(fn($item): array => [
             'name' => $item['name'],
             'url' => [
                 'title' => $item['name'],
@@ -54,6 +56,7 @@ class SocialsType implements VariableTypeInterface
                 'is_external' => true,
                 'url' => $item['link'],
             ],
+            'icon' => $item['icon'] ?? LucideIcon::Image->value,
             'image' => validateImage($item['image']),
         ]);
     }

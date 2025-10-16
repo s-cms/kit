@@ -106,7 +106,7 @@ return [
     'title' => 'Title',
     'suffix' => 'Suffix',
     'prefix' => 'Prefix',
-    'open_url_in_new_tab' => 'Open URL in new tab',
+    'open_url_in_new_tab' => 'In new tab',
     'form_data_key' => 'Form Data Key',
     'form_data_value' => 'Form Data Value',
     'save' => 'Save',
@@ -196,4 +196,7 @@ return [
     'Translates' => 'Translates',
     'heading_type' => 'Heading Type',
     'categories_helper_text' => 'You can select categories to display items from or leave it empty to display items from all categories',
+    'division' => 'Division',
+    'division_category' => 'Division Category',
+    'phone' => 'Phone',
 ];

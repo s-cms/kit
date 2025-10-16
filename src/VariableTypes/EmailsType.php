@@ -2,6 +2,7 @@
 
 namespace SmartCms\Kit\VariableTypes;
 
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Component;
@@ -31,9 +32,12 @@ class EmailsType implements VariableTypeInterface
 
     public function getValue(mixed $value): mixed
     {
-        return collect(app('s')->get('company_info.emails', []))->mapWithKeys(fn ($item, $key): array => [
-            'id' => $key,
-            'value' => $item['value'],
-        ])->whereIn('id', $value)->pluck('value')->toArray();
+        return collect(app('s')->get('company_info.emails', []))->only($value)->map(fn($item): array => [
+            'title' => $item['value'],
+            'type' => 'email',
+            'is_external' => false,
+            'icon' => $item['icon'] ?? LucideIcon::Image->value,
+            'url' => 'mailto:' . $item['value'],
+        ])->toArray();
     }
 }
