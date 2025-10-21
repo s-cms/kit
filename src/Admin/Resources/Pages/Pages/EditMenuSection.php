@@ -51,7 +51,7 @@ class EditMenuSection extends EditRecord
         $categoriesLayouts = Layout::query()->where('path', 'like', '%divisions/%')->pluck('name', 'id')->toArray();
 
         return $schema->components([
-            Hidden::make('settings.is_categories')->formatStateUsing(fn($state) => $state ?? false),
+            Hidden::make('settings.is_categories')->formatStateUsing(fn ($state) => $state ?? false),
             Section::make(__('kit::admin.categories'))->schema([
                 Select::make('settings.categories_layout_id')
                     ->label(__('kit::admin.categories_layout'))
@@ -62,7 +62,7 @@ class EditMenuSection extends EditRecord
                         ->label(__('kit::admin.section'))
                         ->options(ModelsSection::query()->pluck('name', 'id')->toArray())->required(),
                 ]),
-            ])->hidden(fn($get): bool => ! $get('settings.is_categories')),
+            ])->hidden(fn ($get): bool => ! $get('settings.is_categories')),
             Section::make(__('kit::admin.items'))->compact()->schema([
                 Select::make('settings.items_layout_id')
                     ->label(__('kit::admin.items_layout'))
@@ -89,7 +89,7 @@ class EditMenuSection extends EditRecord
             ActionGroup::make([
                 Action::make('delete_menu_section')->label(__('kit::admin.delete'))->icon('heroicon-o-trash')
                     ->color('danger')
-                    ->disabled(fn() => Page::query()->where('root_id', $this->record->id)->exists())
+                    ->disabled(fn () => Page::query()->where('root_id', $this->record->id)->exists())
                     ->requiresConfirmation()
                     ->action(function (): \Illuminate\Routing\Redirector | \Illuminate\Http\RedirectResponse {
                         $this->record->delete();
@@ -99,7 +99,7 @@ class EditMenuSection extends EditRecord
                     }),
                 Action::make('transfer')->label(__('kit::admin.transfer'))->icon('heroicon-o-arrows-right-left')
                     ->color('danger')
-                    ->schema(fn($form) => $form->schema([
+                    ->schema(fn ($form) => $form->schema([
                         Select::make('root_id')
                             ->label(__('kit::admin.menu_section'))
                             ->options(Page::query()->where('id', '!=', $this->record->id)->whereJsonContains('settings->is_categories', $this->record->settings['is_categories'])->pluck('name', 'id')->toArray())
@@ -110,7 +110,7 @@ class EditMenuSection extends EditRecord
                         ]);
                         Notification::make()->title(__('kit::admin.success'))->success()->send();
                     }),
-                EditAction::make()->url(fn($record): string => EditPage::getUrl(['record' => $record->id])),
+                EditAction::make()->url(fn ($record): string => EditPage::getUrl(['record' => $record->id])),
                 ViewRecord::make(),
                 SaveAndClose::make($this, ListPages::getUrl()),
                 SaveAction::make($this),

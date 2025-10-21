@@ -10,11 +10,9 @@ use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Database\Eloquent\Model;
 use SmartCms\Kit\Models\Page as ModelsPage;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Forms\ImageUpload;
-use SmartCms\TemplateBuilder\Models\Layout;
 
 class PageSummary extends Page
 {
@@ -34,9 +32,9 @@ class PageSummary extends Page
             })->compact()
                 ->schema([
                     Radio::make('status')->hiddenLabel()
-                        ->disabled(fn($record): bool => $record->id == 1)
+                        ->disabled(fn ($record): bool => $record->id == 1)
                         ->options(PageStatus::class)->default('active')->reactive(),
-                    DateTimePicker::make('published_at')->reactive()->seconds(false)->default(now())->hidden(fn($get): bool => $get('status')?->value != 'scheduled'),
+                    DateTimePicker::make('published_at')->reactive()->seconds(false)->default(now())->hidden(fn ($get): bool => $get('status')?->value != 'scheduled'),
                 ]),
             Section::make()->compact()->schema([
                 ImageUpload::make('image', $imagePath, __('kit::admin.image')),
@@ -44,7 +42,7 @@ class PageSummary extends Page
             ])->columns(1),
             Section::make()->compact()->schema([
                 Select::make('layout_id')
-                    ->options(fn(ModelsPage $record) => $record->getAvailableLayouts())
+                    ->options(fn (ModelsPage $record) => $record->getAvailableLayouts())
                     ->label(__('kit::admin.layout')),
             ])->columns(1),
             Section::make(__('kit::admin.indexation'))->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
