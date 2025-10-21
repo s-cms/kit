@@ -51,7 +51,7 @@ class EditMenuSection extends EditRecord
         $categoriesLayouts = Layout::query()->where('path', 'like', '%divisions/%')->pluck('name', 'id')->toArray();
 
         return $schema->components([
-            Hidden::make('settings.is_categories')->formatStateUsing(fn ($state) => $state ?? false),
+            Hidden::make('settings.is_categories')->formatStateUsing(fn($state) => $state ?? false),
             Section::make(__('kit::admin.categories'))->schema([
                 Select::make('settings.categories_layout_id')
                     ->label(__('kit::admin.categories_layout'))
@@ -62,7 +62,7 @@ class EditMenuSection extends EditRecord
                         ->label(__('kit::admin.section'))
                         ->options(ModelsSection::query()->pluck('name', 'id')->toArray())->required(),
                 ]),
-            ])->hidden(fn ($get): bool => ! $get('settings.is_categories')),
+            ])->hidden(fn($get): bool => ! $get('settings.is_categories')),
             Section::make(__('kit::admin.items'))->compact()->schema([
                 Select::make('settings.items_layout_id')
                     ->label(__('kit::admin.items_layout'))
@@ -89,17 +89,17 @@ class EditMenuSection extends EditRecord
             ActionGroup::make([
                 Action::make('delete_menu_section')->label(__('kit::admin.delete'))->icon('heroicon-o-trash')
                     ->color('danger')
-                    ->disabled(fn ($record) => Page::query()->where('root_id', $this->record->id)->exists())
+                    ->disabled(fn() => Page::query()->where('root_id', $this->record->id)->exists())
                     ->requiresConfirmation()
-                    ->action(function ($record): \Illuminate\Routing\Redirector | \Illuminate\Http\RedirectResponse {
-                        $record->delete();
+                    ->action(function (): \Illuminate\Routing\Redirector | \Illuminate\Http\RedirectResponse {
+                        $this->record->delete();
                         Notification::make()->title(__('kit::admin.success'))->success()->send();
 
                         return redirect(ListPages::getUrl());
                     }),
                 Action::make('transfer')->label(__('kit::admin.transfer'))->icon('heroicon-o-arrows-right-left')
                     ->color('danger')
-                    ->schema(fn ($form) => $form->schema([
+                    ->schema(fn($form) => $form->schema([
                         Select::make('root_id')
                             ->label(__('kit::admin.menu_section'))
                             ->options(Page::query()->where('id', '!=', $this->record->id)->whereJsonContains('settings->is_categories', $this->record->settings['is_categories'])->pluck('name', 'id')->toArray())
@@ -110,7 +110,7 @@ class EditMenuSection extends EditRecord
                         ]);
                         Notification::make()->title(__('kit::admin.success'))->success()->send();
                     }),
-                EditAction::make()->url(fn ($record): string => EditPage::getUrl(['record' => $record->id])),
+                EditAction::make()->url(fn($record): string => EditPage::getUrl(['record' => $record->id])),
                 ViewRecord::make(),
                 SaveAndClose::make($this, ListPages::getUrl()),
                 SaveAction::make($this),
@@ -129,20 +129,48 @@ class EditMenuSection extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        // Update the record first
+        $record = parent::handleRecordUpdate($record, $data);
+
+        // Then apply layouts and templates to existing child pages
         if ($record->settings['is_categories']) {
-            Page::query()->where('parent_id', $record->id)->update([
-                'layout_id' => $data['settings']['categories_layout_id'],
-            ]);
-            Page::query()->where('parent_id', '!=', $record->id)->where('root_id', $record->id)->update([
-                'layout_id' => $data['settings']['items_layout_id'],
-            ]);
+            // Update categories (direct children)
+            $categories = Page::query()->where('parent_id', $record->id)->get();
+            foreach ($categories as $category) {
+                $category->update(['layout_id' => $data['settings']['categories_layout_id']]);
+                $this->updatePageTemplate($category, $data['settings']['categories_template'] ?? []);
+            }
+
+            // Update items (children of categories)
+            $items = Page::query()->where('parent_id', '!=', $record->id)->where('root_id', $record->id)->get();
+            foreach ($items as $item) {
+                $item->update(['layout_id' => $data['settings']['items_layout_id']]);
+                $this->updatePageTemplate($item, $data['settings']['items_template'] ?? []);
+            }
         } else {
-            Page::query()->where('parent_id', $record->id)->update([
-                'layout_id' => $data['settings']['items_layout_id'],
-            ]);
+            // Update items (direct children)
+            $items = Page::query()->where('parent_id', $record->id)->get();
+            foreach ($items as $item) {
+                $item->update(['layout_id' => $data['settings']['items_layout_id']]);
+                $this->updatePageTemplate($item, $data['settings']['items_template'] ?? []);
+            }
         }
-        parent::handleRecordUpdate($record, $data);
 
         return $record;
+    }
+
+    protected function updatePageTemplate(Page $page, array $template): void
+    {
+        if (empty($template)) {
+            return;
+        }
+
+        // Create new template sections
+        foreach ($template as $key => $item) {
+            $page->template()->create([
+                'section_id' => $item['section_id'],
+                'sorting' => $key + 1,
+            ]);
+        }
     }
 }

@@ -14,6 +14,7 @@ use SmartCms\Support\Traits\HasRoute;
 use SmartCms\Support\Traits\HasSlug;
 use SmartCms\Support\Traits\HasSorting;
 use SmartCms\Support\Traits\HasStatus;
+use SmartCms\TemplateBuilder\Models\Layout;
 use SmartCms\TemplateBuilder\Traits\HasLayout;
 use SmartCms\TemplateBuilder\Traits\HasTemplate;
 use Spatie\Translatable\HasTranslations;
@@ -157,8 +158,19 @@ class Page extends Model
         static::creating(function (Page $page): void {
             $page->created_by = auth()?->id();
             $page->updated_by = auth()?->id();
+
+            // Apply layout from root/parent when creating
+            if ($page->root_id && ! $page->layout_id) {
+                $root = Page::find($page->root_id);
+                if ($root && isset($root->settings['is_categories'])) {
+                    $isCategory = $page->parent_id && $page->parent_id == $root->id && $root->settings['is_categories'];
+                    $layoutKey = $isCategory ? 'categories_layout_id' : 'items_layout_id';
+                    $page->layout_id = $root->settings[$layoutKey] ?? null;
+                }
+            }
         });
         static::created(function (Page $page): void {
+            // Apply template from root/parent settings
             $template = app('s')->get('static_page_template', []);
             if ($page->root_id) {
                 $root = Page::find($page->root_id);
@@ -177,6 +189,7 @@ class Page extends Model
                     'sorting' => $key + 1,
                 ]);
             }
+            // Auto-increment sorting if not set
             if ($page->sorting == 0) {
                 $maxSorting = 0;
                 if ($page->parent_id) {
@@ -208,5 +221,60 @@ class Page extends Model
     public function getFallbackLocale(): string
     {
         return main_lang();
+    }
+
+    public function getAvailableLayouts(): array
+    {
+        return Layout::query()
+            ->when($this->shouldUseDivisionLayout(), function ($query) {
+                return $query->where('path', 'like', '%divisions%');
+            })
+            ->when($this->shouldUsePageLayout(), function ($query) {
+                return $query->where('path', 'like', '%pages%');
+            })
+            ->pluck('name', 'id')->toArray();
+    }
+
+    protected function shouldUseDivisionLayout(): bool
+    {
+        // If page is root (division itself)
+        if ($this->is_root) {
+            return true;
+        }
+
+        // If page is a category (direct child of a root with is_categories enabled)
+        if ($this->parent_id && $this->root_id) {
+            $root = Page::find($this->root_id);
+            if ($root && $this->parent_id == $root->id && ($root->settings['is_categories'] ?? false)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function shouldUsePageLayout(): bool
+    {
+        // If page doesn't have root_id (standalone page)
+        if (! $this->root_id) {
+            return true;
+        }
+
+        // If page is an item (not a division, not a category)
+        if (! $this->is_root && $this->parent_id && $this->root_id) {
+            $root = Page::find($this->root_id);
+
+            // Item in division without categories (direct child of root)
+            if ($root && $this->parent_id == $root->id && ! ($root->settings['is_categories'] ?? false)) {
+                return true;
+            }
+
+            // Item in division with categories (grandchild of root)
+            if ($root && $this->parent_id != $root->id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
