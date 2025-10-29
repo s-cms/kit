@@ -137,7 +137,7 @@ class BlockDataMerger
         // If items are objects, merge each item with the item schema
         if (isset($itemSchema['type']) && $itemSchema['type'] === 'object') {
             return array_map(
-                fn($item) => $this->mergeObject($item, $itemSchema, $removeOrphans),
+                fn ($item) => $this->mergeObject($item, $itemSchema, $removeOrphans),
                 $storedData
             );
         }
@@ -217,6 +217,7 @@ class BlockDataMerger
             $typeFromRegistry = $this->registry->get($inputType);
             if ($typeFromRegistry) {
                 return null;
+
                 return $typeFromRegistry->getDefaultValue();
             }
         }
@@ -226,6 +227,7 @@ class BlockDataMerger
         $typeFromRegistry = $this->registry->get($type);
         if ($typeFromRegistry) {
             return null;
+
             return $typeFromRegistry->getDefaultValue();
         }
 

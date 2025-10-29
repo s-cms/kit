@@ -13,6 +13,7 @@ use Spatie\Translatable\HasTranslations;
  * Block
  *
  * Represents a block of content in the system.
+ *
  * @property int $id
  * @property string $type
  * @property array $data

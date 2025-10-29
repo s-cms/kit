@@ -103,6 +103,7 @@ class SyncBlockSchemas
                 // Skip if schema hasn't changed - no need to update
                 if ($schemaData == $block->schema) {
                     $unchanged++;
+
                     continue;
                 }
 

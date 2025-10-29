@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphPivot;
  *
  * Represents a blockable model (Page, Product, Category, etc.)
  * that can have blocks attached to it.
+ *
  * @property int $id
  * @property int $block_id
  * @property int $blockable_id
