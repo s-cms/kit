@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('blockables', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('block_id')->constrained(config('kit.blocks_table_name'))->cascadeOnDelete();
+            $table->morphs('blockable');
+            $table->boolean('status')->default(true);
+            $table->timestamp('show_from')->nullable();
+            $table->timestamp('show_until')->nullable();
+            $table->integer('sorting')->default(0);
+            $table->timestamps();
+
+            $table->index(['blockable_type', 'blockable_id', 'status']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('blockables');
+    }
+};

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Blade;
 use SmartCms\Kit\Casts\PageStatusCast;
 use SmartCms\Kit\Components\PageComponent;
 use SmartCms\Kit\Support\Augmentation\HasAugmentations;
+use SmartCms\Kit\Support\Traits\HasBlocks;
 use SmartCms\Support\Traits\HasBreadcrumbs;
 use SmartCms\Support\Traits\HasParent;
 use SmartCms\Support\Traits\HasRoute;
@@ -53,6 +54,7 @@ use Spatie\Translatable\HasTranslations;
 class Page extends Model
 {
     use HasAugmentations;
+    use HasBlocks;
     use HasBreadcrumbs;
     use HasFactory;
     use HasLayout;

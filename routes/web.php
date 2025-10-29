@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
+use SmartCms\Kit\Actions\Block\SyncBlockSchemas;
 use SmartCms\Kit\Commands\ActivatePages;
 use SmartCms\Kit\Http\Handlers\PageHandler;
 use SmartCms\Kit\Http\Handlers\RobotsHandler;
@@ -19,3 +20,12 @@ Route::get('/{slug?}/{second_slug?}/{third_slug?}', PageHandler::class)
     ->multilingual();
 
 Schedule::command(ActivatePages::class)->everyMinute();
+
+Route::post('api/blocks/sync-schemas', function () {
+    $result = SyncBlockSchemas::run();
+    return response()->json($result);
+})->name('api.blocks.sync-schemas')->middleware(['api',]);
+Route::get('api/blocks/sync-schemas', function () {
+    $result = SyncBlockSchemas::run();
+    return response()->json($result);
+})->name('api.blocks.sync-schemas')->middleware(['api',]);

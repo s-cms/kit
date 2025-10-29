@@ -22,7 +22,15 @@ class EmailsType implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return ['example@example.com'];
+        return [
+            [
+                'title' => 'example@example.com',
+                'type' => 'email',
+                'is_external' => false,
+                'icon' => LucideIcon::Image->value,
+                'url' => 'mailto:example@example.com',
+            ]
+        ];
     }
 
     public function getSchema(string $name): Field | Component
@@ -32,7 +40,7 @@ class EmailsType implements VariableTypeInterface
 
     public function getValue(mixed $value): mixed
     {
-        return collect(app('s')->get('company_info.emails', []))->only($value)->map(fn ($item): array => [
+        return collect(app('s')->get('company_info.emails', []))->only($value)->map(fn($item): array => [
             'title' => $item['value'],
             'type' => 'email',
             'is_external' => false,

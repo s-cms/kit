@@ -22,6 +22,7 @@ use SmartCms\Kit\Admin\Pages\Profile;
 use SmartCms\Kit\Admin\Pages\Settings;
 use SmartCms\Kit\Admin\Pages\TranslatesPage;
 use SmartCms\Kit\Admin\Resources\Admins\AdminResource;
+use SmartCms\Kit\Admin\Resources\Blocks\BlockResource;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Admin\Widgets\ContactFormStatsWidget;
 use SmartCms\Kit\Admin\Widgets\HealthCheck;
@@ -44,7 +45,9 @@ class KitPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $resources = [];
+        $resources = [
+            BlockResource::class
+        ];
         if (in_array($panel->getModelResource(Page::class), [null, '', '0'], true)) {
             $resources[] = PageResource::class;
         }
@@ -81,7 +84,7 @@ class KitPlugin implements Plugin
                 SetAdminLocale::class,
             ])
             ->renderHook(PanelsRenderHook::PAGE_END, GetVersionHtml::run())
-            ->renderHook(PanelsRenderHook::HEAD_START, fn (): string => '<meta name="robots" content="noindex, nofollow" />')
+            ->renderHook(PanelsRenderHook::HEAD_START, fn(): string => '<meta name="robots" content="noindex, nofollow" />')
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetInboxButton::run())
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetViewButton::run())
             ->breadcrumbs(false)

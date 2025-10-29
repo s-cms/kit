@@ -41,6 +41,9 @@ if (! function_exists('no_image')) {
                 $no_image['source'] = '/no-image.webp';
             }
             $no_image['source'] = validateImage($no_image['source']);
+            $no_image['width'] = 100;
+            $no_image['height'] = 100;
+            $no_image['alt'] = 'No image';
 
             return $no_image;
         });
@@ -71,7 +74,7 @@ if (! function_exists('host')) {
 if (! function_exists('hostname')) {
     function hostname(): string
     {
-        return once(fn () => Page::query()->first()->name ?? __('Hostname'));
+        return once(fn() => Page::query()->first()->name ?? __('Hostname'));
     }
 }
 
