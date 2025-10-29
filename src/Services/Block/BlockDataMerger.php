@@ -39,18 +39,18 @@ class BlockDataMerger
     public function merge(array $storedData, array $schema, bool $removeOrphans = false, ?array $languages = null): array
     {
         // If languages are provided, merge for each language
-        if ($languages && ! empty($languages)) {
-            $mergedData = [];
-            foreach ($languages as $langCode) {
-                $langData = $storedData[$langCode] ?? [];
-                $mergedData[$langCode] = $this->mergeSingleLanguage($langData, $schema, $removeOrphans);
-            }
-
-            return $mergedData;
+        if (is_null($languages) || empty($languages)) {
+            return $this->mergeSingleLanguage($storedData, $schema, $removeOrphans);
         }
 
-        // Single language mode (backward compatibility)
-        return $this->mergeSingleLanguage($storedData, $schema, $removeOrphans);
+        $mergedData = [];
+        foreach ($languages as $langCode) {
+            $langData = $storedData[$langCode] ?? [];
+
+            $mergedData[$langCode] = $this->mergeSingleLanguage($langData, $schema, $removeOrphans);
+        }
+
+        return $mergedData;
     }
 
     /**
@@ -94,7 +94,6 @@ class BlockDataMerger
     {
         $properties = $schema['properties'] ?? [];
         $merged = [];
-
         // Add all schema fields with defaults or preserved values
         foreach ($properties as $fieldName => $fieldSchema) {
             if (array_key_exists($fieldName, $storedData)) {
@@ -138,7 +137,7 @@ class BlockDataMerger
         // If items are objects, merge each item with the item schema
         if (isset($itemSchema['type']) && $itemSchema['type'] === 'object') {
             return array_map(
-                fn ($item) => $this->mergeObject($item, $itemSchema, $removeOrphans),
+                fn($item) => $this->mergeObject($item, $itemSchema, $removeOrphans),
                 $storedData
             );
         }
@@ -162,10 +161,22 @@ class BlockDataMerger
             return $this->getDefaultValue($fieldSchema);
         }
 
+        // Check for custom variable types - prioritize inputType over type
+        // inputType is what developers use to specify custom variable types
+        $inputType = $fieldSchema['inputType'] ?? null;
         $type = $fieldSchema['type'] ?? 'string';
 
-        // Check if this is a custom variable type from registry
-        // If so, pass the stored value through the variable type's getValue method
+        // First, check if inputType matches a custom variable type from registry
+        if ($inputType) {
+            $typeFromRegistry = $this->registry->get($inputType);
+            if ($typeFromRegistry) {
+                // For custom variable types, we trust the stored value as-is
+                // The variable type will transform it when rendering
+                return $storedValue;
+            }
+        }
+
+        // Second, check if type matches a custom variable type from registry
         $typeFromRegistry = $this->registry->get($type);
         if ($typeFromRegistry) {
             // For custom variable types, we trust the stored value as-is
@@ -203,9 +214,9 @@ class BlockDataMerger
         // Priority 1: Check for custom variable types in registry (by inputType)
         $inputType = $fieldSchema['inputType'] ?? null;
         if ($inputType) {
-            return null;
             $typeFromRegistry = $this->registry->get($inputType);
             if ($typeFromRegistry) {
+                return null;
                 return $typeFromRegistry->getDefaultValue();
             }
         }
@@ -214,6 +225,7 @@ class BlockDataMerger
         $type = $fieldSchema['type'] ?? 'string';
         $typeFromRegistry = $this->registry->get($type);
         if ($typeFromRegistry) {
+            return null;
             return $typeFromRegistry->getDefaultValue();
         }
 

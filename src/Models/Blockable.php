@@ -5,6 +5,22 @@ namespace SmartCms\Kit\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
+/**
+ * Blockable
+ *
+ * Represents a blockable model (Page, Product, Category, etc.)
+ * that can have blocks attached to it.
+ * @property int $id
+ * @property int $block_id
+ * @property int $blockable_id
+ * @property string $blockable_type
+ * @property bool $status
+ * @property string $show_from
+ * @property string $show_until
+ * @property int $sorting
+ * @property string $created_at
+ * @property string $updated_at
+ */
 class Blockable extends MorphPivot
 {
     protected $table = 'blockables';

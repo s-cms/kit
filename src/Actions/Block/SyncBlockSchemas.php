@@ -100,8 +100,14 @@ class SyncBlockSchemas
                     continue;
                 }
 
+                // Skip if schema hasn't changed - no need to update
+                if ($schemaData == $block->schema) {
+                    $unchanged++;
+                    continue;
+                }
+
                 // Get current stored data - ensure it's an array
-                $storedData = $block->data ?? [];
+                $storedData = $block->getTranslations('data') ?? [];
 
                 // Safety check: ensure storedData is an array (could be empty string from old data)
                 if (! is_array($storedData)) {
@@ -111,15 +117,11 @@ class SyncBlockSchemas
                 // Merge with schema defaults for all languages
                 $mergedData = $merger->merge($storedData, $schemaData, $removeOrphans, $languages);
 
-                // Check if data changed
-                if (json_encode($storedData) !== json_encode($mergedData)) {
-                    $block->data = $mergedData;
-                    $block->schema = $schemaData;
-                    $block->save();
-                    $updated++;
-                } else {
-                    $unchanged++;
-                }
+                // Update block with merged data and new schema
+                $block->data = $mergedData;
+                $block->schema = $schemaData;
+                $block->save();
+                $updated++;
             } catch (\Exception $e) {
                 $errorMessages[] = "Block #{$block->id}: " . $e->getMessage();
                 $errors++;

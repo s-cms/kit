@@ -9,6 +9,18 @@ use Illuminate\Support\Facades\Log;
 use SmartCms\TemplateBuilder\Support\VariableTypeRegistry;
 use Spatie\Translatable\HasTranslations;
 
+/**
+ * Block
+ *
+ * Represents a block of content in the system.
+ * @property int $id
+ * @property string $type
+ * @property array $data
+ * @property array $schema
+ * @property bool $status
+ * @property string $created_at
+ * @property string $updated_at
+ */
 class Block extends Model
 {
     use HasTranslations;
