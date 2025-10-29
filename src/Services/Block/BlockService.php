@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 class BlockService
 {
     public string $path;
+
     public Collection $blocks;
 
     public function __construct()
@@ -26,14 +27,15 @@ class BlockService
 
     public function getBlockSchema(?string $id, ?string $language = null): array
     {
-        if (!$id) {
+        if (! $id) {
             return [];
         }
         $block = $this->blocks->firstWhere('id', $id);
-        if (!$block) {
+        if (! $block) {
             return [];
         }
         $schema = FilamentSchemaParser::getFieldsForSection($block, $language);
+
         return $schema;
     }
 }

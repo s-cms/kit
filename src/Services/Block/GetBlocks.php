@@ -13,14 +13,15 @@ class GetBlocks
     {
         $schemaPath = $path;
 
-        if (!file_exists($schemaPath)) {
+        if (! file_exists($schemaPath)) {
             return collect();
         }
 
         $schemas = json_decode(file_get_contents($schemaPath), true);
-        if (!is_array($schemas) || !isset($schemas['schemas'])) {
+        if (! is_array($schemas) || ! isset($schemas['schemas'])) {
             return collect();
         }
+
         return collect($schemas['schemas']);
 
         // $options = [];

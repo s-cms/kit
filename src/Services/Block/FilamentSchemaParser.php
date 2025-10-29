@@ -36,13 +36,14 @@ class FilamentSchemaParser
     {
         $this->registry = $registry ?? app(VariableTypeRegistry::class);
     }
+
     /**
      * Parse a JSON schema and return Filament form fields
      *
-     * @param array $schema The JSON schema to parse
-     * @param string $parentPath Optional parent path for nested fields
-     * @param bool $inRepeater Whether we're parsing fields inside a repeater
-     * @param string|null $language Optional language code for multilanguage support
+     * @param  array  $schema  The JSON schema to parse
+     * @param  string  $parentPath  Optional parent path for nested fields
+     * @param  bool  $inRepeater  Whether we're parsing fields inside a repeater
+     * @param  string|null  $language  Optional language code for multilanguage support
      * @return array Array of Filament form components
      */
     public function parse(array $schema, string $parentPath = '', bool $inRepeater = false, ?string $language = null): array
@@ -50,7 +51,7 @@ class FilamentSchemaParser
         // Resolve allOf and $ref before parsing
         $schema = $this->resolveReferences($schema);
 
-        if (!isset($schema['properties']) && !isset($schema['type'])) {
+        if (! isset($schema['properties']) && ! isset($schema['type'])) {
             return [];
         }
 
@@ -60,7 +61,7 @@ class FilamentSchemaParser
         }
 
         // Handle object type with properties
-        if (!isset($schema['properties'])) {
+        if (! isset($schema['properties'])) {
             return [];
         }
 
@@ -81,8 +82,8 @@ class FilamentSchemaParser
     /**
      * Resolve allOf and $ref references in schema
      *
-     * @param array $schema Schema to resolve
-     * @param array|null $definitions Available definitions for $ref resolution
+     * @param  array  $schema  Schema to resolve
+     * @param  array|null  $definitions  Available definitions for $ref resolution
      * @return array Resolved schema
      */
     protected function resolveReferences(array $schema, ?array $definitions = null): array
@@ -125,12 +126,12 @@ class FilamentSchemaParser
     /**
      * Parse a single field schema into a Filament component
      *
-     * @param string $name Field name
-     * @param array $schema Field schema
-     * @param bool $required Whether the field is required
-     * @param string $parentPath Optional parent path for nested fields
-     * @param bool $inRepeater Whether we're parsing fields inside a repeater
-     * @param string|null $language Optional language code for multilanguage support
+     * @param  string  $name  Field name
+     * @param  array  $schema  Field schema
+     * @param  bool  $required  Whether the field is required
+     * @param  string  $parentPath  Optional parent path for nested fields
+     * @param  bool  $inRepeater  Whether we're parsing fields inside a repeater
+     * @param  string|null  $language  Optional language code for multilanguage support
      * @return mixed Filament form component or null
      */
     protected function parseField(string $name, array $schema, bool $required = false, string $parentPath = '', bool $inRepeater = false, ?string $language = null)
@@ -176,6 +177,7 @@ class FilamentSchemaParser
 
         // Handle standard types
         $type = $schema['type'] ?? 'string';
+
         return match ($type) {
             'string' => $this->parseStringField($fullName, $schema, $required),
             'number', 'integer' => $this->parseNumberField($fullName, $schema, $required),
@@ -209,6 +211,7 @@ class FilamentSchemaParser
         if ($firstType && isset($firstType['type'])) {
             // For union fields, we already have the full name, so we need to handle it specially
             $type = $firstType['type'];
+
             return match ($type) {
                 'string' => $this->parseStringField($fullName, $firstType, $required),
                 'number', 'integer' => $this->parseNumberField($fullName, $firstType, $required),
@@ -232,6 +235,7 @@ class FilamentSchemaParser
         if ($customField !== null) {
             return $customField;
         }
+
         return match ($schema['inputType']) {
             'image-upload' => $this->parseImageField($name, $schema, $required),
             'link-builder' => $this->parseLinkField($name, $schema, $required),
@@ -243,9 +247,9 @@ class FilamentSchemaParser
     /**
      * Try to parse field using custom variable types from registry
      *
-     * @param string $name Field name
-     * @param array $schema Field schema
-     * @param bool $required Whether the field is required
+     * @param  string  $name  Field name
+     * @param  array  $schema  Field schema
+     * @param  bool  $required  Whether the field is required
      * @return mixed Filament component or null if no custom type found
      */
     protected function tryParseCustomVariableType(string $name, array $schema, bool $required): mixed
@@ -270,9 +274,9 @@ class FilamentSchemaParser
     /**
      * Build a Filament component from a custom variable type
      *
-     * @param string $name Field name
-     * @param mixed $variableType Variable type instance
-     * @param bool $required Whether the field is required
+     * @param  string  $name  Field name
+     * @param  mixed  $variableType  Variable type instance
+     * @param  bool  $required  Whether the field is required
      * @return mixed Filament component
      */
     protected function buildCustomVariableTypeComponent(string $name, mixed $variableType, bool $required): mixed
@@ -296,7 +300,7 @@ class FilamentSchemaParser
     /**
      * Parse string fields with enum support
      */
-    protected function parseStringField(string $name, array $schema, bool $required): TextInput|Select|Textarea
+    protected function parseStringField(string $name, array $schema, bool $required): TextInput | Select | Textarea
     {
         // Handle enum (dropdown)
         if (isset($schema['enum'])) {
@@ -365,10 +369,10 @@ class FilamentSchemaParser
             ->required($required)
             ->addActionAlignment(Alignment::End)
             ->collapseAllAction(
-                fn(Action $action) => $action->hidden(),
+                fn (Action $action) => $action->hidden(),
             )
             ->expandAllAction(
-                fn(Action $action) => $action->hidden(),
+                fn (Action $action) => $action->hidden(),
             )
             ->collapsible();
 
@@ -399,6 +403,7 @@ class FilamentSchemaParser
         // Pass the current field name as the parent path for nested fields
         // Nested fields will automatically append to this path
         $nestedFields = $this->parse($schema, $name, false, $language);
+
         return Fieldset::make($name)->schema($nestedFields)
             ->label($schema['description'] ?? Str::title($name));
         // ->required($required);
@@ -480,22 +485,22 @@ class FilamentSchemaParser
     /**
      * Parse an entire section schema file
      *
-     * @param string $filePath Path to the sections-schemas.json file
+     * @param  string  $filePath  Path to the sections-schemas.json file
      * @return array Associative array [sectionName => fields]
      */
     public static function parseFile(string $filePath): array
     {
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             throw new \RuntimeException("Schema file not found: {$filePath}");
         }
 
         $schemas = json_decode(file_get_contents($filePath), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \RuntimeException("Invalid JSON in schema file: " . json_last_error_msg());
+            throw new \RuntimeException('Invalid JSON in schema file: ' . json_last_error_msg());
         }
 
-        $parser = new self();
+        $parser = new self;
         $result = [];
 
         foreach ($schemas['schemas'] as $sectionName => $sectionData) {
@@ -512,13 +517,14 @@ class FilamentSchemaParser
     /**
      * Get fields for a specific section
      *
-     * @param array $field The field schema array
-     * @param string|null $language Optional language code for multilanguage support
+     * @param  array  $field  The field schema array
+     * @param  string|null  $language  Optional language code for multilanguage support
      * @return array Filament form fields
      */
     public static function getFieldsForSection(array $field, ?string $language = null): array
     {
-        $parser = new self();
+        $parser = new self;
+
         return $parser->parse($field, '', false, $language);
     }
 }

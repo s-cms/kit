@@ -74,7 +74,7 @@ if (! function_exists('host')) {
 if (! function_exists('hostname')) {
     function hostname(): string
     {
-        return once(fn() => Page::query()->first()->name ?? __('Hostname'));
+        return once(fn () => Page::query()->first()->name ?? __('Hostname'));
     }
 }
 

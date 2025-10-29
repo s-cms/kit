@@ -38,7 +38,7 @@ class Blockable extends MorphPivot
      */
     public function isActive(): bool
     {
-        if (!$this->status) {
+        if (! $this->status) {
             return false;
         }
 

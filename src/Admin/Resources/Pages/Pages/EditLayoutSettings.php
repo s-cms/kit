@@ -40,6 +40,7 @@ class EditLayoutSettings extends EditRecord
                 LeftGrid::make()->schema([
                     Flex::make(function (Get $get) {
                         $layout = Layout::find($get('layout_id'));
+
                         return $layout?->schema ?? [];
                     }),
                 ]),

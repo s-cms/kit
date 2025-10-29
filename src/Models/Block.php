@@ -16,7 +16,7 @@ class Block extends Model
     protected $guarded = [];
 
     protected array $translatable = [
-        'data'
+        'data',
     ];
 
     protected $casts = [
@@ -37,7 +37,7 @@ class Block extends Model
      * to transform custom variable types (like emails, phones, etc.) into
      * their final values for rendering.
      *
-     * @param string|null $locale Optional locale code for multilingual blocks
+     * @param  string|null  $locale  Optional locale code for multilingual blocks
      * @return array Transformed block data
      */
     public function getTransformedData(?string $locale = null): array
@@ -88,8 +88,8 @@ class Block extends Model
     /**
      * Get the variable type instance for a field if it exists
      *
-     * @param array $fieldSchema Field schema definition
-     * @param VariableTypeRegistry $registry Variable type registry
+     * @param  array  $fieldSchema  Field schema definition
+     * @param  VariableTypeRegistry  $registry  Variable type registry
      * @return mixed Variable type instance or null
      */
     protected function getVariableTypeForField(array $fieldSchema, VariableTypeRegistry $registry): mixed
@@ -112,10 +112,10 @@ class Block extends Model
     /**
      * Transform a field value using its variable type
      *
-     * @param string $fieldName Field name
-     * @param mixed $value Field value
-     * @param mixed $variableType Variable type instance
-     * @param array $fieldSchema Field schema definition
+     * @param  string  $fieldName  Field name
+     * @param  mixed  $value  Field value
+     * @param  mixed  $variableType  Variable type instance
+     * @param  array  $fieldSchema  Field schema definition
      * @return mixed Transformed value
      */
     protected function transformFieldValue(string $fieldName, mixed $value, mixed $variableType, array $fieldSchema): mixed
@@ -130,6 +130,7 @@ class Block extends Model
             return $variableType->getValue($value);
         } catch (\Exception $e) {
             Log::warning("Failed to transform block field '{$fieldName}' in block {$this->id}: {$e->getMessage()}");
+
             return $variableType->getDefaultValue();
         }
     }

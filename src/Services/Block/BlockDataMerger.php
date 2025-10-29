@@ -26,24 +26,26 @@ use SmartCms\TemplateBuilder\Support\VariableTypeRegistry;
 class BlockDataMerger
 {
     public function __construct(private VariableTypeRegistry $registry) {}
+
     /**
      * Merge stored data with schema defaults
      *
-     * @param array $storedData The data currently stored in the block
-     * @param array $schema The JSON schema (OpenAPI 3.0 format from Zod)
-     * @param bool $removeOrphans Whether to remove fields not in schema
-     * @param array|null $languages List of language codes to support (e.g., ['en', 'uk'])
+     * @param  array  $storedData  The data currently stored in the block
+     * @param  array  $schema  The JSON schema (OpenAPI 3.0 format from Zod)
+     * @param  bool  $removeOrphans  Whether to remove fields not in schema
+     * @param  array|null  $languages  List of language codes to support (e.g., ['en', 'uk'])
      * @return array Merged data with all defaults filled in
      */
     public function merge(array $storedData, array $schema, bool $removeOrphans = false, ?array $languages = null): array
     {
         // If languages are provided, merge for each language
-        if ($languages && !empty($languages)) {
+        if ($languages && ! empty($languages)) {
             $mergedData = [];
             foreach ($languages as $langCode) {
                 $langData = $storedData[$langCode] ?? [];
                 $mergedData[$langCode] = $this->mergeSingleLanguage($langData, $schema, $removeOrphans);
             }
+
             return $mergedData;
         }
 
@@ -54,9 +56,9 @@ class BlockDataMerger
     /**
      * Merge data for a single language
      *
-     * @param array $storedData The data for this language
-     * @param array $schema The JSON schema
-     * @param bool $removeOrphans Whether to remove fields not in schema
+     * @param  array  $storedData  The data for this language
+     * @param  array  $schema  The JSON schema
+     * @param  bool  $removeOrphans  Whether to remove fields not in schema
      * @return array Merged data
      */
     protected function mergeSingleLanguage(array $storedData, array $schema, bool $removeOrphans = false): array
@@ -83,9 +85,9 @@ class BlockDataMerger
     /**
      * Merge object data with schema
      *
-     * @param array $storedData Stored object data
-     * @param array $schema Object schema with properties
-     * @param bool $removeOrphans Whether to remove fields not in schema
+     * @param  array  $storedData  Stored object data
+     * @param  array  $schema  Object schema with properties
+     * @param  bool  $removeOrphans  Whether to remove fields not in schema
      * @return array Merged object
      */
     protected function mergeObject(array $storedData, array $schema, bool $removeOrphans = false): array
@@ -105,9 +107,9 @@ class BlockDataMerger
         }
 
         // Optionally keep fields that don't exist in schema anymore
-        if (!$removeOrphans) {
+        if (! $removeOrphans) {
             foreach ($storedData as $key => $value) {
-                if (!array_key_exists($key, $properties)) {
+                if (! array_key_exists($key, $properties)) {
                     $merged[$key] = $value;
                 }
             }
@@ -119,9 +121,9 @@ class BlockDataMerger
     /**
      * Merge array data with schema
      *
-     * @param array $storedData Stored array data
-     * @param array $schema Array schema with items definition
-     * @param bool $removeOrphans Whether to remove fields not in schema
+     * @param  array  $storedData  Stored array data
+     * @param  array  $schema  Array schema with items definition
+     * @param  bool  $removeOrphans  Whether to remove fields not in schema
      * @return array Merged array
      */
     protected function mergeArray(array $storedData, array $schema, bool $removeOrphans = false): array
@@ -136,7 +138,7 @@ class BlockDataMerger
         // If items are objects, merge each item with the item schema
         if (isset($itemSchema['type']) && $itemSchema['type'] === 'object') {
             return array_map(
-                fn($item) => $this->mergeObject($item, $itemSchema, $removeOrphans),
+                fn ($item) => $this->mergeObject($item, $itemSchema, $removeOrphans),
                 $storedData
             );
         }
@@ -148,9 +150,9 @@ class BlockDataMerger
     /**
      * Merge a single field based on its type
      *
-     * @param mixed $storedValue Stored value
-     * @param array $fieldSchema Field schema definition
-     * @param bool $removeOrphans Whether to remove fields not in schema
+     * @param  mixed  $storedValue  Stored value
+     * @param  array  $fieldSchema  Field schema definition
+     * @param  bool  $removeOrphans  Whether to remove fields not in schema
      * @return mixed Merged value
      */
     protected function mergeField($storedValue, array $fieldSchema, bool $removeOrphans = false)
@@ -193,7 +195,7 @@ class BlockDataMerger
     /**
      * Extract default value from schema
      *
-     * @param array $fieldSchema Field schema definition
+     * @param  array  $fieldSchema  Field schema definition
      * @return mixed Default value
      */
     protected function getDefaultValue(array $fieldSchema)
@@ -242,8 +244,8 @@ class BlockDataMerger
     /**
      * Merge multiple blocks at once
      *
-     * @param array $blocks Array of blocks with their data and schemas
-     * @param bool $removeOrphans Whether to remove fields not in schema
+     * @param  array  $blocks  Array of blocks with their data and schemas
+     * @param  bool  $removeOrphans  Whether to remove fields not in schema
      * @return array Array of merged results [blockId => mergedData]
      */
     public function mergeMany(array $blocks, bool $removeOrphans = false): array

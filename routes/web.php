@@ -23,9 +23,11 @@ Schedule::command(ActivatePages::class)->everyMinute();
 
 Route::post('api/blocks/sync-schemas', function () {
     $result = SyncBlockSchemas::run();
+
     return response()->json($result);
-})->name('api.blocks.sync-schemas')->middleware(['api',]);
+})->name('api.blocks.sync-schemas')->middleware(['api']);
 Route::get('api/blocks/sync-schemas', function () {
     $result = SyncBlockSchemas::run();
+
     return response()->json($result);
-})->name('api.blocks.sync-schemas')->middleware(['api',]);
+})->name('api.blocks.sync-schemas')->middleware(['api']);

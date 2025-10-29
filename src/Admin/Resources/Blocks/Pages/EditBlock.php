@@ -3,11 +3,10 @@
 namespace SmartCms\Kit\Admin\Resources\Blocks\Pages;
 
 use Filament\Actions\ActionGroup;
-use SmartCms\Kit\Admin\Resources\Blocks\BlockResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
-use League\CommonMark\Extension\CommonMark\Node\Block\ListBlock;
+use SmartCms\Kit\Admin\Resources\Blocks\BlockResource;
 use SmartCms\Support\Admin\Components\Actions\SaveAction;
 use SmartCms\Support\Admin\Components\Actions\SaveAndClose;
 
@@ -22,7 +21,7 @@ class EditBlock extends EditRecord
                 SaveAction::make($this),
                 SaveAndClose::make($this, ListBlocks::getUrl()),
                 DeleteAction::make(),
-            ])
+            ]),
         ];
     }
 

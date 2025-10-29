@@ -8,13 +8,11 @@ use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use SmartCms\Kit\Models\Block;
-use SmartCms\Kit\Services\Block\BlockService;
 
 class BlocksRelationManager extends RelationManager
 {
@@ -26,7 +24,7 @@ class BlocksRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Select::make('block_id')
                     ->label(__('Block'))
-                    ->options(fn() => Block::query()->pluck('title', 'id'))
+                    ->options(fn () => Block::query()->pluck('title', 'id'))
                     ->required()
                     ->searchable()
                     ->preload(),
@@ -100,7 +98,7 @@ class BlocksRelationManager extends RelationManager
             ->headerActions([
                 AttachAction::make()
                     ->preloadRecordSelect()
-                    ->schema(fn(AttachAction $action): array => [
+                    ->schema(fn (AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search) {
@@ -110,7 +108,7 @@ class BlocksRelationManager extends RelationManager
                                     ->limit(50)
                                     ->pluck('title', 'id');
                             })
-                            ->getOptionLabelUsing(fn($value): ?string => Block::find($value)?->title),
+                            ->getOptionLabelUsing(fn ($value): ?string => Block::find($value)?->title),
 
                         Forms\Components\Toggle::make('status')
                             ->label(__('Active'))

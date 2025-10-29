@@ -12,7 +12,7 @@ class SyncBlockSchemas
     /**
      * Sync all blocks with current schema definitions
      *
-     * @param bool $removeOrphans Whether to remove fields not in schema
+     * @param  bool  $removeOrphans  Whether to remove fields not in schema
      * @return array Statistics about the sync operation
      */
     public static function run(bool $removeOrphans = false): array
@@ -38,9 +38,10 @@ class SyncBlockSchemas
         foreach ($allSchemas as $schemaData) {
             $schemaId = $schemaData['id'] ?? null;
 
-            if (!$schemaId || $existingTypes->contains($schemaId)) {
+            if (! $schemaId || $existingTypes->contains($schemaId)) {
                 continue;
             }
+
             try {
                 // Create default data from schema for all languages
                 $defaultData = $merger->merge([], $schemaData, false, $languages);
@@ -75,7 +76,7 @@ class SyncBlockSchemas
                 'errors' => 0,
                 'message' => $created > 0
                     ? "Created {$created} new block(s)"
-                    : 'No blocks found to sync'
+                    : 'No blocks found to sync',
             ];
         }
 
@@ -90,11 +91,12 @@ class SyncBlockSchemas
                 // Find the schema for this block type
                 $schemaData = $allSchemas->firstWhere('id', $block->type);
 
-                if (!$schemaData) {
+                if (! $schemaData) {
                     // Block type doesn't exist in schemas - delete it
                     Log::info("Deleting orphaned block #{$block->id} with type '{$block->type}' (schema not found)");
                     $block->delete();
                     $deleted++;
+
                     continue;
                 }
 
@@ -102,7 +104,7 @@ class SyncBlockSchemas
                 $storedData = $block->data ?? [];
 
                 // Safety check: ensure storedData is an array (could be empty string from old data)
-                if (!is_array($storedData)) {
+                if (! is_array($storedData)) {
                     $storedData = [];
                 }
 
@@ -139,7 +141,7 @@ class SyncBlockSchemas
             'deleted' => $deleted,
             'errors' => $errors,
             'error_messages' => $errorMessages,
-            'message' => $message
+            'message' => $message,
         ];
     }
 }

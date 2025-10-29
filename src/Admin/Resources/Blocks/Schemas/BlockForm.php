@@ -18,6 +18,7 @@ class BlockForm
     public static function configure(Schema $schema): Schema
     {
         $service = app(BlockService::class);
+
         return $schema
             ->components([
                 Section::make('General')
@@ -30,7 +31,7 @@ class BlockForm
                             ->required()
                             ->reactive()
                             ->disabledOn('edit')
-                            ->afterStateUpdated(fn($state, callable $set) => $set('data', [])),
+                            ->afterStateUpdated(fn ($state, callable $set) => $set('data', [])),
                         Toggle::make('status')->inline(false)->default(true),
                     ]),
                 Tabs::make('Block Data')->schema(app('lang')->adminLanguages()->map(function (Language $lang) use ($service) {
@@ -38,7 +39,7 @@ class BlockForm
                         return $service->getBlockSchema($get('type'), $lang->slug);
                     });
                 })->toArray())
-                    ->visible(fn(callable $get) => filled($get('type'))),
+                    ->visible(fn (callable $get) => filled($get('type'))),
             ])->columns(1);
     }
 }

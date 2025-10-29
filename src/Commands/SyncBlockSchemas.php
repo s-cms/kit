@@ -41,13 +41,14 @@ class SyncBlockSchemas extends Command
 
         // Get all available languages
         $languages = app('lang')->adminLanguages()->pluck('slug')->toArray();
-        $this->info("Languages: " . implode(', ', $languages));
+        $this->info('Languages: ' . implode(', ', $languages));
 
         // Load all blocks
         $blocks = Block::all();
 
         if ($blocks->isEmpty()) {
             $this->info('No blocks found to sync.');
+
             return self::SUCCESS;
         }
 
@@ -65,9 +66,10 @@ class SyncBlockSchemas extends Command
                 // Find the schema for this block type
                 $schemaData = $allSchemas->firstWhere('id', $block->type);
 
-                if (!$schemaData) {
+                if (! $schemaData) {
                     $this->warn("⚠ Block #{$block->id} ({$block->title}): Schema type '{$block->type}' not found - skipping");
                     $errors++;
+
                     continue;
                 }
 
@@ -75,7 +77,7 @@ class SyncBlockSchemas extends Command
                 $storedData = $block->data ?? [];
 
                 // Safety check: ensure storedData is an array (could be empty string from old data)
-                if (!is_array($storedData)) {
+                if (! is_array($storedData)) {
                     $storedData = [];
                 }
 
@@ -86,7 +88,7 @@ class SyncBlockSchemas extends Command
                 if ($this->dataChanged($storedData, $mergedData)) {
                     $this->line("✓ Block #{$block->id} ({$block->title}): Updated with new schema defaults");
 
-                    if (!$dryRun) {
+                    if (! $dryRun) {
                         $block->data = $mergedData;
                         $block->save();
                     }
@@ -144,11 +146,11 @@ class SyncBlockSchemas extends Command
         $added = array_diff($newKeys, $oldKeys);
         $removed = array_diff($oldKeys, $newKeys);
 
-        if (!empty($added)) {
+        if (! empty($added)) {
             $this->line('    Added fields: ' . implode(', ', $added));
         }
 
-        if (!empty($removed)) {
+        if (! empty($removed)) {
             $this->line('    Removed fields: ' . implode(', ', $removed));
         }
     }
