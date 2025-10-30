@@ -2,30 +2,30 @@
 
 namespace SmartCms\Kit\Admin\Resources\Pages\RelationManagers;
 
+use Filament\Actions\Action;
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
-use Filament\Tables;
-use Filament\Tables\Table;
-use SmartCms\Kit\Models\Block;
-use SmartCms\Kit\Services\Block\BlockService;
-use SmartCms\Lang\Models\Language;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use SmartCms\Support\Admin\Components\Layout\LeftGrid;
-use SmartCms\Support\Admin\Components\Layout\RightGrid;
-use Filament\Actions\Action;
-use Filament\Notifications\Notification;
+use Filament\Schemas\Schema;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use SmartCms\Kit\Models\Block;
+use SmartCms\Kit\Services\Block\BlockService;
+use SmartCms\Lang\Models\Language;
+use SmartCms\Support\Admin\Components\Layout\LeftGrid;
+use SmartCms\Support\Admin\Components\Layout\RightGrid;
 
 class BlocksRelationManager extends RelationManager
 {
@@ -37,7 +37,7 @@ class BlocksRelationManager extends RelationManager
             ->schema([
                 Forms\Components\Select::make('block_id')
                     ->label(__('Block'))
-                    ->options(fn() => Block::query()->pluck('title', 'id'))
+                    ->options(fn () => Block::query()->pluck('title', 'id'))
                     ->required()
                     ->searchable()
                     ->preload(),
@@ -111,7 +111,7 @@ class BlocksRelationManager extends RelationManager
             ->headerActions([
                 AttachAction::make()
                     ->preloadRecordSelect()
-                    ->schema(fn(AttachAction $action): array => [
+                    ->schema(fn (AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->searchable()
                             ->getSearchResultsUsing(function (string $search) {
@@ -121,7 +121,7 @@ class BlocksRelationManager extends RelationManager
                                     ->limit(50)
                                     ->pluck('title', 'id');
                             })
-                            ->getOptionLabelUsing(fn($value): ?string => Block::find($value)?->title),
+                            ->getOptionLabelUsing(fn ($value): ?string => Block::find($value)?->title),
 
                         Forms\Components\Toggle::make('status')
                             ->label(__('Active'))
@@ -147,6 +147,7 @@ class BlocksRelationManager extends RelationManager
                     ->fillForm(function (Model $record): array {
                         $pivot = $record->pivot;
                         $block = Block::find($record->id);
+
                         return [
                             'data' => $block->getTranslations('data') ?? [],
                             'status' => $pivot->status,
@@ -237,7 +238,7 @@ class BlocksRelationManager extends RelationManager
                             ->color('success'),
                         Action::make('cancel')
                             ->label(__('Cancel'))
-                            ->action(fn(EditAction $action) => $action->cancel())
+                            ->action(fn (EditAction $action) => $action->cancel())
                             ->color('gray'),
                     ])
                     ->modalFooterActionsAlignment('right'),
@@ -256,29 +257,29 @@ class BlocksRelationManager extends RelationManager
     }
 }
 
-    // Action::make('save')
-                        //     ->label(__('Save'))
-                        //     ->action(function (Model $record, array $data, EditAction $action) {
-                        //         $block = Block::find($record->id);
+// Action::make('save')
+//     ->label(__('Save'))
+//     ->action(function (Model $record, array $data, EditAction $action) {
+//         $block = Block::find($record->id);
 
-                        //         // Update block data
-                        //         $blockData = $data;
-                        //         unset($blockData['status'], $blockData['show_from'], $blockData['show_until'], $blockData['sorting'], $blockData['title'], $blockData['type'], $blockData['block_status']);
+//         // Update block data
+//         $blockData = $data;
+//         unset($blockData['status'], $blockData['show_from'], $blockData['show_until'], $blockData['sorting'], $blockData['title'], $blockData['type'], $blockData['block_status']);
 
-                        //         $block->update([
-                        //             'data' => $blockData,
-                        //         ]);
+//         $block->update([
+//             'data' => $blockData,
+//         ]);
 
-                        //         // Update pivot data
-                        //         $record->pivot->update([
-                        //             'status' => $data['status'],
-                        //             'show_from' => $data['show_from'],
-                        //             'show_until' => $data['show_until'],
-                        //             'sorting' => $data['sorting'],
-                        //         ]);
+//         // Update pivot data
+//         $record->pivot->update([
+//             'status' => $data['status'],
+//             'show_from' => $data['show_from'],
+//             'show_until' => $data['show_until'],
+//             'sorting' => $data['sorting'],
+//         ]);
 
-                        //         $action->success();
-                        //         $action->sendSuccessNotification();
-                        //         $action->halt();
-                        //     })
-                        //     ->color('primary'),
+//         $action->success();
+//         $action->sendSuccessNotification();
+//         $action->halt();
+//     })
+//     ->color('primary'),
