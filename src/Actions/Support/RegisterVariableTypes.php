@@ -34,13 +34,13 @@ class RegisterVariableTypes
 
     public function handle(): void
     {
-        $this->registry->register(PhoneType::class);
+        // $this->registry->register(PhoneType::class);
         $this->registry->register(PhonesType::class);
-        $this->registry->register(EmailType::class);
+        // $this->registry->register(EmailType::class);
         $this->registry->register(EmailsType::class);
-        $this->registry->register(AddressType::class);
+        // $this->registry->register(AddressType::class);
         $this->registry->register(SocialsType::class);
-        $this->registry->register(HeadingType::class);
+        // $this->registry->register(HeadingType::class);
         $this->registry->register(MenuType::class);
         $this->registry->register(PopularCategories::class);
         $this->registry->register(RandomCategories::class);
@@ -53,7 +53,7 @@ class RegisterVariableTypes
         $this->registry->register(ImageType::class);
         $this->registry->register(FileType::class);
         $this->registry->register(FormType::class);
-        $this->registry->register(StringType::class);
+        // $this->registry->register(StringType::class);
         $this->registry->register(KeyValueType::class);
     }
 }
