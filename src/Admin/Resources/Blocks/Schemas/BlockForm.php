@@ -5,6 +5,7 @@ namespace SmartCms\Kit\Admin\Resources\Blocks\Schemas;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -12,6 +13,11 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use SmartCms\Kit\Services\Block\BlockService;
 use SmartCms\Lang\Models\Language;
+use SmartCms\Support\Admin\Components\Layout\Aside;
+use SmartCms\Support\Admin\Components\Layout\FormGrid;
+use SmartCms\Support\Admin\Components\Layout\LeftGrid;
+use SmartCms\Support\Admin\Components\Layout\RightGrid;
+use Filament\Schemas\Components\Text;
 
 class BlockForm
 {
@@ -21,25 +27,37 @@ class BlockForm
 
         return $schema
             ->components([
-                Section::make('General')
-                    ->columns(3)
+                Grid::make()->gridContainer()
+                    ->columns([
+                        '@md' => 3,
+                        '@xl' => 4,
+                    ])
+                    ->columnSpanFull()
                     ->schema([
-                        TextInput::make('title')->required(),
-                        Select::make('type')
-                            ->label('Section Type')
-                            ->options($service->getBlocksTypes())
-                            ->required()
-                            ->reactive()
-                            ->disabledOn('edit')
-                            ->afterStateUpdated(fn ($state, callable $set) => $set('data', [])),
-                        Toggle::make('status')->inline(false)->default(true),
-                    ]),
-                Tabs::make('Block Data')->schema(app('lang')->adminLanguages()->map(function (Language $lang) use ($service) {
-                    return Tab::make($lang->name)->schema(function (Get $get) use ($service, $lang) {
-                        return $service->getBlockSchema($get('type'), $lang->slug);
-                    });
-                })->toArray())
-                    ->visible(fn (callable $get) => filled($get('type'))),
+                        LeftGrid::make()->schema([
+                            Tabs::make('Block Data')->schema(app('lang')->adminLanguages()->map(function (Language $lang) use ($service) {
+                                return Tab::make($lang->name)->schema(function (Get $get) use ($service, $lang) {
+                                    return $service->getBlockSchema($get('type'), $lang->slug);
+                                });
+                            })->toArray())
+                                ->visible(fn(callable $get) => filled($get('type'))),
+                            Text::make('Select section type in sidebar first')->columnSpanFull()->visible(fn(callable $get) => empty($get('type'))),
+                        ]),
+                        RightGrid::make()->schema([
+                            Section::make()
+                                ->schema([
+                                    TextInput::make('title')->required(),
+                                    Select::make('type')
+                                        ->label('Section Type')
+                                        ->options($service->getBlocksTypes())
+                                        ->required()
+                                        ->reactive()
+                                        ->disabledOn('edit')
+                                        ->afterStateUpdated(fn($state, callable $set) => $set('data', [])),
+                                    Toggle::make('status')->default(true),
+                                ]),
+                        ]),
+                    ])
             ])->columns(1);
     }
 }

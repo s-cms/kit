@@ -2,10 +2,12 @@
 
 namespace SmartCms\Kit\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Log;
+use SmartCms\Kit\Database\Factories\BlockFactory;
 use SmartCms\TemplateBuilder\Support\VariableTypeRegistry;
 use Spatie\Translatable\HasTranslations;
 
@@ -24,9 +26,18 @@ use Spatie\Translatable\HasTranslations;
  */
 class Block extends Model
 {
+    use HasFactory;
     use HasTranslations;
 
     protected $guarded = [];
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): BlockFactory
+    {
+        return BlockFactory::new();
+    }
 
     protected array $translatable = [
         'data',
@@ -73,14 +84,10 @@ class Block extends Model
         }
 
         $transformedData = [];
-
         // Process each field in the schema
         foreach ($properties as $fieldName => $fieldSchema) {
             $fieldValue = $data[$fieldName] ?? null;
-
-            // Check if this field uses a custom variable type
             $variableType = $this->getVariableTypeForField($fieldSchema, $registry);
-
             if ($variableType) {
                 // Transform the value using the variable type
                 $transformedData[$fieldName] = $this->transformFieldValue(
@@ -115,6 +122,9 @@ class Block extends Model
 
         // Priority 2: Check standard type
         $type = $fieldSchema['type'] ?? null;
+        if ($type == 'array') {
+            return null;
+        }
         if ($type && $variableType = $registry->get($type)) {
             return $variableType;
         }
@@ -207,5 +217,21 @@ class Block extends Model
             ->withPivot(['status', 'show_from', 'show_until', 'sorting'])
             ->withTimestamps()
             ->orderBy('sorting');
+    }
+
+    public static function getHeaderBlocks(): array
+    {
+        return Block::query()->whereIn('id', app('s')->get('header_blocks'))->get()->map(fn($block): array => [
+            'id' => $block->type,
+            'data' => $block->transformedData(),
+        ])->toArray();
+    }
+
+    public static function getFooterBlocks(): array
+    {
+        return Block::query()->whereIn('id', app('s')->get('footer_blocks'))->get()->map(fn($block): array => [
+            'id' => $block->type,
+            'data' => $block->transformedData(),
+        ])->toArray();
     }
 }

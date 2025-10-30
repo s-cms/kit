@@ -64,4 +64,8 @@ return [
     'division_category' => 'Abteilungskategorie',
     'phone' => 'Telefon',
     'category' => 'Kategorie',
+    'block_copied_successfully' => 'Block wurde erfolgreich kopiert',
+    'layout' => 'Layout',
+    'header_blocks' => 'Header Blocks',
+    'footer_blocks' => 'Footer Blocks',
 ];

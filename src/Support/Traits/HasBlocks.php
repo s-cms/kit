@@ -21,7 +21,7 @@ trait HasBlocks
             'blockables'
         )
             ->using(Blockable::class)
-            ->withPivot(['status', 'show_from', 'show_until', 'sorting'])
+            ->withPivot(['status', 'show_from', 'show_until', 'sorting', 'id'])
             ->withTimestamps()
             ->orderBy('sorting');
     }

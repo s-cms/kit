@@ -94,8 +94,8 @@ class SyncBlockSchemas
                 if (! $schemaData) {
                     // Block type doesn't exist in schemas - delete it
                     Log::info("Deleting orphaned block #{$block->id} with type '{$block->type}' (schema not found)");
-                    $block->delete();
-                    $deleted++;
+                    // $block->delete();
+                    // $deleted++;
 
                     continue;
                 }

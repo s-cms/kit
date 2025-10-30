@@ -17,6 +17,7 @@ use SmartCms\Kit\Actions\Admin\GetVersionHtml;
 use SmartCms\Kit\Actions\Admin\GetViewButton;
 use SmartCms\Kit\Admin\Clusters\Design\DesignCluster;
 use SmartCms\Kit\Admin\Pages\Dashboard;
+use SmartCms\Kit\Admin\Pages\Layout;
 use SmartCms\Kit\Admin\Pages\Login;
 use SmartCms\Kit\Admin\Pages\Profile;
 use SmartCms\Kit\Admin\Pages\Settings;
@@ -59,7 +60,7 @@ class KitPlugin implements Plugin
         ]);
         $panel->plugins([
             new Theme,
-            TemplateBuilderPlugin::make(null, DesignCluster::class),
+            // TemplateBuilderPlugin::make(null, DesignCluster::class),
             MenuPlugin::make(null, DesignCluster::class),
             FormsPlugin::make(),
         ])
@@ -84,12 +85,13 @@ class KitPlugin implements Plugin
                 SetAdminLocale::class,
             ])
             ->renderHook(PanelsRenderHook::PAGE_END, GetVersionHtml::run())
-            ->renderHook(PanelsRenderHook::HEAD_START, fn (): string => '<meta name="robots" content="noindex, nofollow" />')
+            ->renderHook(PanelsRenderHook::HEAD_START, fn(): string => '<meta name="robots" content="noindex, nofollow" />')
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetInboxButton::run())
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetViewButton::run())
             ->breadcrumbs(false)
             ->maxContentWidth(Width::Full)
             ->pages([
+                Layout::class,
                 Dashboard::class,
                 Settings::class,
                 TranslatesPage::class,

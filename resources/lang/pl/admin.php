@@ -64,4 +64,8 @@ return [
     'division_category' => 'Kategoria działu',
     'phone' => 'Telefon',
     'category' => 'Kategoria',
+    'layout' => 'Layout',
+    'header_blocks' => 'Bloków nagłówka',
+    'footer_blocks' => 'Bloków stopki',
+    'block_copied_successfully' => 'Blok został skopiowany pomyślnie',
 ];

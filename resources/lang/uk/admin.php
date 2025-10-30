@@ -66,4 +66,8 @@ return [
     'division_category' => 'Категорія розділу',
     'phone' => 'Телефон',
     'category' => 'Категорія',
+    'layout' => 'Шаблон',
+    'header_blocks' => 'Блоки хедера',
+    'footer_blocks' => 'Блоки футера',
+    'block_copied_successfully' => 'Блок успішно скопійовано',
 ];

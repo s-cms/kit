@@ -29,6 +29,7 @@ class Blockable extends MorphPivot
     public $incrementing = true;
 
     protected $casts = [
+        'id' => 'integer',
         'status' => 'boolean',
         'show_from' => 'datetime',
         'show_until' => 'datetime',

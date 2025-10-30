@@ -200,4 +200,8 @@ return [
     'division_category' => 'Division Category',
     'phone' => 'Phone',
     'category' => 'Category',
+    'layout' => 'Layout',
+    'header_blocks' => 'Header Blocks',
+    'footer_blocks' => 'Footer Blocks',
+    'block_copied_successfully' => 'Block copied successfully',
 ];
