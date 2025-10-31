@@ -43,7 +43,6 @@ class Login extends PagesLogin
                 'data.username' => __('filament-panels::auth/pages/login.messages.failed'),
             ]);
         }
-        $this->checkForUpdates();
         $user = Filament::auth()->user();
 
         if (
@@ -53,11 +52,10 @@ class Login extends PagesLogin
             Filament::auth()->logout();
             $this->throwFailureValidationException();
         }
-        // session()->regenerate();
         cookie()->queue(
             cookie('maintenance_bypass', 'true', 60 * 24 * 7)
         );
-        \SmartCms\TemplateBuilder\Actions\SyncLayouts::run();
+        $this->checkForUpdates();
 
         return app(LoginResponse::class);
     }
@@ -76,6 +74,9 @@ class Login extends PagesLogin
 
     protected function checkForUpdates(): void
     {
+        if (app()->isLocal()) {
+            return;
+        }
         try {
             $updateChecker = app(\SmartCms\Kit\Contracts\UpdateCheckerInterface::class);
             $updateChecker->checkOnLogin();

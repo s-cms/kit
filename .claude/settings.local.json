@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:filamentphp.com)",
+      "Bash(composer test:*)"
     ],
     "deny": [],
     "ask": []
