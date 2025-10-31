@@ -2,10 +2,11 @@
 
 namespace SmartCms\Kit\Mcp\Tools;
 
-use Laravel\Mcp\Request;use Laravel\Mcp\Response;
+use Illuminate\JsonSchema\JsonSchema;
+use Laravel\Mcp\Request;
+use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-use Illuminate\JsonSchema\JsonSchema;
 use SmartCms\Menu\Models\Menu;
 
 #[IsReadOnly]

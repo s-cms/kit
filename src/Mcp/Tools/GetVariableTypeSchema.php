@@ -48,6 +48,7 @@ class GetVariableTypeSchema extends Tool
 
         if (! $typeInstance) {
             $availableTypes = array_keys($this->registry->all());
+
             return Response::text(
                 "Variable type '{$type}' not found. Available types: " . implode(', ', $availableTypes)
             );

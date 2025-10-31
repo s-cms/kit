@@ -56,7 +56,7 @@ it('validates field lengths', function () {
 
     $tool = app(UpdatePageSeo::class);
 
-    expect(fn() => $tool->handle(new Request([
+    expect(fn () => $tool->handle(new Request([
         'id' => $page->id,
         'meta_title' => str_repeat('a', 256), // Exceeds 255 char limit
         'language' => 'en',
@@ -101,7 +101,7 @@ it('can update content field', function () {
 it('fails to update seo for nonexistent page', function () {
     $tool = app(UpdatePageSeo::class);
 
-    expect(fn() => $tool->handle(new Request([
+    expect(fn () => $tool->handle(new Request([
         'id' => 999999,
         'meta_title' => 'Test',
         'language' => 'en',

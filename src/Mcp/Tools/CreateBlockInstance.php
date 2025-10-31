@@ -2,10 +2,10 @@
 
 namespace SmartCms\Kit\Mcp\Tools;
 
+use Illuminate\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Tool;
-use Illuminate\JsonSchema\JsonSchema;
 use SmartCms\Kit\Models\Block;
 use SmartCms\Kit\Services\Block\BlockDataMerger;
 use SmartCms\Kit\Services\Block\BlockService;
@@ -84,7 +84,7 @@ class CreateBlockInstance extends Tool
 
             return Response::json($block);
         } catch (\Exception $e) {
-            return Response::text("Error creating block: " . $e->getMessage());
+            return Response::text('Error creating block: ' . $e->getMessage());
         }
     }
 }

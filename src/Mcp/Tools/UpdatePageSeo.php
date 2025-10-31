@@ -2,10 +2,10 @@
 
 namespace SmartCms\Kit\Mcp\Tools;
 
-use Laravel\Mcp\Response;
-use Laravel\Mcp\Server\Tool;
 use Illuminate\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
+use Laravel\Mcp\Response;
+use Laravel\Mcp\Server\Tool;
 use SmartCms\Kit\Models\Page;
 
 class UpdatePageSeo extends Tool

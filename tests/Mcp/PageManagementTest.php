@@ -35,7 +35,7 @@ it('can list pages', function () {
     Page::factory()->count(3)->create();
 
     $tool = app(GetPages::class);
-    $response = $tool->handle(new Request());
+    $response = $tool->handle(new Request);
 
     $result = decodePageResponse($response);
     expect(count($result))->toBe(3);
@@ -91,7 +91,7 @@ it('can get page by slug', function () {
 
 it('fails to get page without id or slug', function () {
     $tool = app(GetPage::class);
-    $response = $tool->handle(new Request());
+    $response = $tool->handle(new Request);
     expect($response->content()->__toString())->toBe('Either id or slug must be provided');
 });
 

@@ -18,8 +18,6 @@ use Orchestra\Testbench\TestCase as Orchestra;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 use SmartCms\Kit\KitServiceProvider;
 use SmartCms\Lang\LangServiceProvider;
-use SmartCms\Lang\Languages;
-use SmartCms\Lang\Models\Language;
 use SmartCms\Menu\MenuServiceProvider;
 
 class TestCase extends Orchestra
@@ -29,7 +27,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn(string $modelName): string => 'SmartCms\\Kit\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
+            fn (string $modelName): string => 'SmartCms\\Kit\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
@@ -78,7 +76,7 @@ class TestCase extends Orchestra
         $langMigration->up();
 
         // Mock the 's' service that's used in KitPlugin
-        $app->singleton('s', fn(): object => new class
+        $app->singleton('s', fn (): object => new class
         {
             public function get($key, $default = null)
             {
@@ -87,7 +85,7 @@ class TestCase extends Orchestra
         });
 
         // Mock the 'lang' service that's used in helpers
-        $app->singleton('lang', fn() => new class
+        $app->singleton('lang', fn () => new class
         {
             public function current()
             {

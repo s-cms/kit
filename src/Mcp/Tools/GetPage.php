@@ -2,11 +2,11 @@
 
 namespace SmartCms\Kit\Mcp\Tools;
 
+use Illuminate\JsonSchema\JsonSchema;
+use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-use Illuminate\JsonSchema\JsonSchema;
-use Laravel\Mcp\Request;
 use SmartCms\Kit\Models\Page;
 
 #[IsReadOnly]
@@ -79,7 +79,7 @@ class GetPage extends Tool
                 'meta_description' => $page->description,
                 'meta_keywords' => $page->keywords,
             ],
-            'blocks' => $page->blocks->map(fn($block) => [
+            'blocks' => $page->blocks->map(fn ($block) => [
                 'id' => $block->id,
                 'type' => $block->type,
                 'title' => $block->title,

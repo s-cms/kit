@@ -2,11 +2,11 @@
 
 namespace SmartCms\Kit\Mcp\Tools;
 
+use Illuminate\JsonSchema\JsonSchema;
 use Illuminate\Validation\Rule;
+use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Tool;
-use Illuminate\JsonSchema\JsonSchema;
-use Laravel\Mcp\Request;
 use SmartCms\Kit\Models\Page;
 
 class UpdatePage extends Tool
@@ -90,7 +90,7 @@ class UpdatePage extends Tool
                 'updated_at' => $page->updated_at?->toIso8601String(),
             ]);
         } catch (\Exception $e) {
-            return Response::text("Error updating page: " . $e->getMessage());
+            return Response::text('Error updating page: ' . $e->getMessage());
         }
     }
 }

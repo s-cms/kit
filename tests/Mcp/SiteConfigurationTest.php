@@ -35,7 +35,7 @@ it('can get languages', function () {
     ]);
 
     $tool = app(GetLanguages::class);
-    $response = $tool->handle(new Request());
+    $response = $tool->handle(new Request);
     $result = decodeResponse($response);
     expect($result)->toHaveKey('main');
     expect($result)->toHaveKey('frontend');
@@ -48,7 +48,7 @@ it('can list menus', function () {
     Menu::factory()->count(3)->create();
 
     $tool = app(GetMenus::class);
-    $response = $tool->handle(new Request());
+    $response = $tool->handle(new Request);
 
     $result = decodeResponse($response);
 
@@ -99,7 +99,7 @@ it('can get menu by name', function () {
 
 it('fails to get menu without id or name', function () {
     $tool = app(GetMenu::class);
-    $response = $tool->handle(new Request());
+    $response = $tool->handle(new Request);
 
     $content = $response->content[0]['text'] ?? $response->content()->__toString() ?? '';
 
@@ -131,7 +131,7 @@ it('counts menu items correctly', function () {
     ]);
 
     $tool = app(GetMenus::class);
-    $response = $tool->handle(new Request());
+    $response = $tool->handle(new Request);
 
     $result = decodeResponse($response);
 

@@ -2,17 +2,12 @@
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Mcp\Request;
-use SmartCms\Kit\Mcp\Tools\CreateBlockInstance;
 use SmartCms\Kit\Mcp\Tools\CreatePage;
 use SmartCms\Kit\Mcp\Tools\GetPageBlocks;
-use SmartCms\Kit\Mcp\Tools\UpdateBlockData;
 use SmartCms\Kit\Mcp\Tools\UpdatePageSeo;
 use SmartCms\Kit\Models\Block;
 use SmartCms\Kit\Models\Page;
-use SmartCms\Kit\Services\Block\BlockService;
 use SmartCms\Lang\Database\Factories\LanguageFactory;
-
-use function Pest\Laravel\assertDatabaseHas;
 
 uses(RefreshDatabase::class);
 beforeEach(function () {

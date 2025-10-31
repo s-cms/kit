@@ -77,6 +77,7 @@ class Login extends PagesLogin
         if (app()->isLocal()) {
             return;
         }
+
         try {
             $updateChecker = app(\SmartCms\Kit\Contracts\UpdateCheckerInterface::class);
             $updateChecker->checkOnLogin();

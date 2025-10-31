@@ -2,11 +2,11 @@
 
 namespace SmartCms\Kit\Mcp\Tools;
 
+use Illuminate\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-use Illuminate\JsonSchema\JsonSchema;
 use SmartCms\Kit\Models\Block;
 
 #[IsReadOnly]

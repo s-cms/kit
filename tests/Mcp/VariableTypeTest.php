@@ -19,7 +19,7 @@ function decodeVariableTypeResponse($response): array
 
 it('can list all variable types', function () {
     $tool = app(GetVariableTypes::class);
-    $response = $tool->handle(new Request());
+    $response = $tool->handle(new Request);
 
     $result = decodeVariableTypeResponse($response);
 
@@ -37,7 +37,7 @@ it('can list all variable types', function () {
 
 it('includes common variable types', function () {
     $tool = app(GetVariableTypes::class);
-    $response = $tool->handle(new Request());
+    $response = $tool->handle(new Request);
 
     $result = decodeVariableTypeResponse($response);
     $typeNames = array_column($result['types'], 'name');
@@ -50,7 +50,7 @@ it('includes common variable types', function () {
 it('can get specific variable type schema', function () {
     // First get all types
     $typesTool = app(GetVariableTypes::class);
-    $typesResponse = $typesTool->handle(new Request());
+    $typesResponse = $typesTool->handle(new Request);
     $typesResult = decodeVariableTypeResponse($typesResponse);
 
     // Skip if no types registered
