@@ -204,7 +204,7 @@ class KitServiceProvider extends PackageServiceProvider
         // Routes and config must be loaded after all other services are booted
         $this->app->booted(function (): void {
             BindConfig::run();
-            $this->mergeAuthConfigFrom(__DIR__ . '/../config/auth.php');
+            $this->mergeAuthConfigFrom();
             $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         });
 
@@ -250,9 +250,22 @@ class KitServiceProvider extends PackageServiceProvider
         });
     }
 
-    protected function mergeAuthConfigFrom(string $path)
+    protected function mergeAuthConfigFrom(): void
     {
-        $custom = require $path;
+        $custom = [
+            'guards' => [
+                'admin' => [
+                    'driver' => 'session',
+                    'provider' => 'admin',
+                ],
+            ],
+            'providers' => [
+                'admin' => [
+                    'driver' => 'eloquent',
+                    'model' => config('kit.auth_model', \SmartCms\Kit\Models\Admin::class),
+                ],
+            ],
+        ];
 
         foreach ($custom as $key => $values) {
             $existing = config("auth.$key", []);

@@ -10,6 +10,8 @@ return [
         'update' => 'kit::admin.update',
         'new_contact_form' => 'kit::admin.new_contact_form',
     ],
+    'register_routes' => true,
+    'auth_model' => \SmartCms\Kit\Models\Admin::class,
     'updates' => [
         'enabled' => env('KIT_UPDATES_ENABLED', true),
         'github_repository' => 's-cms/kit',
