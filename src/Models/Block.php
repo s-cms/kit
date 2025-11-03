@@ -221,7 +221,7 @@ class Block extends Model
 
     public static function getHeaderBlocks(): array
     {
-        return Block::query()->whereIn('id', app('s')->get('header_blocks', []))->get()->map(fn($block): array => [
+        return Block::query()->whereIn('id', app('s')->get('header_blocks', []))->get()->map(fn ($block): array => [
             'id' => $block->type,
             'data' => $block->transformedData(),
         ])->toArray();
@@ -229,7 +229,7 @@ class Block extends Model
 
     public static function getFooterBlocks(): array
     {
-        return Block::query()->whereIn('id', app('s')->get('footer_blocks', []))->get()->map(fn($block): array => [
+        return Block::query()->whereIn('id', app('s')->get('footer_blocks', []))->get()->map(fn ($block): array => [
             'id' => $block->type,
             'data' => $block->transformedData(),
         ])->toArray();
