@@ -28,7 +28,7 @@ class PopularItems implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return FrontPage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => new FrontPageResource($item)->toArray(request()));
+        return FrontPage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
@@ -45,6 +45,6 @@ class PopularItems implements VariableTypeInterface
             return $this->getDefaultValue();
         }
 
-        return FrontPage::query()->where('root_id', $value['root_id'] ?? 0)->limit($value['limit'] ?? 3)->get()->map(fn ($item): array => new FrontPageResource($item)->toArray(request()));
+        return FrontPage::query()->where('root_id', $value['root_id'] ?? 0)->limit($value['limit'] ?? 3)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 }
