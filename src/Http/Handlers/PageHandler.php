@@ -18,7 +18,7 @@ class PageHandler
         $segments = array_filter(explode('/', $path));
 
         // Remove language segment if present
-        $segments = array_values(array_filter($segments, fn($value) => $value != current_lang()));
+        $segments = array_values(array_filter($segments, fn ($value) => $value != current_lang()));
 
         // Validate depth doesn't exceed max
         if (count($segments) > $maxDepth) {

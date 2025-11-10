@@ -9,7 +9,6 @@ use Filament\Support\Enums\Width;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
 use SmartCms\Kit\Actions\Admin\GetPageNavigation;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
@@ -51,6 +50,7 @@ class ListPages extends ListRecords
                                 ->mapWithKeys(function (Page $page) {
                                     $indent = str_repeat('— ', $page->depth);
                                     $label = $indent . $page->name . ' (' . $page->type . ')';
+
                                     return [$page->id => $label];
                                 })
                                 ->toArray();

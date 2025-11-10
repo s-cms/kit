@@ -46,7 +46,7 @@ class FrontPage extends Page
         return new Attribute(
             get: function () {
                 // Only categories can have category children
-                if (!$this->canHaveChildren()) {
+                if (! $this->canHaveChildren()) {
                     return FrontPage::query()->where('id', 0);
                 }
 

@@ -13,7 +13,6 @@ use SmartCms\Support\Admin\Components\Actions\ViewRecord;
 use SmartCms\Support\Admin\Components\Filters\StatusFilter;
 use SmartCms\Support\Admin\Components\Tables\CreatedAtColumn;
 use SmartCms\Support\Admin\Components\Tables\NameColumn;
-use SmartCms\Support\Admin\Components\Tables\SortingColumn;
 use SmartCms\Support\Admin\Components\Tables\UpdatedAtColumn;
 use SmartCms\Support\Admin\Components\Tables\ViewsColumn;
 
