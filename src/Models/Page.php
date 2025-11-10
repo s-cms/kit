@@ -249,7 +249,7 @@ class Page extends Model
     protected function validateParentCanHaveChildren(): void
     {
         if ($this->parent_id && $this->parent) {
-            if (!$this->parent->canHaveChildren()) {
+            if (! $this->parent->canHaveChildren()) {
                 throw new \Exception("Parent page of type '{$this->parent->type}' cannot have children.");
             }
         }

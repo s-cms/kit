@@ -106,12 +106,12 @@ class PageForm
      */
     protected static function getDepthHelperText(?int $parentId): string
     {
-        if (!$parentId) {
+        if (! $parentId) {
             return __('kit::admin.depth_helper_root');
         }
 
         $parent = Page::find($parentId);
-        if (!$parent) {
+        if (! $parent) {
             return '';
         }
 

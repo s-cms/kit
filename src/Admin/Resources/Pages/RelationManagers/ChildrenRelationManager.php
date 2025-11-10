@@ -102,20 +102,22 @@ class ChildrenRelationManager extends RelationManager
                     ->mutateFormDataUsing(function (array $data) use ($ownerRecord): array {
                         $data['parent_id'] = $ownerRecord->id;
                         $data['depth'] = $ownerRecord->depth + 1;
+
                         return $data;
                     })
                     ->disabled(function () use ($ownerRecord): bool {
                         // Check if owner can have children
-                        if (!$ownerRecord->canHaveChildren()) {
+                        if (! $ownerRecord->canHaveChildren()) {
                             return true;
                         }
 
                         // Check depth limit
                         $maxDepth = config('kit.max_page_depth', 5);
+
                         return $ownerRecord->depth >= $maxDepth - 1;
                     })
                     ->disabledTooltip(function () use ($ownerRecord): ?string {
-                        if (!$ownerRecord->canHaveChildren()) {
+                        if (! $ownerRecord->canHaveChildren()) {
                             return __('kit::admin.parent_cannot_have_children', ['type' => $ownerRecord->type]);
                         }
 
