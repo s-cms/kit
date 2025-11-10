@@ -12,6 +12,21 @@ return [
     ],
     'register_routes' => true,
     'auth_model' => \SmartCms\Kit\Models\Admin::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maximum Page Nesting Depth
+    |--------------------------------------------------------------------------
+    |
+    | This value controls the maximum depth of page hierarchy allowed.
+    | A depth of 5 means you can have up to 5 levels of nested pages.
+    | Example: /level1/level2/level3/level4/level5
+    |
+    | Setting this too high may impact SEO and user experience.
+    |
+    */
+    'max_page_depth' => 5,
+
     'updates' => [
         'enabled' => env('KIT_UPDATES_ENABLED', true),
         'github_repository' => 's-cms/kit',
