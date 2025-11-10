@@ -5,9 +5,9 @@ use SmartCms\Kit\Http\Handlers\PageHandler;
 
 // Page handler can be overrided, because its include on boot
 if (config('kit.register_routes')) {
-    Route::get('/{slug?}/{second_slug?}/{third_slug?}', PageHandler::class)
-        ->where('slug', '^(?!admin|api|_debugbar|.well-known).*$')
-        ->where('lang', '[a-zA-Z]{2}')
+    // Support unlimited nesting depth (validated at model level to max 5)
+    Route::get('/{path}', PageHandler::class)
+        ->where('path', '^(?!admin|api|_debugbar|.well-known).*')
         ->middleware(['web', 'maintenance', 'uuid', 'lang'])
         ->name('cms.page')
         ->multilingual();

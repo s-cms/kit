@@ -11,12 +11,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use SmartCms\Kit\Admin\Resources\Pages\Pages\CreatePage;
 use SmartCms\Kit\Admin\Resources\Pages\Pages\EditLayoutSettings;
-use SmartCms\Kit\Admin\Resources\Pages\Pages\EditMenuSection as PagesEditMenuSection;
 use SmartCms\Kit\Admin\Resources\Pages\Pages\EditPage;
-use SmartCms\Kit\Admin\Resources\Pages\Pages\EditSeo;
 use SmartCms\Kit\Admin\Resources\Pages\Pages\EditTemplateRelated;
-use SmartCms\Kit\Admin\Resources\Pages\Pages\ListCategories;
-use SmartCms\Kit\Admin\Resources\Pages\Pages\ListItems;
 use SmartCms\Kit\Admin\Resources\Pages\Pages\ListPages;
 use SmartCms\Kit\Admin\Resources\Pages\Schemas\PageForm;
 use SmartCms\Kit\Admin\Resources\Pages\Tables\PagesTable;
@@ -61,11 +57,7 @@ class PageResource extends Resource
             'index' => ListPages::route('/'),
             'create' => CreatePage::route('/create'),
             'edit' => EditPage::route('/{record}/edit'),
-            'items' => ListItems::route('/list/{record}/items'),
-            'categories' => ListCategories::route('/list/{record}/categories'),
             'template' => EditTemplateRelated::route('/{record}/template'),
-            // 'seo' => EditSeo::route('/{record}/seo'),
-            'menu' => PagesEditMenuSection::route('/{record}/menu'),
             'layout' => EditLayoutSettings::route('/{record}/layout'),
         ];
     }

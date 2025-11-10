@@ -15,6 +15,7 @@ class FrontPage extends Page
 
     public static $staticCasts = [
         'settings' => 'array',
+        'metadata' => 'array',
         'image' => ImageCast::class,
         'banner' => ImageCast::class,
     ];
@@ -36,35 +37,51 @@ class FrontPage extends Page
         return array_merge(parent::getCasts(), $this->casts, self::$staticCasts);
     }
 
+    /**
+     * Get direct child categories of this page.
+     * Only returns categories (type='category') that are direct children.
+     */
     public function categories(): Attribute
     {
         return new Attribute(
             get: function () {
-                if ($this->parent_id) {
-                    return FrontPage::query()->where('id', 0);
-                }
-                $settings = $this->settings ?? [];
-                $isCategories = $settings['is_categories'] ?? false;
-                if (! $isCategories) {
+                // Only categories can have category children
+                if (!$this->canHaveChildren()) {
                     return FrontPage::query()->where('id', 0);
                 }
 
-                return FrontPage::query()->where('root_id', $this->id)->where('parent_id', '=', $this->id);
+                // Return direct child categories
+                return FrontPage::query()
+                    ->where('parent_id', $this->id)
+                    ->where('type', 'category');
             }
         );
     }
 
+    /**
+     * Get all child items (pages/posts) of this page.
+     * Returns direct children that are NOT categories.
+     */
     public function items(): Attribute
     {
         return new Attribute(
             get: function () {
-                $settings = $this->settings ?? [];
-                $isCategories = $settings['is_categories'] ?? false;
-                if (! $isCategories) {
-                    return FrontPage::query()->where('root_id', $this->is_root ? $this->id : $this->root_id)->where('parent_id', $this->id);
-                }
+                // Return direct children that are not categories
+                return FrontPage::query()
+                    ->where('parent_id', $this->id)
+                    ->where('type', '!=', 'category');
+            }
+        );
+    }
 
-                return FrontPage::query()->where('root_id', $this->is_root ? $this->id : $this->root_id)->where('parent_id', '!=', $this->id);
+    /**
+     * Get all descendants (children at any level).
+     */
+    public function allDescendants(): Attribute
+    {
+        return new Attribute(
+            get: function () {
+                return $this->descendants();
             }
         );
     }
@@ -96,6 +113,7 @@ class FrontPage extends Page
             'id',
             'name',
             'slug',
+            'type',
             'url',
             'breadcrumbs',
             'image',
@@ -103,7 +121,6 @@ class FrontPage extends Page
             'title',
             'heading',
             'summary',
-            'is_root',
         ];
     }
 }

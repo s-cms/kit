@@ -23,20 +23,49 @@ class PagesTable
     {
         return $table
             ->columns([
-                NameColumn::make()->getStateUsing(fn ($record) => $record->getTranslation('name', main_lang())),
+                NameColumn::make()
+                    ->getStateUsing(fn ($record) => $record->getTranslation('name', main_lang()))
+                    ->description(fn (Page $record): string => $record->slug),
+                TextColumn::make('type')
+                    ->label(__('kit::admin.type'))
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'category' => 'success',
+                        'page' => 'primary',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'category' => __('kit::admin.type_category'),
+                        'page' => __('kit::admin.type_page'),
+                        default => ucfirst($state),
+                    }),
+                TextColumn::make('parent.name')
+                    ->label(__('kit::admin.parent'))
+                    ->formatStateUsing(fn ($state, Page $record) => $record->parent ? $record->parent->getTranslation('name', main_lang()) : '-')
+                    ->toggleable(),
+                TextColumn::make('depth')
+                    ->label(__('kit::admin.depth'))
+                    ->badge()
+                    ->color('gray')
+                    ->toggleable(),
                 ImageColumn::make('image.source')
                     ->square()
                     ->getStateUsing(fn ($record): string | array => validateImage(ltrim($record?->image['source'] ?? '', '/')))
                     ->defaultImageUrl(no_image()['source'] ?? '')
-                    ->default(no_image()['source']),
-                TextColumn::make('status')->badge()->color(fn (mixed $state) => PageStatus::tryFrom($state)?->getColor())->formatStateUsing(fn (mixed $state) => PageStatus::tryFrom($state)?->getLabel()),
-                // SortingColumn::make(),
-                ViewsColumn::make(),
-                UpdatedAtColumn::make(),
-                CreatedAtColumn::make(),
+                    ->default(no_image()['source'])
+                    ->toggleable(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (mixed $state) => PageStatus::tryFrom($state)?->getColor())
+                    ->formatStateUsing(fn (mixed $state) => PageStatus::tryFrom($state)?->getLabel()),
+                ViewsColumn::make()->toggleable(),
+                UpdatedAtColumn::make()->toggleable(),
+                CreatedAtColumn::make()->toggleable(),
                 // Add augmented columns from augmentations
                 ...Page::getAugmentedColumns(),
             ])
+            ->defaultSort('depth', 'asc')
+            ->reorderable('sorting')
             ->filters([
                 StatusFilter::make(),
                 // Add augmented filters from augmentations

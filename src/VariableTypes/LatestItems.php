@@ -34,9 +34,27 @@ class LatestItems implements VariableTypeInterface
     public function getSchema(string $name): Field | Component
     {
         return Group::make([
-            Select::make($name . '.root_id')->options(Page::query()->where('parent_id', null)->whereJsonContains('settings->is_categories', true)->where('is_root', true)->pluck('name', 'id'))->required()->live(),
-            Select::make($name . '.categories')->label(__('kit::admin.categories'))->options(fn (Get $get) => Page::query()->where('is_root', false)->where('parent_id', $get($name . '.root_id') ?? 0)->pluck('name', 'id'))->live()->multiple()->visible(fn (Get $get) => Page::query()->find($get($name . '.root_id'))?->settings['is_categories'] ?? false)->helperText(__('kit::admin.categories_helper_text')),
-            TextInput::make($name . '.limit')->default(self::DEFAULT_LIMIT)->numeric()->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
+            Select::make($name . '.parent_id')
+                ->label(__('kit::admin.parent_category'))
+                ->options(Page::query()->whereIn('type', ['category', 'division'])->pluck('name', 'id'))
+                ->required()
+                ->live()
+                ->helperText(__('kit::admin.select_parent_for_items')),
+            Select::make($name . '.categories')
+                ->label(__('kit::admin.filter_by_categories'))
+                ->options(fn (Get $get) => Page::query()
+                    ->where('type', 'category')
+                    ->where('parent_id', $get($name . '.parent_id') ?? 0)
+                    ->pluck('name', 'id'))
+                ->live()
+                ->multiple()
+                ->visible(fn (Get $get) => $get($name . '.parent_id'))
+                ->helperText(__('kit::admin.optional_category_filter')),
+            TextInput::make($name . '.limit')
+                ->label(__('kit::admin.items_limit'))
+                ->default(self::DEFAULT_LIMIT)
+                ->numeric()
+                ->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
         ]);
     }
 
@@ -45,26 +63,35 @@ class LatestItems implements VariableTypeInterface
         if (! is_array($value)) {
             return $this->getDefaultValue();
         }
-        $root = Page::find($value['root_id'] ?? 0);
-        if (! $root) {
+
+        $parentId = $value['parent_id'] ?? null;
+        if (! $parentId) {
             return $this->getDefaultValue();
         }
-        $categories = $value['categories'] ?? [];
-        $isCategories = $root->settings['is_categories'] ?? false;
 
-        return FrontPage::query()->where('root_id', $value['root_id'] ?? 0)
-            ->when($isCategories, function ($query) use ($root) {
-                $query->where('parent_id', '!=', $root->id);
-            })
-            ->when(! $isCategories, function ($query) use ($root) {
-                $query->where('parent_id', $root->id);
-            })
-            ->when($isCategories && is_array($categories) && count($categories) > 0, function ($query) use ($categories) {
+        $categories = $value['categories'] ?? [];
+
+        $query = FrontPage::query()
+            ->where('type', '!=', 'category') // Only get non-category pages
+            ->when(is_array($categories) && count($categories) > 0, function ($query) use ($categories) {
+                // Filter by specific categories
                 $query->whereIn('parent_id', $categories);
+            }, function ($query) use ($parentId) {
+                // Get all items from parent (including nested)
+                $parent = Page::find($parentId);
+                if ($parent) {
+                    $descendantIds = $parent->descendants()->pluck('id')->toArray();
+                    $descendantIds[] = $parentId;
+                    $query->whereIn('parent_id', $descendantIds);
+                }
             })
             ->when(app()->bound('page'), function ($query) {
                 $query->where('id', '!=', app('page')->id);
             })
-            ->limit($value['limit'] ?? 3)->orderBy('published_at', 'desc')->orderBy('updated_at', 'desc')->get();
+            ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
+            ->orderBy('published_at', 'desc')
+            ->orderBy('updated_at', 'desc');
+
+        return $query->get();
     }
 }
