@@ -43,7 +43,7 @@ class ListPages extends ListRecords
                         ->label(__('kit::admin.parent_page'))
                         ->options(function () {
                             return Page::query()
-                                ->whereIn('type', ['category', 'division'])
+                                ->where('type', 'category')
                                 ->where('depth', '<', config('kit.max_page_depth', 5) - 1)
                                 ->orderBy('slug')
                                 ->get()
@@ -90,7 +90,7 @@ class ListPages extends ListRecords
                     ->label(__('kit::admin.parent_page'))
                     ->options(function () {
                         return Page::query()
-                            ->whereIn('type', ['category', 'division'])
+                            ->where('type', 'category')
                             ->orderBy('name')
                             ->pluck('name', 'id')
                             ->toArray();

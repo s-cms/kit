@@ -241,4 +241,5 @@ return [
     'view' => 'View',
     'subcategory' => 'Subcategory',
     'published_at' => 'Published At',
+    'change_published_date' => 'Change Published Date',
 ];

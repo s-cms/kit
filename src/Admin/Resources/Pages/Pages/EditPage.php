@@ -5,6 +5,7 @@ namespace SmartCms\Kit\Admin\Resources\Pages\Pages;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Components\Group;
@@ -36,6 +37,20 @@ class EditPage extends EditRecord
                 SaveAndClose::make($this, GetPageListUrl::run($this->getRecord())),
                 ViewRecord::make(),
                 DeleteAction::make()->hidden(fn (Page $record): bool => $record->is_system || $record->is_root),
+                Action::make('change_published_at')
+                    ->label(__('kit::admin.change_published_date'))
+                    ->icon(Heroicon::Calendar)
+                    ->color('info')
+                    ->form([
+                        DateTimePicker::make('published_at')
+                            ->label(__('kit::admin.published_at'))
+                            ->default(fn (Page $record) => $record->published_at)
+                            ->required(),
+                    ])
+                    ->action(function (Page $record, array $data): void {
+                        $record->published_at = $data['published_at'];
+                        $record->save();
+                    }),
                 Action::make('show info')->label(__('kit::admin.show_info'))->icon(Heroicon::InformationCircle)->color('primary')->schema([
                     Group::make([
                         TextEntry::make('created_at')->icon(Heroicon::OutlinedClock)->date(),

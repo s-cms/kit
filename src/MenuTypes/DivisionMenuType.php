@@ -25,7 +25,7 @@ class DivisionMenuType extends PageMenuType
         return Select::make('url')
             ->options(Page::query()
                 ->where('status', PageStatus::Published->value)
-                ->whereIn('type', ['category', 'division']) // Support both new and old types
+                ->where('type', 'category')
                 ->pluck('name', 'id'))
             ->live()
             ->afterStateUpdated(function (string $state, Set $set): void {

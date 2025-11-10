@@ -25,7 +25,7 @@ class DivisionCategoryMenyType extends PageMenuType
         // Get all categories that have category children
         $parentCategories = Page::query()
             ->where('status', PageStatus::Published->value)
-            ->whereIn('type', ['category', 'division'])
+            ->where('type', 'category')
             ->whereHas('children', function ($query) {
                 $query->where('type', 'category');
             })

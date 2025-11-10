@@ -7,8 +7,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Group;
-use SmartCms\Kit\Models\Front\FrontPage;
+use SmartCms\Kit\Http\Resources\CategoryPageResource;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Models\Pages\CategoryPage;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class RandomCategories implements VariableTypeInterface
@@ -27,7 +28,7 @@ class RandomCategories implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return FrontPage::query()->limit(self::DEFAULT_LIMIT)->get();
+        return CategoryPage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new CategoryPageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
@@ -35,7 +36,7 @@ class RandomCategories implements VariableTypeInterface
         return Group::make([
             Select::make($name . '.parent_id')
                 ->label(__('kit::admin.parent_category'))
-                ->options(Page::query()->whereIn('type', ['category', 'division'])->pluck('name', 'id'))
+                ->options(Page::query()->where('type', 'category')->pluck('name', 'id'))
                 ->required()
                 ->helperText(__('kit::admin.select_parent_for_categories')),
             TextInput::make($name . '.limit')
@@ -57,11 +58,11 @@ class RandomCategories implements VariableTypeInterface
             return $this->getDefaultValue();
         }
 
-        return FrontPage::query()
-            ->where('type', 'category')
+        return CategoryPage::query()
             ->where('parent_id', $parentId)
             ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
             ->inRandomOrder()
-            ->get();
+            ->get()
+            ->map(fn ($item): array => (new CategoryPageResource($item))->toArray(request()));
     }
 }

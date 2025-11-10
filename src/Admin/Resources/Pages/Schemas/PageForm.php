@@ -79,7 +79,7 @@ class PageForm
 
         return Page::query()
             ->where('id', '!=', $record?->id ?? 0) // Exclude self
-            ->whereIn('type', ['category', 'division']) // Only types that can have children
+            ->where('type', 'category') // Only types that can have children
             ->where('depth', '<', $maxDepth - 1) // Don't allow parents at max depth
             ->orderBy('slug')
             ->get()

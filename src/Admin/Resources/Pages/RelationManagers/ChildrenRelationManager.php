@@ -2,13 +2,14 @@
 
 namespace SmartCms\Kit\Admin\Resources\Pages\RelationManagers;
 
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -105,28 +106,16 @@ class ChildrenRelationManager extends RelationManager
 
                         return $data;
                     })
-                    ->disabled(function () use ($ownerRecord): bool {
-                        // Check if owner can have children
+                    ->hidden(function () use ($ownerRecord): bool {
+                        // Hide if owner can't have children
                         if (! $ownerRecord->canHaveChildren()) {
                             return true;
                         }
 
-                        // Check depth limit
+                        // Hide if depth limit reached
                         $maxDepth = config('kit.max_page_depth', 5);
 
                         return $ownerRecord->depth >= $maxDepth - 1;
-                    })
-                    ->disabledTooltip(function () use ($ownerRecord): ?string {
-                        if (! $ownerRecord->canHaveChildren()) {
-                            return __('kit::admin.parent_cannot_have_children', ['type' => $ownerRecord->type]);
-                        }
-
-                        $maxDepth = config('kit.max_page_depth', 5);
-                        if ($ownerRecord->depth >= $maxDepth - 1) {
-                            return __('kit::admin.max_depth_reached', ['max' => $maxDepth]);
-                        }
-
-                        return null;
                     }),
             ])
             ->recordActions([
@@ -141,11 +130,10 @@ class ChildrenRelationManager extends RelationManager
                     ->openUrlInNewTab(),
 
                 DeleteAction::make()
-                    ->disabled(fn (Page $record): bool => $record->children()->count() > 0)
-                    ->disabledTooltip(__('kit::admin.cannot_delete_page_with_children')),
+                    ->hidden(fn (Page $record): bool => $record->children()->count() > 0),
             ])
-            ->toolbarActions([
-                Tables\Actions\BulkActionGroup::make([
+            ->bulkActions([
+                BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->before(function (DeleteBulkAction $action, $records) {
                             // Check if any record has children

@@ -8,8 +8,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
-use SmartCms\Kit\Models\Front\FrontPage;
+use SmartCms\Kit\Http\Resources\SimplePageResource;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Models\Pages\SimplePage;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class RandomItems implements VariableTypeInterface
@@ -28,7 +29,7 @@ class RandomItems implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return FrontPage::query()->limit(self::DEFAULT_LIMIT)->get();
+        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
@@ -36,7 +37,7 @@ class RandomItems implements VariableTypeInterface
         return Group::make([
             Select::make($name . '.parent_id')
                 ->label(__('kit::admin.parent_category'))
-                ->options(Page::query()->whereIn('type', ['category', 'division'])->pluck('name', 'id'))
+                ->options(Page::query()->where('type', 'category')->pluck('name', 'id'))
                 ->required()
                 ->live()
                 ->helperText(__('kit::admin.select_parent_for_items')),
@@ -71,8 +72,7 @@ class RandomItems implements VariableTypeInterface
 
         $categories = $value['categories'] ?? [];
 
-        $query = FrontPage::query()
-            ->where('type', '!=', 'category')
+        $query = SimplePage::query()
             ->when(is_array($categories) && count($categories) > 0, function ($query) use ($categories) {
                 $query->whereIn('parent_id', $categories);
             }, function ($query) use ($parentId) {
@@ -89,6 +89,6 @@ class RandomItems implements VariableTypeInterface
             ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
             ->inRandomOrder();
 
-        return $query->get();
+        return $query->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
     }
 }

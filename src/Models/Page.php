@@ -145,7 +145,7 @@ class Page extends Model
                 $current = $current->getCachedParent();
             }
 
-            return tRoute('cms.page', ['slug' => implode('/', $slugs)]);
+            return tRoute('cms.page', ['path' => implode('/', $slugs)]);
         });
     }
 
@@ -287,6 +287,11 @@ class Page extends Model
 
             // Auto-calculate depth
             $page->depth = $page->parent_id ? $page->getDepth() : 0;
+
+            // Auto-fill published_at if status is 'published' and not already set
+            if ($page->status?->value === 'published' && empty($page->published_at)) {
+                $page->published_at = now();
+            }
         });
         static::created(function (Page $page): void {
             // Apply default template if defined
@@ -304,7 +309,7 @@ class Page extends Model
                 if ($page->parent_id) {
                     $maxSorting = Page::query()->where('parent_id', $page->parent_id)->max('sorting');
                 } else {
-                    $maxSorting = Page::query()->max('sorting');
+                    $maxSorting = Page::query()->whereNull('parent_id')->max('sorting');
                 }
                 $page->sorting = $maxSorting + 1;
                 $page->save();
@@ -312,6 +317,11 @@ class Page extends Model
         });
         static::updating(function (Page $page): void {
             $page->updated_by = auth()?->id();
+
+            // Update published_at only when status changes to 'published'
+            if ($page->isDirty('status') && $page->status?->value === 'published') {
+                $page->published_at = now();
+            }
         });
 
         static::saving(function (Page $page): void {
