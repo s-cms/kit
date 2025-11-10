@@ -49,6 +49,7 @@ class PageResource extends Resource
     {
         return [
             RelationManagers\BlocksRelationManager::class,
+            RelationManagers\ChildrenRelationManager::class,
             // Add augmented relation managers from augmentations
             ...Page::getAugmentedRelationManagers(),
         ];
