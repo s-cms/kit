@@ -303,6 +303,23 @@ class Page extends Model
                 ]);
             }
 
+            // Auto-attach blocks from parent's settings
+            if ($page->parent_id && $page->parent) {
+                $settingsKey = "child_blocks_{$page->type}";
+                $blockIds = $page->parent->settings[$settingsKey] ?? [];
+
+                if (is_array($blockIds) && count($blockIds) > 0) {
+                    $attachData = [];
+                    foreach ($blockIds as $index => $blockId) {
+                        $attachData[$blockId] = [
+                            'status' => true,
+                            'sorting' => $index + 1,
+                        ];
+                    }
+                    $page->blocks()->attach($attachData);
+                }
+            }
+
             // Auto-increment sorting if not set
             if ($page->sorting == 0) {
                 $maxSorting = 0;

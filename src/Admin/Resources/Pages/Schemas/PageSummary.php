@@ -10,6 +10,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
+use SmartCms\Kit\Models\Block;
 use SmartCms\Kit\Models\Page as ModelsPage;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Forms\ImageUpload;
@@ -55,6 +56,24 @@ class PageSummary extends Page
             })->compact()->schema([
                 Toggle::make('is_index')->label(__('kit::admin.is_index'))->hiddenLabel()->default(true)->reactive(),
             ]),
+            Section::make(__('kit::admin.child_default_blocks'))
+                ->icon(Heroicon::Squares2x2)
+                ->compact()
+                ->visible(fn (Get $get, ?ModelsPage $record) => $record?->canHaveChildren() ?? in_array($get('type'), ['category']))
+                ->schema([
+                    Select::make('settings.child_blocks_page')
+                        ->label(__('kit::admin.default_blocks_for_child_pages'))
+                        ->helperText(__('kit::admin.default_blocks_for_child_pages_helper'))
+                        ->options(Block::query()->where('status', true)->pluck('type', 'id'))
+                        ->multiple()
+                        ->searchable(),
+                    Select::make('settings.child_blocks_category')
+                        ->label(__('kit::admin.default_blocks_for_child_categories'))
+                        ->helperText(__('kit::admin.default_blocks_for_child_categories_helper'))
+                        ->options(Block::query()->where('status', true)->pluck('type', 'id'))
+                        ->multiple()
+                        ->searchable(),
+                ]),
         ];
     }
 }

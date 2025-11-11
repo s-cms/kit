@@ -242,4 +242,9 @@ return [
     'subcategory' => 'Subcategory',
     'published_at' => 'Published At',
     'change_published_date' => 'Change Published Date',
+    'child_default_blocks' => 'Default Blocks for Children',
+    'default_blocks_for_child_pages' => 'Default Blocks for Child Pages',
+    'default_blocks_for_child_pages_helper' => 'These blocks will be automatically attached to new child pages created under this category',
+    'default_blocks_for_child_categories' => 'Default Blocks for Child Categories',
+    'default_blocks_for_child_categories_helper' => 'These blocks will be automatically attached to new child categories created under this category',
 ];
