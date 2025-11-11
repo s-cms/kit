@@ -4,6 +4,7 @@ namespace SmartCms\Kit\Admin\Resources\Pages\RelationManagers;
 
 use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkActionGroup;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
+use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 
@@ -123,6 +125,55 @@ class ChildrenRelationManager extends RelationManager
                 EditAction::make()
                     ->url(fn (Page $record): string => route('filament.admin.resources.pages.edit', ['record' => $record]))
                     ->icon('heroicon-o-pencil-square'),
+
+                Action::make('clone')
+                    ->label(__('kit::admin.clone_page'))
+                    ->icon('heroicon-o-document-duplicate')
+                    ->color('gray')
+                    ->form([
+                        PageNameField::make()
+                            ->default(fn (Page $record) => $record->name . ' (Copy)'),
+                        PageSlugField::make()
+                            ->default(fn (Page $record) => $record->slug . '-copy'),
+                    ])
+                    ->action(function (Page $record, array $data) use ($ownerRecord): void {
+                        // Clone the page
+                        $clone = $record->replicate(['views', 'published_at']);
+                        $clone->name = $data['name'];
+                        $clone->slug = $data['slug'];
+                        $clone->parent_id = $ownerRecord->id; // Keep same parent
+                        $clone->status = PageStatus::Draft;
+                        $clone->published_at = null;
+                        $clone->views = 0;
+                        $clone->depth = $ownerRecord->depth + 1;
+
+                        $clone->save();
+
+                        // Clone blocks relationship
+                        foreach ($record->blocks as $block) {
+                            $clone->blocks()->attach($block->id, [
+                                'status' => $block->pivot->status,
+                                'sorting' => $block->pivot->sorting,
+                                'show_from' => $block->pivot->show_from,
+                                'show_until' => $block->pivot->show_until,
+                            ]);
+                        }
+
+                        // Clone template relationship
+                        foreach ($record->template as $template) {
+                            $clone->template()->create([
+                                'section_id' => $template->section_id,
+                                'sorting' => $template->sorting,
+                            ]);
+                        }
+
+                        Notification::make()
+                            ->success()
+                            ->title(__('kit::admin.page_cloned_successfully'))
+                            ->send();
+
+                        redirect()->to(PageResource::getUrl('edit', ['record' => $clone]));
+                    }),
 
                 Tables\Actions\Action::make('view')
                     ->label(__('kit::admin.view'))

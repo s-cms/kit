@@ -4,9 +4,15 @@ namespace SmartCms\Kit\Admin\Resources\Pages\Tables;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use SmartCms\Kit\Admin\Forms\PageNameField;
+use SmartCms\Kit\Admin\Forms\PageSlugField;
+use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Actions\ViewRecord;
@@ -73,6 +79,88 @@ class PagesTable
             ->recordActions([
                 // DeleteAction::make()->iconButton()->hidden(fn($record) => $record->is_system),
                 // EditAction::make()->iconButton(),
+                Action::make('clone')
+                    ->label(__('kit::admin.clone_page'))
+                    ->icon('heroicon-o-document-duplicate')
+                    ->color('gray')
+                    ->form([
+                        PageNameField::make()
+                            ->default(fn (Page $record) => $record->name . ' (Copy)'),
+                        PageSlugField::make()
+                            ->default(fn (Page $record) => $record->slug . '-copy'),
+                        Select::make('parent_id')
+                            ->label(__('kit::admin.parent_page'))
+                            ->options(function (Page $record) {
+                                $maxDepth = config('kit.max_page_depth', 5);
+                                return Page::query()
+                                    ->where('id', '!=', $record->id)
+                                    ->where('type', 'category')
+                                    ->where('depth', '<', $maxDepth - 1)
+                                    ->orderBy('slug')
+                                    ->get()
+                                    ->mapWithKeys(function (Page $page) use ($record) {
+                                        // Exclude descendants
+                                        if ($record->exists) {
+                                            $descendantIds = $record->descendants()->pluck('id')->toArray();
+                                            if (in_array($page->id, $descendantIds)) {
+                                                return [];
+                                            }
+                                        }
+                                        $indent = str_repeat('— ', $page->depth);
+                                        $label = $indent . $page->name;
+                                        return [$page->id => $label];
+                                    })
+                                    ->toArray();
+                            })
+                            ->default(fn (Page $record) => $record->parent_id)
+                            ->searchable()
+                            ->placeholder(__('kit::admin.no_parent')),
+                    ])
+                    ->action(function (Page $record, array $data): void {
+                        // Clone the page
+                        $clone = $record->replicate(['views', 'published_at']);
+                        $clone->name = $data['name'];
+                        $clone->slug = $data['slug'];
+                        $clone->parent_id = $data['parent_id'] ?? null;
+                        $clone->status = PageStatus::Draft;
+                        $clone->published_at = null;
+                        $clone->views = 0;
+
+                        // Recalculate depth based on new parent
+                        if ($clone->parent_id) {
+                            $parent = Page::find($clone->parent_id);
+                            $clone->depth = $parent ? $parent->depth + 1 : 0;
+                        } else {
+                            $clone->depth = 0;
+                        }
+
+                        $clone->save();
+
+                        // Clone blocks relationship
+                        foreach ($record->blocks as $block) {
+                            $clone->blocks()->attach($block->id, [
+                                'status' => $block->pivot->status,
+                                'sorting' => $block->pivot->sorting,
+                                'show_from' => $block->pivot->show_from,
+                                'show_until' => $block->pivot->show_until,
+                            ]);
+                        }
+
+                        // Clone template relationship
+                        foreach ($record->template as $template) {
+                            $clone->template()->create([
+                                'section_id' => $template->section_id,
+                                'sorting' => $template->sorting,
+                            ]);
+                        }
+
+                        Notification::make()
+                            ->success()
+                            ->title(__('kit::admin.page_cloned_successfully'))
+                            ->send();
+
+                        redirect()->to(PageResource::getUrl('edit', ['record' => $clone]));
+                    }),
                 ViewRecord::make()->iconButton(),
                 // Add augmented record actions from augmentations
                 ...Page::getAugmentedRecordActions(),

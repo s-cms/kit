@@ -247,4 +247,6 @@ return [
     'default_blocks_for_child_pages_helper' => 'These blocks will be automatically attached to new child pages created under this category',
     'default_blocks_for_child_categories' => 'Default Blocks for Child Categories',
     'default_blocks_for_child_categories_helper' => 'These blocks will be automatically attached to new child categories created under this category',
+    'clone_page' => 'Clone Page',
+    'page_cloned_successfully' => 'Page cloned successfully',
 ];
