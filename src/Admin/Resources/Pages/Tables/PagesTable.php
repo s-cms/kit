@@ -92,6 +92,7 @@ class PagesTable
                             ->label(__('kit::admin.parent_page'))
                             ->options(function (Page $record) {
                                 $maxDepth = config('kit.max_page_depth', 5);
+
                                 return Page::query()
                                     ->where('id', '!=', $record->id)
                                     ->where('type', 'category')
@@ -108,6 +109,7 @@ class PagesTable
                                         }
                                         $indent = str_repeat('— ', $page->depth);
                                         $label = $indent . $page->name;
+
                                         return [$page->id => $label];
                                     })
                                     ->toArray();

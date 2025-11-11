@@ -7,7 +7,6 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -55,6 +54,7 @@ class EditPage extends EditRecord
                             ->label(__('kit::admin.parent_page'))
                             ->options(function (Page $record) {
                                 $maxDepth = config('kit.max_page_depth', 5);
+
                                 return Page::query()
                                     ->where('id', '!=', $record->id)
                                     ->where('type', 'category')
@@ -71,6 +71,7 @@ class EditPage extends EditRecord
                                         }
                                         $indent = str_repeat('— ', $page->depth);
                                         $label = $indent . $page->name;
+
                                         return [$page->id => $label];
                                     })
                                     ->toArray();
