@@ -25,9 +25,6 @@ class BlockTemplate extends Model
 
     /**
      * Apply this template to a page (force replace all blocks).
-     *
-     * @param  Page  $page
-     * @return void
      */
     public function applyToPage(Page $page): void
     {
@@ -48,8 +45,6 @@ class BlockTemplate extends Model
     /**
      * Get the blocks data for attachment (without executing attachment).
      * Returns array suitable for attach() method.
-     *
-     * @return array
      */
     public function getBlocksForAttachment(): array
     {

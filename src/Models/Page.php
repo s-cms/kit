@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use SmartCms\Kit\Casts\PageStatusCast;
 use SmartCms\Kit\Components\PageComponent;
-use SmartCms\Kit\Models\BlockTemplate;
 use SmartCms\Kit\Support\Augmentation\HasAugmentations;
 use SmartCms\Kit\Support\Traits\HasBlocks;
 use SmartCms\Support\Traits\HasBreadcrumbs;

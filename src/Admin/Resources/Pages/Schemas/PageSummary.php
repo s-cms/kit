@@ -68,8 +68,9 @@ class PageSummary extends Page
                         ->helperText(__('kit::admin.template_for_child_pages_helper'))
                         ->options(function (Get $get) {
                             $type = $get('type');
+
                             return BlockTemplate::query()
-                                ->where(function ($query) use ($type) {
+                                ->where(function ($query) {
                                     $query->where('type', 'page')
                                         ->orWhereNull('type');
                                 })
@@ -86,12 +87,12 @@ class PageSummary extends Page
                                 ->modalDescription(__('kit::admin.force_apply_template_description'))
                                 ->action(function (Get $get, ?ModelsPage $record) {
                                     $templateId = $get('settings.child_template_page');
-                                    if (!$templateId || !$record) {
+                                    if (! $templateId || ! $record) {
                                         return;
                                     }
 
                                     $template = BlockTemplate::find($templateId);
-                                    if (!$template) {
+                                    if (! $template) {
                                         return;
                                     }
 
@@ -116,8 +117,9 @@ class PageSummary extends Page
                         ->helperText(__('kit::admin.template_for_child_categories_helper'))
                         ->options(function (Get $get) {
                             $type = $get('type');
+
                             return BlockTemplate::query()
-                                ->where(function ($query) use ($type) {
+                                ->where(function ($query) {
                                     $query->where('type', 'category')
                                         ->orWhereNull('type');
                                 })
@@ -134,12 +136,12 @@ class PageSummary extends Page
                                 ->modalDescription(__('kit::admin.force_apply_template_description'))
                                 ->action(function (Get $get, ?ModelsPage $record) {
                                     $templateId = $get('settings.child_template_category');
-                                    if (!$templateId || !$record) {
+                                    if (! $templateId || ! $record) {
                                         return;
                                     }
 
                                     $template = BlockTemplate::find($templateId);
-                                    if (!$template) {
+                                    if (! $template) {
                                         return;
                                     }
 

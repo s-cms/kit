@@ -127,7 +127,7 @@ class BlocksRelationManager extends RelationManager
                     ->modalDescription(__('kit::admin.apply_template_description'))
                     ->action(function (array $data, RelationManager $livewire) {
                         $template = BlockTemplate::find($data['template_id']);
-                        if (!$template) {
+                        if (! $template) {
                             return;
                         }
 
