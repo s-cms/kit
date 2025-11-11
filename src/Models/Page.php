@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use SmartCms\Kit\Casts\PageStatusCast;
 use SmartCms\Kit\Components\PageComponent;
+use SmartCms\Kit\Models\BlockTemplate;
 use SmartCms\Kit\Support\Augmentation\HasAugmentations;
 use SmartCms\Kit\Support\Traits\HasBlocks;
 use SmartCms\Support\Traits\HasBreadcrumbs;
@@ -305,20 +306,16 @@ class Page extends Model
                 ]);
             }
 
-            // Auto-attach blocks from parent's settings
+            // Auto-apply template from parent's settings
             if ($page->parent_id && $page->parent) {
-                $settingsKey = "child_blocks_{$page->type}";
-                $blockIds = $page->parent->settings[$settingsKey] ?? [];
+                $settingsKey = "child_template_{$page->type}";
+                $templateId = $page->parent->settings[$settingsKey] ?? null;
 
-                if (is_array($blockIds) && count($blockIds) > 0) {
-                    $attachData = [];
-                    foreach ($blockIds as $index => $blockId) {
-                        $attachData[$blockId] = [
-                            'status' => true,
-                            'sorting' => $index + 1,
-                        ];
+                if ($templateId) {
+                    $template = BlockTemplate::find($templateId);
+                    if ($template) {
+                        $template->applyToPage($page);
                     }
-                    $page->blocks()->attach($attachData);
                 }
             }
 

@@ -82,6 +82,7 @@ class KitServiceProvider extends PackageServiceProvider
                 'alter_admins_table',
                 'create_blocks_table',
                 'create_blockables_table',
+                'create_block_templates_table',
             ])
             ->hasTranslations()
             ->hasRoute('static')

@@ -2,15 +2,17 @@
 
 namespace SmartCms\Kit\Admin\Resources\Pages\Schemas;
 
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
-use SmartCms\Kit\Models\Block;
+use SmartCms\Kit\Models\BlockTemplate;
 use SmartCms\Kit\Models\Page as ModelsPage;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Forms\ImageUpload;
@@ -56,23 +58,107 @@ class PageSummary extends Page
             })->compact()->schema([
                 Toggle::make('is_index')->label(__('kit::admin.is_index'))->hiddenLabel()->default(true)->reactive(),
             ]),
-            Section::make(__('kit::admin.child_default_blocks'))
+            Section::make(__('kit::admin.child_templates'))
                 ->icon(Heroicon::Squares2x2)
                 ->compact()
                 ->visible(fn (Get $get, ?ModelsPage $record) => $record?->canHaveChildren() ?? in_array($get('type'), ['category']))
                 ->schema([
-                    Select::make('settings.child_blocks_page')
-                        ->label(__('kit::admin.default_blocks_for_child_pages'))
-                        ->helperText(__('kit::admin.default_blocks_for_child_pages_helper'))
-                        ->options(Block::query()->where('status', true)->pluck('type', 'id'))
-                        ->multiple()
-                        ->searchable(),
-                    Select::make('settings.child_blocks_category')
-                        ->label(__('kit::admin.default_blocks_for_child_categories'))
-                        ->helperText(__('kit::admin.default_blocks_for_child_categories_helper'))
-                        ->options(Block::query()->where('status', true)->pluck('type', 'id'))
-                        ->multiple()
-                        ->searchable(),
+                    Select::make('settings.child_template_page')
+                        ->label(__('kit::admin.template_for_child_pages'))
+                        ->helperText(__('kit::admin.template_for_child_pages_helper'))
+                        ->options(function (Get $get) {
+                            $type = $get('type');
+                            return BlockTemplate::query()
+                                ->where(function ($query) use ($type) {
+                                    $query->where('type', 'page')
+                                        ->orWhereNull('type');
+                                })
+                                ->pluck('name', 'id');
+                        })
+                        ->searchable()
+                        ->hintAction(
+                            Action::make('force_apply_pages')
+                                ->label(__('kit::admin.force_apply'))
+                                ->icon(Heroicon::Bolt)
+                                ->color('warning')
+                                ->requiresConfirmation()
+                                ->modalHeading(__('kit::admin.force_apply_template_to_pages'))
+                                ->modalDescription(__('kit::admin.force_apply_template_description'))
+                                ->action(function (Get $get, ?ModelsPage $record) {
+                                    $templateId = $get('settings.child_template_page');
+                                    if (!$templateId || !$record) {
+                                        return;
+                                    }
+
+                                    $template = BlockTemplate::find($templateId);
+                                    if (!$template) {
+                                        return;
+                                    }
+
+                                    $children = $record->children()->where('type', 'page')->get();
+                                    $count = 0;
+
+                                    foreach ($children as $child) {
+                                        $template->applyToPage($child);
+                                        $count++;
+                                    }
+
+                                    Notification::make()
+                                        ->title(__('kit::admin.template_applied_successfully'))
+                                        ->body(__('kit::admin.template_applied_to_count', ['count' => $count]))
+                                        ->success()
+                                        ->send();
+                                })
+                                ->visible(fn (Get $get, ?ModelsPage $record) => $record && $get('settings.child_template_page'))
+                        ),
+                    Select::make('settings.child_template_category')
+                        ->label(__('kit::admin.template_for_child_categories'))
+                        ->helperText(__('kit::admin.template_for_child_categories_helper'))
+                        ->options(function (Get $get) {
+                            $type = $get('type');
+                            return BlockTemplate::query()
+                                ->where(function ($query) use ($type) {
+                                    $query->where('type', 'category')
+                                        ->orWhereNull('type');
+                                })
+                                ->pluck('name', 'id');
+                        })
+                        ->searchable()
+                        ->hintAction(
+                            Action::make('force_apply_categories')
+                                ->label(__('kit::admin.force_apply'))
+                                ->icon(Heroicon::Bolt)
+                                ->color('warning')
+                                ->requiresConfirmation()
+                                ->modalHeading(__('kit::admin.force_apply_template_to_categories'))
+                                ->modalDescription(__('kit::admin.force_apply_template_description'))
+                                ->action(function (Get $get, ?ModelsPage $record) {
+                                    $templateId = $get('settings.child_template_category');
+                                    if (!$templateId || !$record) {
+                                        return;
+                                    }
+
+                                    $template = BlockTemplate::find($templateId);
+                                    if (!$template) {
+                                        return;
+                                    }
+
+                                    $children = $record->children()->where('type', 'category')->get();
+                                    $count = 0;
+
+                                    foreach ($children as $child) {
+                                        $template->applyToPage($child);
+                                        $count++;
+                                    }
+
+                                    Notification::make()
+                                        ->title(__('kit::admin.template_applied_successfully'))
+                                        ->body(__('kit::admin.template_applied_to_count', ['count' => $count]))
+                                        ->success()
+                                        ->send();
+                                })
+                                ->visible(fn (Get $get, ?ModelsPage $record) => $record && $get('settings.child_template_category'))
+                        ),
                 ]),
         ];
     }
