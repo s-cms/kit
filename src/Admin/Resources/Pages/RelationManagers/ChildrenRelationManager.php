@@ -2,13 +2,14 @@
 
 namespace SmartCms\Kit\Admin\Resources\Pages\RelationManagers;
 
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Support\Contracts\PageStatus;
 
 class ChildrenRelationManager extends RelationManager
 {
@@ -51,7 +53,7 @@ class ChildrenRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('kit::admin.status'))
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state?->getLabel()),
+                    ->formatStateUsing(fn ($state) => PageStatus::tryFrom($state)?->getLabel()),
 
                 Tables\Columns\TextColumn::make('depth')
                     ->label(__('kit::admin.depth'))

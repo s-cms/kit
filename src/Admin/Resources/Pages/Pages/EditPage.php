@@ -80,4 +80,23 @@ class EditPage extends EditRecord
     {
         return __('kit::admin.edit');
     }
+
+    public function getBreadcrumbs(): array
+    {
+        $breadcrumbs = [];
+
+        // Add "Pages" link to list page
+        $breadcrumbs[PageResource::getUrl('index')] = __('kit::admin.pages');
+
+        // Add all ancestors with links to their edit pages
+        $ancestors = $this->record->ancestors();
+        foreach ($ancestors as $ancestor) {
+            $breadcrumbs[PageResource::getUrl('edit', ['record' => $ancestor->id])] = $ancestor->name;
+        }
+
+        // Add current page (no link)
+        $breadcrumbs[] = $this->record->name;
+
+        return $breadcrumbs;
+    }
 }
