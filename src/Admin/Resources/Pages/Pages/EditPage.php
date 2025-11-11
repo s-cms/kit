@@ -41,6 +41,13 @@ class EditPage extends EditRecord
                 SaveAction::make($this),
                 SaveAndClose::make($this, GetPageListUrl::run($this->getRecord())),
                 ViewRecord::make(),
+                Action::make('preview')
+                    ->label(__('kit::admin.preview_page'))
+                    ->icon(Heroicon::Eye)
+                    ->color('info')
+                    ->url(fn (Page $record): ?string => $record->generatePreviewUrl())
+                    ->openUrlInNewTab()
+                    ->visible(fn (Page $record): bool => $record->status?->value !== 'published'),
                 Action::make('clone')
                     ->label(__('kit::admin.clone_page'))
                     ->icon(Heroicon::DocumentDuplicate)

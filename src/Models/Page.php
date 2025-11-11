@@ -5,6 +5,8 @@ namespace SmartCms\Kit\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use SmartCms\Kit\Casts\PageStatusCast;
 use SmartCms\Kit\Components\PageComponent;
 use SmartCms\Kit\Support\Augmentation\HasAugmentations;
@@ -381,6 +383,43 @@ class Page extends Model
         return Layout::query()
             ->pluck('name', 'id')
             ->toArray();
+    }
+
+    /**
+     * Generate a preview URL for this page with a secure token.
+     * If a preview token already exists, it will extend the TTL.
+     * Preview is only available for draft pages.
+     *
+     * @return string|null Preview URL or null if page is already published
+     */
+    public function generatePreviewUrl(): ?string
+    {
+        // Only generate preview for non-published pages
+        if ($this->status?->value === 'published') {
+            return null;
+        }
+
+        // Check if a token already exists for this page
+        $existingToken = Cache::get("preview_page.{$this->id}");
+
+        if ($existingToken) {
+            // Extend TTL by refreshing the cache
+            Cache::put("preview.{$existingToken}", $this->id, now()->addHour());
+            Cache::put("preview_page.{$this->id}", $existingToken, now()->addHour());
+
+            return route('preview.show', ['token' => $existingToken]);
+        }
+
+        // Generate new token
+        $token = Str::random(64);
+
+        // Store token -> page_id mapping (1 hour expiration)
+        Cache::put("preview.{$token}", $this->id, now()->addHour());
+
+        // Store page_id -> token mapping (for extending TTL)
+        Cache::put("preview_page.{$this->id}", $token, now()->addHour());
+
+        return route('preview.show', ['token' => $token]);
     }
 
     /**

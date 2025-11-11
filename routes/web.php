@@ -1,7 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use SmartCms\Kit\Http\Controllers\PreviewController;
 use SmartCms\Kit\Http\Handlers\PageHandler;
+
+// Preview route with rate limiting (Layer 4: Rate Limiting)
+Route::get('/preview/{token}', PreviewController::class)
+    ->name('preview.show')
+    ->middleware(['web', 'throttle:10,1']);
 
 // Page handler can be overrided, because its include on boot
 if (config('kit.register_routes')) {

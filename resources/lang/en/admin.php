@@ -249,4 +249,7 @@ return [
     'default_blocks_for_child_categories_helper' => 'These blocks will be automatically attached to new child categories created under this category',
     'clone_page' => 'Clone Page',
     'page_cloned_successfully' => 'Page cloned successfully',
+    'preview_page' => 'Preview Page',
+    'preview_link_expired' => 'Preview link has expired',
+    'page_not_found' => 'Page not found',
 ];
