@@ -13,7 +13,6 @@ class PreviewController
      * Handle preview request with anti-indexing headers.
      *
      * @param  string  $token  The preview token
-     * @return Response
      */
     public function __invoke(string $token): Response
     {
