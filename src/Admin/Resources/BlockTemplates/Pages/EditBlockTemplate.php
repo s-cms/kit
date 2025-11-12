@@ -33,7 +33,7 @@ class EditBlockTemplate extends EditRecord
             if ($blockId) {
                 $record->blocks()->attach($blockId, [
                     'status' => $blockData['status'] ?? true,
-                    'sorting' => $index+1,
+                    'sorting' => $index + 1,
                     'show_from' => $blockData['show_from'] ?? null,
                     'show_until' => $blockData['show_until'] ?? null,
                 ]);
@@ -47,6 +47,7 @@ class EditBlockTemplate extends EditRecord
     {
         $data['blocks'] = $this->record->blocks->map(function ($block) {
             $pivot = $block->pivot;
+
             return [
                 'block_id' => $block->id,
                 'status' => $pivot->status,
@@ -55,7 +56,7 @@ class EditBlockTemplate extends EditRecord
                 'show_until' => $pivot->show_until,
             ];
         })->toArray();
+
         return $data;
     }
-
 }
