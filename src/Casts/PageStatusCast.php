@@ -10,6 +10,10 @@ class PageStatusCast implements CastsAttributes
 {
     public function get(Model $model, string $key, $value, array $attributes): string
     {
+        if (! $value) {
+            return PageStatus::Draft->value;
+        }
+
         return $value;
     }
 

@@ -44,7 +44,7 @@ class UnpublishPage extends Tool
 
         try {
             $page = Page::findOrFail($validated['id']);
-            $page->status = PageStatus::Draft->value;
+            $page->status = PageStatus::Draft;
             $page->published_at = null;
             $page->save();
 

@@ -10,9 +10,10 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
-use SmartCms\Kit\Admin\Clusters\Design\DesignCluster;
+use SmartCms\Kit\Admin\Enums\NavigationGroup;
 use SmartCms\Kit\Models\Block;
 use SmartCms\PanelSettings\SettingsPage;
+use UnitEnum;
 
 /**
  * @property mixed $form
@@ -21,17 +22,17 @@ class Layout extends SettingsPage
 {
     protected static ?int $navigationSort = 0;
 
+    protected static string | BackedEnum | null $navigationIcon = Heroicon::Cog6Tooth;
+
     public static function getNavigationLabel(): string
     {
         return __('kit::admin.layout');
     }
 
-    public static function getCluster(): ?string
+    public static function getNavigationGroup(): string | UnitEnum | null
     {
-        return DesignCluster::class;
+        return NavigationGroup::Design;
     }
-
-    protected static string | BackedEnum | null $navigationIcon = Heroicon::Cog6Tooth;
 
     /**
      * @var array<string, mixed> | null

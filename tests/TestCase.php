@@ -70,6 +70,12 @@ class TestCase extends Orchestra
         $blockablesMigration = include __DIR__ . '/../database/migrations/create_blockables_table.php.stub';
         $blockablesMigration->up();
 
+        $blockTemplatesMigration = include __DIR__ . '/../database/migrations/create_block_templates_table.php.stub';
+        $blockTemplatesMigration->up();
+
+        $addTypeAndMetadataToPagesMigration = include __DIR__ . '/../database/migrations/add_type_and_metadata_to_pages_table.php.stub';
+        $addTypeAndMetadataToPagesMigration->up();
+
         $menuMigration = include __DIR__ . '/../vendor/smart-cms/menu/database/migrations/create_menus_table.php.stub';
         $menuMigration->up();
         $langMigration = include __DIR__ . '/../vendor/smart-cms/lang/database/migrations/create_languages_table.php.stub';

@@ -3,15 +3,12 @@
 namespace SmartCms\Kit\Admin\Resources\Pages\Pages;
 
 use Filament\Actions\Action;
-use Filament\Forms\Components\Toggle;
-use Filament\Notifications\Notification;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
-use SmartCms\Kit\Actions\Admin\GetPageNavigation;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
@@ -24,60 +21,90 @@ class ListPages extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('create_menu_section')
-                ->label(__('kit::admin.create_menu_section'))
-                ->color('gray')
-                ->modal()
-                ->modalWidth(Width::TwoExtraLarge)
-                ->schema(fn (Schema $form): \Filament\Schemas\Schema => $form->schema([
-                    PageNameField::make(),
-                    PageSlugField::make(),
-                    Toggle::make('is_categories')->label(__('kit::admin.is_categories'))->default(false),
-                ]))->action(function ($data): \Illuminate\Routing\Redirector | \Illuminate\Http\RedirectResponse {
-                    if (! isset($data['slug'])) {
-                        $data['slug'] = \Illuminate\Support\Str::slug($data['name'][main_lang()]);
-                    }
-                    $page = Page::query()->create([
-                        'name' => $data['name'],
-                        'slug' => $data['slug'],
-                        'is_root' => true,
-                        'settings' => [
-                            'is_categories' => $data['is_categories'],
-                        ],
-                    ]);
-                    Notification::make(__('kit::admin.menu_section_created'))->success();
-
-                    return redirect(ListPages::getUrl(['record' => $page->id]));
-                }),
-            Action::make('_create')->label(__('filament-actions::create.single.label', ['label' => PageResource::getModelLabel()]))
+            // Single create action for all page types
+            Action::make('_create')
+                ->label(__('filament-actions::create.single.label', ['label' => PageResource::getModelLabel()]))
                 ->modalWidth(Width::ExtraLarge)
-                ->modal()->color('primary')->schema([
+                ->modal()
+                ->color('primary')
+                ->schema([
                     PageNameField::make(),
                     PageSlugField::make(),
-                ])->action(function (array $data): void {
-                    Page::query()->create([
-                        'name' => $data['name'],
-                        'slug' => $data['slug'],
-                        'parent_id' => null,
-                        'root_id' => null,
-                    ]);
+                    Select::make('type')
+                        ->label(__('kit::admin.page_type'))
+                        ->options([
+                            'page' => __('kit::admin.type_page'),
+                            'category' => __('kit::admin.type_category'),
+                        ])
+                        ->default('page')
+                        ->required(),
+                    Select::make('parent_id')
+                        ->label(__('kit::admin.parent_page'))
+                        ->options(function () {
+                            return Page::query()
+                                ->where('type', 'category')
+                                ->where('depth', '<', config('kit.max_page_depth', 5) - 1)
+                                ->orderBy('slug')
+                                ->get()
+                                ->mapWithKeys(function (Page $page) {
+                                    $indent = str_repeat('— ', $page->depth);
+                                    $label = $indent . $page->name . ' (' . $page->type . ')';
+
+                                    return [$page->id => $label];
+                                })
+                                ->toArray();
+                        })
+                        ->searchable()
+                        ->placeholder(__('kit::admin.no_parent')),
+                ])
+                ->action(function (array $data): void {
+                    Page::query()->create($data);
                 }),
         ];
     }
 
-    public function getBreadcrumbs(): array
-    {
-        return [];
-    }
+    // public function getBreadcrumbs(): array
+    // {
+    //     return [];
+    // }
 
-    public function getSubNavigation(): array
-    {
-        return array_merge(parent::getSubNavigation(), GetPageNavigation::run());
-    }
+    // public function getSubNavigation(): array
+    // {
+    //     return array_merge(parent::getSubNavigation(), GetPageNavigation::run());
+    // }
 
     public function table(Table $table): Table
     {
-        return $table->modifyQueryUsing(fn (Builder $query) => $query->where('is_root', false)->whereNull('parent_id'));
+        return $table
+            // Show all pages - no more filtering by is_root or parent_id
+            ->filters([
+                SelectFilter::make('type')
+                    ->label(__('kit::admin.type'))
+                    ->options([
+                        'page' => __('kit::admin.type_page'),
+                        'category' => __('kit::admin.type_category'),
+                    ])
+                    ->multiple(),
+                SelectFilter::make('parent_id')
+                    ->label(__('kit::admin.parent_page'))
+                    ->options(function () {
+                        return Page::query()
+                            ->where('type', 'category')
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->searchable(),
+                SelectFilter::make('depth')
+                    ->label(__('kit::admin.depth'))
+                    ->options([
+                        0 => __('kit::admin.root_level'),
+                        1 => __('kit::admin.level_1'),
+                        2 => __('kit::admin.level_2'),
+                        3 => __('kit::admin.level_3'),
+                        4 => __('kit::admin.level_4'),
+                    ]),
+            ]);
     }
 
     public static function getNavigationLabel(): string

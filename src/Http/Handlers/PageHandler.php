@@ -8,20 +8,24 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 
 class PageHandler
 {
-    public $limit = 3;
-
     #[Cache(public: true, maxage: 31536000, mustRevalidate: true)]
-    public function __invoke(Request $request): string
+    public function __invoke(Request $request, string $path = ''): string
     {
-        $segments = $request->segments();
-        foreach ($segments as $key => $value) {
-            if ($value == current_lang()) {
-                unset($segments[$key]);
-            }
-        }
-        if ($this->limit < count($segments)) {
+        // Get max depth from config (default 5)
+        $maxDepth = config('kit.max_page_depth', 5);
+
+        // Split path into segments
+        $segments = array_filter(explode('/', $path));
+
+        // Remove language segment if present
+        $segments = array_values(array_filter($segments, fn ($value) => $value != current_lang()));
+
+        // Validate depth doesn't exceed max
+        if (count($segments) > $maxDepth) {
             return abort(404);
         }
+
+        // Find page by hierarchical path
         $page = $this->findPage($segments);
 
         return $page?->render() ?? abort(404);

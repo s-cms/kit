@@ -44,7 +44,7 @@ class PublishPage extends Tool
 
         try {
             $page = Page::findOrFail($validated['id']);
-            $page->status = PageStatus::Published->value;
+            $page->status = PageStatus::Published;
             $page->published_at = now();
             $page->save();
 

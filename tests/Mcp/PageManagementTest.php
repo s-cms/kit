@@ -124,7 +124,7 @@ it('can update page', function () {
 });
 
 it('can publish page', function () {
-    $page = Page::factory()->create(['status' => false]);
+    $page = Page::factory()->create(['status' => PageStatus::Draft->value]);
 
     $tool = app(PublishPage::class);
     $response = $tool->handle(new Request(['id' => $page->id]));

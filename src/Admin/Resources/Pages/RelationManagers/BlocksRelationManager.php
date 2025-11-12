@@ -17,11 +17,13 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use SmartCms\Kit\Models\Block;
+use SmartCms\Kit\Models\BlockTemplate;
 use SmartCms\Kit\Services\Block\BlockService;
 use SmartCms\Lang\Models\Language;
 use SmartCms\Support\Admin\Components\Layout\LeftGrid;
@@ -109,6 +111,34 @@ class BlocksRelationManager extends RelationManager
                     ->native(false),
             ])
             ->headerActions([
+                Action::make('apply_template')
+                    ->label(__('kit::admin.apply_template'))
+                    ->icon(Heroicon::OutlinedArrowPathRoundedSquare)
+                    ->color('info')
+                    ->schema([
+                        Forms\Components\Select::make('template_id')
+                            ->label(__('kit::admin.select_template'))
+                            ->options(BlockTemplate::query()->pluck('name', 'id'))
+                            ->required()
+                            ->searchable(),
+                    ])
+                    ->requiresConfirmation()
+                    ->modalHeading(__('kit::admin.apply_template'))
+                    ->modalDescription(__('kit::admin.apply_template_description'))
+                    ->action(function (array $data, RelationManager $livewire) {
+                        $template = BlockTemplate::find($data['template_id']);
+                        if (! $template) {
+                            return;
+                        }
+
+                        $page = $livewire->getOwnerRecord();
+                        $template->applyToPage($page);
+
+                        Notification::make()
+                            ->title(__('kit::admin.template_applied_successfully'))
+                            ->success()
+                            ->send();
+                    }),
                 AttachAction::make()
                     ->preloadRecordSelect()
                     ->schema(fn (AttachAction $action): array => [

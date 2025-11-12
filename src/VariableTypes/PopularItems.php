@@ -7,9 +7,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Group;
-use SmartCms\Kit\Http\Resources\FrontPageResource;
-use SmartCms\Kit\Models\Front\FrontPage;
+use Filament\Schemas\Components\Utilities\Get;
+use SmartCms\Kit\Http\Resources\SimplePageResource;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Models\Pages\SimplePage;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class PopularItems implements VariableTypeInterface
@@ -28,14 +29,33 @@ class PopularItems implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return FrontPage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
+        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
     {
         return Group::make([
-            Select::make($name . '.root_id')->options(Page::query()->where('parent_id', null)->where('is_root', true)->pluck('name', 'id'))->required(),
-            TextInput::make($name . '.limit')->default(self::DEFAULT_LIMIT)->numeric()->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
+            Select::make($name . '.parent_id')
+                ->label(__('kit::admin.parent_category'))
+                ->options(Page::query()->where('type', 'category')->pluck('name', 'id'))
+                ->required()
+                ->live()
+                ->helperText(__('kit::admin.select_parent_for_items')),
+            Select::make($name . '.categories')
+                ->label(__('kit::admin.filter_by_categories'))
+                ->options(fn (Get $get) => Page::query()
+                    ->where('type', 'category')
+                    ->where('parent_id', $get($name . '.parent_id') ?? 0)
+                    ->pluck('name', 'id'))
+                ->live()
+                ->multiple()
+                ->visible(fn (Get $get) => $get($name . '.parent_id'))
+                ->helperText(__('kit::admin.optional_category_filter')),
+            TextInput::make($name . '.limit')
+                ->label(__('kit::admin.items_limit'))
+                ->default(self::DEFAULT_LIMIT)
+                ->numeric()
+                ->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
         ]);
     }
 
@@ -45,6 +65,30 @@ class PopularItems implements VariableTypeInterface
             return $this->getDefaultValue();
         }
 
-        return FrontPage::query()->where('root_id', $value['root_id'] ?? 0)->limit($value['limit'] ?? 3)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
+        $parentId = $value['parent_id'] ?? null;
+        if (! $parentId) {
+            return $this->getDefaultValue();
+        }
+
+        $categories = $value['categories'] ?? [];
+
+        $query = SimplePage::query()
+            ->when(is_array($categories) && count($categories) > 0, function ($query) use ($categories) {
+                $query->whereIn('parent_id', $categories);
+            }, function ($query) use ($parentId) {
+                $parent = Page::find($parentId);
+                if ($parent) {
+                    $descendantIds = $parent->descendants()->pluck('id')->toArray();
+                    $descendantIds[] = $parentId;
+                    $query->whereIn('parent_id', $descendantIds);
+                }
+            })
+            ->when(app()->bound('page'), function ($query) {
+                $query->where('id', '!=', app('page')->id);
+            })
+            ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
+            ->orderBy('views', 'desc');
+
+        return $query->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
     }
 }

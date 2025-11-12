@@ -9,12 +9,13 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use SmartCms\Kit\Admin\Clusters\System\SystemCluster;
+use SmartCms\Kit\Admin\Enums\NavigationGroup;
 use SmartCms\Kit\Admin\Resources\Admins\Pages\EditAdmin;
 use SmartCms\Kit\Admin\Resources\Admins\Pages\ListAdmins;
 use SmartCms\Kit\Admin\Resources\Admins\Schemas\AdminForm;
 use SmartCms\Kit\Admin\Resources\Admins\Tables\AdminsTable;
 use SmartCms\Kit\Models\Admin;
+use UnitEnum;
 
 class AdminResource extends Resource
 {
@@ -24,9 +25,9 @@ class AdminResource extends Resource
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedUserCircle;
 
-    public static function getCluster(): ?string
+    public static function getNavigationGroup(): string | UnitEnum | null
     {
-        return SystemCluster::class;
+        return NavigationGroup::System;
     }
 
     public static function getNavigationLabel(): string

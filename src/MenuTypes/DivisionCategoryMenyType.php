@@ -12,22 +12,36 @@ class DivisionCategoryMenyType extends PageMenuType
 {
     public function getType(): string
     {
-        return 'division_category';
+        return 'subcategory';
     }
 
     public function getLabel(): string
     {
-        return __('kit::admin.division_category');
+        return __('kit::admin.subcategory');
     }
 
     public function getSchema(): Field
     {
-        $roots = Page::query()->where('status', PageStatus::Published->value)->whereJsonContains('settings->is_categories', true)->where('is_root', true)->get();
+        // Get all categories that have category children
+        $parentCategories = Page::query()
+            ->where('status', PageStatus::Published->value)
+            ->where('type', 'category')
+            ->whereHas('children', function ($query) {
+                $query->where('type', 'category');
+            })
+            ->get();
 
         return Select::make('url')
-            ->options($roots->mapWithKeys(fn ($root) => [
-                $root->name => Page::query()->where('status', PageStatus::Published->value)->where('parent_id', $root->id)->pluck('name', 'id')->toArray(),
-            ]))->live()->afterStateUpdated(function (string $state, Set $set): void {
+            ->options($parentCategories->mapWithKeys(fn ($parent) => [
+                $parent->name => Page::query()
+                    ->where('status', PageStatus::Published->value)
+                    ->where('type', 'category')
+                    ->where('parent_id', $parent->id)
+                    ->pluck('name', 'id')
+                    ->toArray(),
+            ]))
+            ->live()
+            ->afterStateUpdated(function (string $state, Set $set): void {
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
                     if ($page) {

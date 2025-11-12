@@ -12,18 +12,23 @@ class DivisionMenuType extends PageMenuType
 {
     public function getType(): string
     {
-        return 'division';
+        return 'category';
     }
 
     public function getLabel(): string
     {
-        return __('kit::admin.division');
+        return __('kit::admin.category');
     }
 
     public function getSchema(): Field
     {
         return Select::make('url')
-            ->options(Page::query()->where('status', PageStatus::Published->value)->where('is_root', true)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, Set $set): void {
+            ->options(Page::query()
+                ->where('status', PageStatus::Published->value)
+                ->where('type', 'category')
+                ->pluck('name', 'id'))
+            ->live()
+            ->afterStateUpdated(function (string $state, Set $set): void {
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
                     if ($page) {

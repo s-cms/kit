@@ -7,8 +7,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Group;
-use SmartCms\Kit\Models\Front\FrontPage;
+use SmartCms\Kit\Http\Resources\CategoryPageResource;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Models\Pages\CategoryPage;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class LatestCategories implements VariableTypeInterface
@@ -27,14 +28,22 @@ class LatestCategories implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return FrontPage::query()->limit(self::DEFAULT_LIMIT)->get();
+        return CategoryPage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new CategoryPageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
     {
         return Group::make([
-            Select::make($name . '.root_id')->options(Page::query()->whereJsonContains('settings->is_categories', true)->where('parent_id', null)->where('is_root', true)->pluck('name', 'id'))->required(),
-            TextInput::make($name . '.limit')->default(self::DEFAULT_LIMIT)->numeric()->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
+            Select::make($name . '.parent_id')
+                ->label(__('kit::admin.parent_category'))
+                ->options(Page::query()->where('type', 'category')->pluck('name', 'id'))
+                ->required()
+                ->helperText(__('kit::admin.select_parent_for_categories')),
+            TextInput::make($name . '.limit')
+                ->label(__('kit::admin.categories_limit'))
+                ->default(self::DEFAULT_LIMIT)
+                ->numeric()
+                ->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
         ]);
     }
 
@@ -44,6 +53,17 @@ class LatestCategories implements VariableTypeInterface
             return $this->getDefaultValue();
         }
 
-        return FrontPage::query()->where('parent_id', $value['root_id'] ?? 0)->limit($value['limit'] ?? 3)->orderBy('published_at', 'desc')->orderBy('updated_at', 'desc')->get();
+        $parentId = $value['parent_id'] ?? null;
+        if (! $parentId) {
+            return $this->getDefaultValue();
+        }
+
+        return CategoryPage::query()
+            ->where('parent_id', $parentId)
+            ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
+            ->orderBy('published_at', 'desc')
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->map(fn ($item): array => (new CategoryPageResource($item))->toArray(request()));
     }
 }
