@@ -58,7 +58,7 @@ class MediaLibraryService
         $media = $container->addMedia($file)
             ->toMediaCollection($collection);
 
-        return $media->toImageArray();
+        return $this->mediaToImageArray($media);
     }
 
     /**
@@ -111,7 +111,7 @@ class MediaLibraryService
                 ))
                 ->toMediaCollection($collection);
 
-            return $media->toImageArray();
+            return $this->mediaToImageArray($media);
         } finally {
             // Clean up temp file
             if (file_exists($tempPath)) {
@@ -173,5 +173,19 @@ class MediaLibraryService
             ->latest()
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Convert Media to image array format
+     */
+    public function mediaToImageArray(Media $media): array
+    {
+        return [
+            'source' => $media->getFullUrl(),
+            'width' => $media->getCustomProperty('width', 0),
+            'height' => $media->getCustomProperty('height', 0),
+            'alt' => $media->getCustomProperty('alt', []),
+            'media_id' => $media->id,
+        ];
     }
 }

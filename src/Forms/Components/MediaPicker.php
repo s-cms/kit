@@ -125,15 +125,15 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                                         ->live(debounce: 300)
                                         ->afterStateUpdated(function ($state, callable $set) {
                                             $search = $state;
-                                            $media = app(\SmartCms\Kit\Services\MediaLibraryService::class)
-                                                ->search($search ?: '', config('kit.media.collection_name'), 20);
+                                            $service = app(\SmartCms\Kit\Services\MediaLibraryService::class);
+                                            $media = $service->search($search ?: '', config('kit.media.collection_name'), 20);
 
-                                            $set('library_results', $media->map(function ($item) {
+                                            $set('library_results', $media->map(function ($item) use ($service) {
                                                 return [
                                                     'id' => $item->id,
                                                     'name' => $item->name,
                                                     'thumb_url' => $item->getUrl('thumb'),
-                                                    'image' => $item->toImageArray(),
+                                                    'image' => $service->mediaToImageArray($item),
                                                 ];
                                             })->toArray());
                                         }),
@@ -142,15 +142,15 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                                         ->view('kit::forms.components.library-grid')
                                         ->afterStateHydrated(function (callable $set) {
                                             // Load initial results
-                                            $media = app(\SmartCms\Kit\Services\MediaLibraryService::class)
-                                                ->search('', config('kit.media.collection_name'), 20);
+                                            $service = app(\SmartCms\Kit\Services\MediaLibraryService::class);
+                                            $media = $service->search('', config('kit.media.collection_name'), 20);
 
-                                            $set('library_results', $media->map(function ($item) {
+                                            $set('library_results', $media->map(function ($item) use ($service) {
                                                 return [
                                                     'id' => $item->id,
                                                     'name' => $item->name,
                                                     'thumb_url' => $item->getUrl('thumb'),
-                                                    'image' => $item->toImageArray(),
+                                                    'image' => $service->mediaToImageArray($item),
                                                 ];
                                             })->toArray());
                                         }),
