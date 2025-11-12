@@ -38,7 +38,7 @@ class GetViewButton
                 ->extraAttributes([
                     'style' => 'width:30%',
                 ])
-                ->badgeColor(fn(Action $action) => $action->getBadge() > 0 ? 'warning' : 'gray')
+                ->badgeColor(fn (Action $action) => $action->getBadge() > 0 ? 'warning' : 'gray')
                 ->icon(LucideIcon::Inbox)
                 ->iconSize(IconSize::Large)
                 ->outlined()
