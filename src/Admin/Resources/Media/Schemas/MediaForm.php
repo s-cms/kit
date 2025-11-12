@@ -40,7 +40,8 @@ class MediaForm
 
                                 Placeholder::make('dimensions')
                                     ->label(__('kit::admin.dimensions'))
-                                    ->content(fn ($record) => $record
+                                    ->content(
+                                        fn ($record) => $record
                                         ? ($record->getCustomProperty('width', 0) . ' × ' . $record->getCustomProperty('height', 0))
                                         : '-'
                                     ),
