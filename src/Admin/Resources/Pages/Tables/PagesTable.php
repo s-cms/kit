@@ -79,6 +79,7 @@ class PagesTable
                 // EditAction::make()->iconButton(),
                 Action::make('clone')
                     ->label(__('kit::admin.clone_page'))
+                    ->iconButton()
                     ->icon('heroicon-o-document-duplicate')
                     ->color('gray')
                     ->schema([

@@ -53,6 +53,7 @@ return [
     'draft' => 'Entwurf',
     'preferred_language' => 'Bevorzugte Sprache',
     'design' => 'Design',
+    'plugins' => 'Plugins',
     'admins' => 'Administratoren',
     'updates' => 'Aktualisierungen',
     'Translates' => 'Übersetzungen',

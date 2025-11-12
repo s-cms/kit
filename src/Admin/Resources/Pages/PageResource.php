@@ -17,6 +17,7 @@ use SmartCms\Kit\Admin\Resources\Pages\Pages\ListPages;
 use SmartCms\Kit\Admin\Resources\Pages\Schemas\PageForm;
 use SmartCms\Kit\Admin\Resources\Pages\Tables\PagesTable;
 use SmartCms\Kit\Models\Page;
+use UnitEnum;
 
 class PageResource extends Resource
 {
@@ -26,9 +27,16 @@ class PageResource extends Resource
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedRocketLaunch;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getNavigationLabel(): string
     {
         return __('kit::admin.pages');
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return Page::query()->count();
     }
 
     public static function form(Schema $schema): Schema
@@ -62,19 +70,19 @@ class PageResource extends Resource
         ];
     }
 
-    public static function getRecordSubNavigation(PagesPage $page): array
-    {
-        $subNavigation = [
-            EditPage::class,
-            // EditTemplateRelated::class,
-        ];
-        $schema = $page->record?->layout?->schema ?? [];
-        if (count($schema) > 0) {
-            $subNavigation[] = EditLayoutSettings::class;
-        }
+    // public static function getRecordSubNavigation(PagesPage $page): array
+    // {
+    //     $subNavigation = [
+    //         EditPage::class,
+    //         // EditTemplateRelated::class,
+    //     ];
+    //     $schema = $page->record?->layout?->schema ?? [];
+    //     if (count($schema) > 0) {
+    //         $subNavigation[] = EditLayoutSettings::class;
+    //     }
 
-        return $page->generateNavigationItems($subNavigation);
-    }
+    //     return $page->generateNavigationItems($subNavigation);
+    // }
 
     /**
      * @param  Page  $record

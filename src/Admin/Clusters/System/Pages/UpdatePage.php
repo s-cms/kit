@@ -14,9 +14,11 @@ use Filament\Support\Enums\TextSize;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Cache;
-use SmartCms\Kit\Admin\Clusters\System\SystemCluster;
+use SmartCms\Kit\Admin\Enums\NavigationGroup;
+use SmartCms\Kit\Admin\Pages\Dashboard;
 use SmartCms\Kit\Contracts\UpdateCheckerInterface;
 use SmartCms\Kit\Contracts\UpdateServiceInterface;
+use UnitEnum;
 
 class UpdatePage extends Page
 {
@@ -26,9 +28,17 @@ class UpdatePage extends Page
 
     protected static ?int $navigationSort = 2;
 
-    public static function getCluster(): ?string
+    public static function getNavigationGroup(): string|UnitEnum|null
     {
-        return SystemCluster::class;
+        return NavigationGroup::System;
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            Dashboard::getUrl() => Dashboard::getNavigationLabel(),
+            self::getUrl() => self::getNavigationLabel(),
+        ];
     }
 
     public static function getNavigationLabel(): string

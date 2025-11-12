@@ -4,6 +4,7 @@ namespace SmartCms\Kit;
 
 use Filament\Actions\Action;
 use Filament\Contracts\Plugin;
+use Filament\Enums\DatabaseNotificationsPosition;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Enums\IconPosition;
@@ -12,10 +13,8 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Tables\Table;
 use Filament\View\PanelsRenderHook;
 use SmartCms\Forms\FormsPlugin;
-use SmartCms\Kit\Actions\Admin\GetInboxButton;
 use SmartCms\Kit\Actions\Admin\GetVersionHtml;
 use SmartCms\Kit\Actions\Admin\GetViewButton;
-use SmartCms\Kit\Admin\Clusters\Design\DesignCluster;
 use SmartCms\Kit\Admin\Pages\Dashboard;
 use SmartCms\Kit\Admin\Pages\Layout;
 use SmartCms\Kit\Admin\Pages\Login;
@@ -35,7 +34,6 @@ use SmartCms\Kit\Http\Middlewares\SetAdminLocale;
 use SmartCms\Kit\Models\Admin;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Menu\MenuPlugin;
-use SmartCms\TemplateBuilder\TemplateBuilderPlugin;
 use SmartCms\Theme\Theme;
 
 class KitPlugin implements Plugin
@@ -62,21 +60,21 @@ class KitPlugin implements Plugin
         ]);
         $panel->plugins([
             new Theme,
-            // TemplateBuilderPlugin::make(null, DesignCluster::class),
-            MenuPlugin::make(null, DesignCluster::class),
+            MenuPlugin::make(null),
             FormsPlugin::make(),
         ])
             ->discoverClusters(in: __DIR__ . '/Admin/Clusters', for: 'SmartCms\Kit\Admin\Clusters')
             ->profile(Profile::class, isSimple: false)
             ->login(Login::class)
             ->authGuard('admin')
-            ->topNavigation()
-            // ->topbar(false)
-            // ->sidebarWidth('18rem')
+            // ->topNavigation()
+            ->topbar(false)
+            ->sidebarWidth('16rem')
             ->brandName(config('app.name', 'SmartCms'))
             ->spa()
             ->unsavedChangesAlerts()
-            ->databaseNotifications()
+            ->databaseNotifications(position:DatabaseNotificationsPosition::Topbar)
+            ->databaseNotificationsPolling('120s')
             ->resources($resources)
             ->widgets([
                 HealthCheck::class,
@@ -90,9 +88,7 @@ class KitPlugin implements Plugin
             ])
             ->renderHook(PanelsRenderHook::PAGE_END, GetVersionHtml::run())
             ->renderHook(PanelsRenderHook::HEAD_START, fn (): string => '<meta name="robots" content="noindex, nofollow" />')
-            ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetInboxButton::run())
-            ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetViewButton::run())
-            // ->breadcrumbs(false)
+            ->renderHook(PanelsRenderHook::USER_MENU_BEFORE, GetViewButton::run())
             ->maxContentWidth(Width::Full)
             ->pages([
                 Layout::class,

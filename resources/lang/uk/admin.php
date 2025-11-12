@@ -53,6 +53,7 @@ return [
     'draft' => 'Чернетка',
     'preferred_language' => 'Обрана мова',
     'design' => 'Дизайн',
+    'plugins' => 'Плагіни',
     'admins' => 'Адміністратори',
     'updates' => 'Оновлення',
     'Translates' => 'Переклади',

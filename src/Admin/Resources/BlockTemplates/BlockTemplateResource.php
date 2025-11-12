@@ -7,13 +7,14 @@ use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use SmartCms\Kit\Admin\Clusters\Design\DesignCluster;
 use SmartCms\Kit\Admin\Resources\BlockTemplates\Pages\CreateBlockTemplate;
 use SmartCms\Kit\Admin\Resources\BlockTemplates\Pages\EditBlockTemplate;
 use SmartCms\Kit\Admin\Resources\BlockTemplates\Pages\ListBlockTemplates;
 use SmartCms\Kit\Admin\Resources\BlockTemplates\Schemas\BlockTemplateForm;
 use SmartCms\Kit\Admin\Resources\BlockTemplates\Tables\BlockTemplatesTable;
 use SmartCms\Kit\Models\BlockTemplate;
+use SmartCms\Kit\Admin\Enums\NavigationGroup;
+use UnitEnum;
 
 class BlockTemplateResource extends Resource
 {
@@ -21,12 +22,12 @@ class BlockTemplateResource extends Resource
 
     protected static string | BackedEnum | null $navigationIcon = LucideIcon::LayoutTemplate;
 
-    public static function getCluster(): ?string
-    {
-        return DesignCluster::class;
-    }
-
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return NavigationGroup::Design;
+    }
 
     public static function form(Schema $schema): Schema
     {

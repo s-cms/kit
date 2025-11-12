@@ -64,15 +64,15 @@ class ListPages extends ListRecords
         ];
     }
 
-    public function getBreadcrumbs(): array
-    {
-        return [];
-    }
+    // public function getBreadcrumbs(): array
+    // {
+    //     return [];
+    // }
 
-    public function getSubNavigation(): array
-    {
-        return array_merge(parent::getSubNavigation(), GetPageNavigation::run());
-    }
+    // public function getSubNavigation(): array
+    // {
+    //     return array_merge(parent::getSubNavigation(), GetPageNavigation::run());
+    // }
 
     public function table(Table $table): Table
     {

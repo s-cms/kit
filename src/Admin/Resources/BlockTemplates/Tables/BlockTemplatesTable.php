@@ -8,6 +8,8 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use SmartCms\Support\Admin\Components\Tables\CreatedAtColumn;
+use SmartCms\Support\Admin\Components\Tables\UpdatedAtColumn;
 
 class BlockTemplatesTable
 {
@@ -28,22 +30,8 @@ class BlockTemplatesTable
                     ->label(__('kit::admin.blocks_count'))
                     ->counts('blocks')
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->label(__('kit::admin.created_at'))
-                    ->dateTime()
-                    ->since()
-                    ->tooltip(function (mixed $state) {
-                        return Carbon::parse($state)->format('d.m.Y H:i');
-                    })
-                    ->sortable(),
-                TextColumn::make('updated_at')
-                    ->label(__('kit::admin.updated_at'))
-                    ->dateTime()
-                    ->since()
-                    ->tooltip(function (mixed $state) {
-                        return Carbon::parse($state)->format('d.m.Y H:i');
-                    })
-                    ->sortable(),
+                CreatedAtColumn::make(),
+                UpdatedAtColumn::make(),
             ])
             ->filters([
                 //

@@ -19,6 +19,7 @@ class InboxButton extends Component
         return Blade::render('<div wire:poll.10s>{{$action}}</div>', [
             'action' => Action::make('contact_form')
                 ->label(__('kit::admin.inbox'))
+                ->hiddenLabel()
                 ->link()
                 ->badge($count)
                 ->badgeColor($count > 0 ? 'warning' : 'gray')

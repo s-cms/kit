@@ -53,6 +53,7 @@ return [
     'draft' => 'Szkic',
     'preferred_language' => 'Preferowany język',
     'design' => 'Design',
+    'plugins' => 'Wtyczki',
     'admins' => 'Administratorzy',
     'updates' => 'Aktualizacje',
     'Translates' => 'Tłumaczenia',

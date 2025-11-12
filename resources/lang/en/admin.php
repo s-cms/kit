@@ -192,6 +192,7 @@ return [
     'scheduled_pages_desc' => 'Scheduled pages for last week',
     'preferred_language' => 'Preferred Language',
     'design' => 'Design',
+    'plugins' => 'Plugins',
     'admins' => 'Admins',
     'Translates' => 'Translates',
     'heading_type' => 'Heading Type',
