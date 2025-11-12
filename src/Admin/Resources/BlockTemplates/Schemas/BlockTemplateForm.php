@@ -33,28 +33,22 @@ class BlockTemplateForm
                                 ->description(__('kit::admin.template_blocks_description'))
                                 ->schema([
                                     Repeater::make('blocks')
-                                        ->relationship()
                                         ->label(__('kit::admin.blocks'))
-                                        ->reorderable('sorting')
+                                        ->reorderable()
                                         ->defaultItems(0)
                                         ->addActionLabel(__('kit::admin.add_block'))
                                         ->schema([
-                                            Select::make('id')
+                                            Select::make('block_id')
                                                 ->label(__('kit::admin.block'))
                                                 ->options(Block::query()->where('status', true)->pluck('title', 'id'))
                                                 ->preload()
                                                 ->required()
                                                 ->searchable()
-                                                // ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                                 ->columnSpanFull(),
                                             Grid::make(2)->schema([
                                                 Toggle::make('status')
                                                     ->label(__('kit::admin.active'))
                                                     ->default(true),
-                                                // TextInput::make('sorting')
-                                                //     ->label(__('kit::admin.sorting'))
-                                                //     ->numeric()
-                                                //     ->default(fn($get, $livewire) => $livewire->mountedTableActionRecord ? count($livewire->mountedTableActionRecord->blocks) + 1 : 1),
                                             ]),
                                             Grid::make(2)->schema([
                                                 DateTimePicker::make('show_from')
@@ -67,7 +61,7 @@ class BlockTemplateForm
                                         ])
                                         ->columns(2)
                                         ->collapsible()
-                                        ->itemLabel(fn (array $state): ?string => Block::find($state['id'])?->title),
+                                        ->itemLabel(fn (array $state): ?string => Block::find($state['block_id'])?->title),
                                 ]),
                         ]),
                         RightGrid::make()->schema([
