@@ -44,6 +44,7 @@ use SmartCms\Kit\MenuTypes\DivisionCategoryMenyType;
 use SmartCms\Kit\MenuTypes\DivisionMenuType;
 use SmartCms\Kit\MenuTypes\PageMenuType;
 use SmartCms\Kit\Observers\ContactFormObserver;
+use SmartCms\Kit\Observers\MediaObserver;
 use SmartCms\Kit\Support\AssetManager;
 use SmartCms\Kit\Support\MicrodataManager;
 use SmartCms\Kit\Support\Seo;
@@ -53,6 +54,7 @@ use SmartCms\Menu\MenuRegistry;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class KitServiceProvider extends PackageServiceProvider
 {
@@ -116,6 +118,9 @@ class KitServiceProvider extends PackageServiceProvider
                         ]);
                         $command->callSilently('vendor:publish', [
                             '--tag' => 'notifications-migrations',
+                        ]);
+                        $command->callSilently('vendor:publish', [
+                            '--tag' => 'medialibrary-migrations',
                         ]);
                         $command->callSilently('vendor:publish', [
                             '--tag' => 'laravel-errors',
@@ -202,6 +207,7 @@ class KitServiceProvider extends PackageServiceProvider
         app(MenuRegistry::class)->register(DivisionMenuType::class);
         app(MenuRegistry::class)->register(DivisionCategoryMenyType::class);
         ContactForm::observe(ContactFormObserver::class);
+        Media::observe(MediaObserver::class);
 
         // Routes and config must be loaded after all other services are booted
         $this->app->booted(function (): void {
