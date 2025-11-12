@@ -16,6 +16,7 @@ enum NavigationGroup implements HasIcon, HasLabel
     public function getIcon(): string | BackedEnum | null
     {
         return null;
+
         return match ($this) {
             self::Design => LucideIcon::Component,
             self::Plugins => LucideIcon::PlugZap2,

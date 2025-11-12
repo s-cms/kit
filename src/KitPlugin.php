@@ -73,7 +73,7 @@ class KitPlugin implements Plugin
             ->brandName(config('app.name', 'SmartCms'))
             ->spa()
             ->unsavedChangesAlerts()
-            ->databaseNotifications(position:DatabaseNotificationsPosition::Topbar)
+            ->databaseNotifications(position: DatabaseNotificationsPosition::Topbar)
             ->databaseNotificationsPolling('120s')
             ->resources($resources)
             ->widgets([

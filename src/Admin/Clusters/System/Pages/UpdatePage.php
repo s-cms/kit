@@ -28,7 +28,7 @@ class UpdatePage extends Page
 
     protected static ?int $navigationSort = 2;
 
-    public static function getNavigationGroup(): string|UnitEnum|null
+    public static function getNavigationGroup(): string | UnitEnum | null
     {
         return NavigationGroup::System;
     }

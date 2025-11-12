@@ -9,6 +9,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use SmartCms\Kit\Admin\Enums\NavigationGroup;
 use SmartCms\Kit\Admin\Settings\BrandingForm;
 use SmartCms\Kit\Admin\Settings\CompanyInfoForm;
 use SmartCms\Kit\Admin\Settings\GeneralForm;
@@ -16,7 +17,6 @@ use SmartCms\Kit\Admin\Settings\NotificationForm;
 use SmartCms\Kit\Admin\Settings\SeoForm;
 use SmartCms\Kit\Admin\Settings\SystemForm;
 use SmartCms\Kit\Admin\Settings\ThemeForm;
-use SmartCms\Kit\Admin\Enums\NavigationGroup;
 use SmartCms\Lang\Models\Language;
 use SmartCms\PanelSettings\SettingsPage;
 use SmartCms\Support\Admin\Components\Actions\HelpAction;
@@ -34,7 +34,7 @@ class Settings extends SettingsPage
         return __('kit::admin.settings');
     }
 
-    public static function getNavigationGroup(): string|UnitEnum|null
+    public static function getNavigationGroup(): string | UnitEnum | null
     {
         return NavigationGroup::System;
     }

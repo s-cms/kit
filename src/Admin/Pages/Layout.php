@@ -10,9 +10,9 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
+use SmartCms\Kit\Admin\Enums\NavigationGroup;
 use SmartCms\Kit\Models\Block;
 use SmartCms\PanelSettings\SettingsPage;
-use SmartCms\Kit\Admin\Enums\NavigationGroup;
 use UnitEnum;
 
 /**
@@ -29,7 +29,7 @@ class Layout extends SettingsPage
         return __('kit::admin.layout');
     }
 
-    public static function getNavigationGroup(): string|UnitEnum|null
+    public static function getNavigationGroup(): string | UnitEnum | null
     {
         return NavigationGroup::Design;
     }

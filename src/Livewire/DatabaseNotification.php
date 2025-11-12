@@ -38,7 +38,7 @@ class DatabaseNotification extends BaseComponent
                 ->iconSize(IconSize::Large)
                 ->icon(LucideIcon::Bell)
                 ->outlined()
-                ->color('gray')
+                ->color('gray'),
         ]);
     }
 }

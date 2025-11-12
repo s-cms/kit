@@ -10,7 +10,7 @@ class TranslatesPage extends PanelTranslateTranslatesPage
 {
     protected static ?int $navigationSort = 1;
 
-    public static function getNavigationGroup(): string|UnitEnum|null
+    public static function getNavigationGroup(): string | UnitEnum | null
     {
         return NavigationGroup::System;
     }

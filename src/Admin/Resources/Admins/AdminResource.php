@@ -25,7 +25,7 @@ class AdminResource extends Resource
 
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedUserCircle;
 
-    public static function getNavigationGroup(): string|UnitEnum|null
+    public static function getNavigationGroup(): string | UnitEnum | null
     {
         return NavigationGroup::System;
     }

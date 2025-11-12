@@ -17,7 +17,6 @@ use SmartCms\Kit\Admin\Resources\Pages\Pages\ListPages;
 use SmartCms\Kit\Admin\Resources\Pages\Schemas\PageForm;
 use SmartCms\Kit\Admin\Resources\Pages\Tables\PagesTable;
 use SmartCms\Kit\Models\Page;
-use UnitEnum;
 
 class PageResource extends Resource
 {
