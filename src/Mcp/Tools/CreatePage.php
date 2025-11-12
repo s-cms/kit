@@ -7,6 +7,7 @@ use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Tool;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Support\Contracts\PageStatus;
 
 class CreatePage extends Tool
 {
@@ -57,7 +58,7 @@ class CreatePage extends Tool
             $page = Page::query()->create([
                 'name' => $validated['name'],
                 'slug' => $validated['slug'],
-                'status' => $validated['status'] ?? 'draft',
+                'status' => PageStatus::tryFrom($validated['status']) ?? PageStatus::Draft,
             ]);
 
             // Handle translations if provided

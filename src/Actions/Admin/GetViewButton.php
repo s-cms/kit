@@ -17,7 +17,6 @@ class GetViewButton
 {
     public static function run(): Closure
     {
-        $count = ContactForm::query()->where('status', ContactFormStatusesEnum::NEW)->count();
         LivewireLivewire::component('scms-database-notifications', DatabaseNotification::class);
 
         return fn (): string => Blade::render('<div style="display:flex; align-items:center; justify-content:flex-end; gap:10px; padding-inline:.5rem;">{{$action}} {{$action2}} @livewire(\'scms-database-notifications\')</div>', [
@@ -35,11 +34,11 @@ class GetViewButton
             'action2' => Action::make('contact_form')
                 ->hiddenLabel()
                 ->button()
-                ->badge($count)
+                ->badge(fn () => ContactForm::query()->where('status', ContactFormStatusesEnum::NEW)->count())
                 ->extraAttributes([
                     'style' => 'width:30%',
                 ])
-                ->badgeColor($count > 0 ? 'warning' : 'gray')
+                ->badgeColor(fn(Action $action) => $action->getBadge() > 0 ? 'warning' : 'gray')
                 ->icon(LucideIcon::Inbox)
                 ->iconSize(IconSize::Large)
                 ->outlined()

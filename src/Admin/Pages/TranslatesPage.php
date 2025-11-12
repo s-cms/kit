@@ -15,6 +15,11 @@ class TranslatesPage extends PanelTranslateTranslatesPage
         return NavigationGroup::System;
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('kit::admin.translates');
+    }
+
     public function getBreadcrumbs(): array
     {
         return [

@@ -37,6 +37,11 @@ class BlockResource extends Resource
         return NavigationGroup::Design;
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('kit::admin.blocks');
+    }
+
     protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema
