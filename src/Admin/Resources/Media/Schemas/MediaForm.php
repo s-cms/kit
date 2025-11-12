@@ -2,9 +2,9 @@
 
 namespace SmartCms\Kit\Admin\Resources\Media\Schemas;
 
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\ViewField;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use SmartCms\ModelTranslate\Admin\Components\Forms\Translated;

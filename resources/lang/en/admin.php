@@ -311,4 +311,7 @@ return [
     'select_image' => 'Select Image',
     'no_images_found' => 'No images found',
     'unsplash_not_configured' => 'Unsplash API is not configured. Please add UNSPLASH_ACCESS_KEY to your .env file.',
+    'fetching' => 'Fetching',
+    'name' => 'Name',
+    'type' => 'Type',
 ];

@@ -4,7 +4,7 @@ namespace SmartCms\Kit\VariableTypes;
 
 use Filament\Forms\Components\Field;
 use Filament\Schemas\Components\Component;
-use SmartCms\Support\Admin\Components\Forms\ImageUpload;
+use SmartCms\Kit\Filament\Forms\Components\MediaPicker;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class ImageType implements VariableTypeInterface
@@ -31,7 +31,8 @@ class ImageType implements VariableTypeInterface
 
     public function getSchema(string $name): Field | Component
     {
-        return ImageUpload::make($name, label: 'Image');
+        return MediaPicker::make($name)
+            ->label('Image');
     }
 
     public function getValue(mixed $value): mixed

@@ -89,6 +89,7 @@ class KitServiceProvider extends PackageServiceProvider
             ])
             ->hasTranslations()
             ->hasRoute('static')
+            ->hasRoute('admin')
             ->hasViews('kit')
             ->hasViewComponents('kit', Layout::class, Footer::class, Theme::class, Gtm::class, Header::class, PageComponent::class, Heading::class, Image::class, Link::class, Icon::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
@@ -208,6 +209,20 @@ class KitServiceProvider extends PackageServiceProvider
         app(MenuRegistry::class)->register(DivisionCategoryMenyType::class);
         ContactForm::observe(ContactFormObserver::class);
         Media::observe(MediaObserver::class);
+
+        // Add toImageArray macro to Media model
+        if (! Media::hasMacro('toImageArray')) {
+            Media::macro('toImageArray', function () {
+                /** @var Media $this */
+                return [
+                    'source' => $this->getFullUrl(),
+                    'width' => $this->getCustomProperty('width', 0),
+                    'height' => $this->getCustomProperty('height', 0),
+                    'alt' => $this->getCustomProperty('alt', []),
+                    'media_id' => $this->id,
+                ];
+            });
+        }
 
         // Routes and config must be loaded after all other services are booted
         $this->app->booted(function (): void {
