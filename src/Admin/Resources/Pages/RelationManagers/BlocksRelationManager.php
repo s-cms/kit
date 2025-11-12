@@ -115,7 +115,7 @@ class BlocksRelationManager extends RelationManager
                     ->label(__('kit::admin.apply_template'))
                     ->icon(Heroicon::OutlinedArrowPathRoundedSquare)
                     ->color('info')
-                    ->form([
+                    ->schema([
                         Forms\Components\Select::make('template_id')
                             ->label(__('kit::admin.select_template'))
                             ->options(BlockTemplate::query()->pluck('name', 'id'))

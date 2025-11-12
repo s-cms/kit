@@ -52,7 +52,7 @@ class EditPage extends EditRecord
                     ->label(__('kit::admin.clone_page'))
                     ->icon(Heroicon::DocumentDuplicate)
                     ->color('gray')
-                    ->form([
+                    ->schema([
                         PageNameField::make()
                             ->default(fn (Page $record) => $record->name . ' (Copy)'),
                         PageSlugField::make()
@@ -137,7 +137,7 @@ class EditPage extends EditRecord
                     ->label(__('kit::admin.change_published_date'))
                     ->icon(Heroicon::Calendar)
                     ->color('info')
-                    ->form([
+                    ->schema([
                         DateTimePicker::make('published_at')
                             ->label(__('kit::admin.published_at'))
                             ->default(fn (Page $record) => $record->published_at)

@@ -15,21 +15,25 @@ class CategoryPageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /**
+         * @var \SmartCms\Kit\Models\Page $page
+         */
+        $page = $this->resource;
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'url' => $this->route(),
-            'image' => $this->image,
-            'banner' => $this->banner,
-            'title' => $this->title,
-            'heading' => $this->heading,
-            'summary' => $this->summary,
-            'description' => $this->description,
-            'depth' => $this->depth,
-            'published_at' => $this->published_at?->toDateTimeString(),
-            'views' => $this->views,
-            'children_count' => $this->children()->count(),
+            'id' => $page->id,
+            'name' => $page->name,
+            'slug' => $page->slug,
+            'url' => $page->route(),
+            'image' => $page->image,
+            'banner' => $page->banner,
+            'title' => $page->title,
+            'heading' => $page->heading,
+            'summary' => $page->summary,
+            'description' => $page->description,
+            'depth' => $page->depth,
+            'published_at' => $page->published_at?->format('Y-m-d H:i:s'),
+            'views' => $page->views,
+            'children_count' => $page->children()->count(),
         ];
     }
 }
