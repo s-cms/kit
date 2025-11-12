@@ -148,7 +148,7 @@ class Page extends Model
                 $current = $current->getCachedParent();
             }
             $path = implode('/', $slugs);
-            if(blank($path)) {
+            if (blank($path)) {
                 $path = '/';
             }
 
@@ -276,7 +276,7 @@ class Page extends Model
             $page->created_by = auth()?->id();
             $page->updated_by = auth()?->id();
 
-            if(blank($page->title) && !blank($page->name)) {
+            if (blank($page->title) && ! blank($page->name)) {
                 $page->title = $page->name;
             }
             if (empty($page->type) && static::$pageType !== null) {

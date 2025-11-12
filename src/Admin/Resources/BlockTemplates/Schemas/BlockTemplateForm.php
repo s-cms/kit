@@ -67,7 +67,7 @@ class BlockTemplateForm
                                         ])
                                         ->columns(2)
                                         ->collapsible()
-                                        ->itemLabel(fn(array $state): ?string => Block::find($state['id'])?->title),
+                                        ->itemLabel(fn (array $state): ?string => Block::find($state['id'])?->title),
                                 ]),
                         ]),
                         RightGrid::make()->schema([

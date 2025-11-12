@@ -27,24 +27,24 @@ class PagesTable
         return $table
             ->columns([
                 NameColumn::make()
-                    ->getStateUsing(fn($record) => $record->getTranslation('name', main_lang()))
-                    ->description(fn(Page $record): string => $record->slug),
+                    ->getStateUsing(fn ($record) => $record->getTranslation('name', main_lang()))
+                    ->description(fn (Page $record): string => $record->slug),
                 TextColumn::make('type')
                     ->label(__('kit::admin.type'))
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'category' => 'success',
                         'page' => 'primary',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'category' => __('kit::admin.type_category'),
                         'page' => __('kit::admin.type_page'),
                         default => ucfirst($state),
                     }),
                 TextColumn::make('parent.name')
                     ->label(__('kit::admin.parent'))
-                    ->formatStateUsing(fn($state, Page $record) => $record->parent ? $record->parent->getTranslation('name', main_lang()) : '-')
+                    ->formatStateUsing(fn ($state, Page $record) => $record->parent ? $record->parent->getTranslation('name', main_lang()) : '-')
                     ->toggleable(),
                 TextColumn::make('depth')
                     ->label(__('kit::admin.depth'))
@@ -53,14 +53,14 @@ class PagesTable
                     ->toggleable(),
                 ImageColumn::make('image.source')
                     ->square()
-                    ->getStateUsing(fn($record): string | array => validateImage(ltrim($record?->image['source'] ?? '', '/')))
+                    ->getStateUsing(fn ($record): string | array => validateImage(ltrim($record?->image['source'] ?? '', '/')))
                     ->defaultImageUrl(no_image()['source'] ?? '')
                     ->default(no_image()['source'])
                     ->toggleable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn(mixed $state) => PageStatus::tryFrom($state)?->getColor())
-                    ->formatStateUsing(fn(mixed $state) => PageStatus::tryFrom($state)?->getLabel()),
+                    ->color(fn (mixed $state) => PageStatus::tryFrom($state)?->getColor())
+                    ->formatStateUsing(fn (mixed $state) => PageStatus::tryFrom($state)?->getLabel()),
                 ViewsColumn::make()->toggleable(),
                 UpdatedAtColumn::make()->toggleable(),
                 CreatedAtColumn::make()->toggleable(),
@@ -83,9 +83,9 @@ class PagesTable
                     ->color('gray')
                     ->schema([
                         PageNameField::make()
-                            ->default(fn(Page $record) => $record->name . ' (Copy)'),
+                            ->default(fn (Page $record) => $record->name . ' (Copy)'),
                         PageSlugField::make()
-                            ->default(fn(Page $record) => $record->slug . '-copy'),
+                            ->default(fn (Page $record) => $record->slug . '-copy'),
                         Select::make('parent_id')
                             ->label(__('kit::admin.parent_page'))
                             ->options(function (Page $record) {
@@ -112,7 +112,7 @@ class PagesTable
                                     })
                                     ->toArray();
                             })
-                            ->default(fn(Page $record) => $record->parent_id)
+                            ->default(fn (Page $record) => $record->parent_id)
                             ->searchable()
                             ->placeholder(__('kit::admin.no_parent')),
                     ])
