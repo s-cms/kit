@@ -13,6 +13,7 @@ class GetPageListUrl
     public function handle(Page $record): string
     {
         $url = ListPages::getUrl();
+
         return $url;
     }
 }

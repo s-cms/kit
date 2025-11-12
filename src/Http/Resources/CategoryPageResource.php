@@ -19,6 +19,7 @@ class CategoryPageResource extends JsonResource
          * @var \SmartCms\Kit\Models\Page $page
          */
         $page = $this->resource;
+
         return [
             'id' => $page->id,
             'name' => $page->name,
