@@ -6,10 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use SmartCms\Kit\Services\MediaLibraryService;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaPickerController extends Controller
 {

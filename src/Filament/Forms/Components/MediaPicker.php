@@ -2,16 +2,8 @@
 
 namespace SmartCms\Kit\Filament\Forms\Components;
 
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Field;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Tabs\Tab;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ViewField;
-use Illuminate\Support\Facades\Http;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Support\Str;
 
 class MediaPicker extends Field
 {

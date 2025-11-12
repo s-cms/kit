@@ -2,14 +2,13 @@
 
 namespace SmartCms\Kit\Services;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Database\Eloquent\Model;
 
 class MediaLibraryService
 {
@@ -19,7 +18,8 @@ class MediaLibraryService
     protected function getMediaContainer(): HasMedia
     {
         // Create a simple container model for media library
-        return new class extends Model implements HasMedia {
+        return new class extends Model implements HasMedia
+        {
             use InteractsWithMedia;
 
             protected $table = 'pages'; // Use existing table, we just need an ID
@@ -29,7 +29,7 @@ class MediaLibraryService
                 $this->addMediaCollection(config('kit.media.collection_name', 'library'));
             }
 
-            public function registerMediaConversions(Media $media = null): void
+            public function registerMediaConversions(?Media $media = null): void
             {
                 $conversions = config('kit.media.conversions', []);
 
