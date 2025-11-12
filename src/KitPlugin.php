@@ -35,7 +35,6 @@ use SmartCms\Kit\Http\Middlewares\SetAdminLocale;
 use SmartCms\Kit\Models\Admin;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Menu\MenuPlugin;
-use SmartCms\Theme\Theme;
 
 class KitPlugin implements Plugin
 {
