@@ -19,7 +19,7 @@ class GetViewButton
     {
         LivewireLivewire::component('scms-database-notifications', DatabaseNotification::class);
 
-        return fn (): string => Blade::render('<div style="display:flex; align-items:center; justify-content:flex-end; gap:10px; padding-inline:.5rem;">{{$action}} {{$action2}} @livewire(\'scms-database-notifications\')</div>', [
+        return fn (): string => Blade::render('<div style="display:flex; align-items:center; justify-content:flex-start; gap:10px; padding-inline:.5rem;">{{$action}} {{$action2}} @livewire(\'scms-database-notifications\')</div>', [
             'action' => Action::make('view')
                 ->hiddenLabel()
                 ->icon(LucideIcon::ExternalLink)

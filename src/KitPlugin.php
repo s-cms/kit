@@ -7,6 +7,7 @@ use Filament\Contracts\Plugin;
 use Filament\Enums\DatabaseNotificationsPosition;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
+use Filament\Support\Colors\Color;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Enums\Width;
 use Filament\Support\Facades\FilamentAsset;
@@ -59,7 +60,6 @@ class KitPlugin implements Plugin
             Css::make('custom', public_path('kit/css/custom.css')),
         ]);
         $panel->plugins([
-            new Theme,
             MenuPlugin::make(null),
             FormsPlugin::make(),
         ])
@@ -90,6 +90,15 @@ class KitPlugin implements Plugin
             ->renderHook(PanelsRenderHook::HEAD_START, fn (): string => '<meta name="robots" content="noindex, nofollow" />')
             ->renderHook(PanelsRenderHook::USER_MENU_BEFORE, GetViewButton::run())
             ->maxContentWidth(Width::Full)
+            ->font('Roboto')
+            ->colors([
+                'primary' => '#28a0e7',
+                'danger' => Color::Rose,
+                'gray' => Color::Gray,
+                'info' => Color::Blue,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
+            ])
             ->pages([
                 Layout::class,
                 Dashboard::class,
