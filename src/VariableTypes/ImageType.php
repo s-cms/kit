@@ -4,7 +4,7 @@ namespace SmartCms\Kit\VariableTypes;
 
 use Filament\Forms\Components\Field;
 use Filament\Schemas\Components\Component;
-use SmartCms\Kit\Filament\Forms\Components\MediaPicker;
+use SmartCms\Kit\Forms\Components\MediaPicker;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class ImageType implements VariableTypeInterface

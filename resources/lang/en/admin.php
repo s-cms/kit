@@ -225,6 +225,9 @@ return [
     'level_3' => 'Level 3',
     'level_4' => 'Level 4',
     'type' => 'Type',
+    'success' => 'Success',
+    'error' => 'Error',
+    'image_fetched' => 'Image fetched successfully',
     'parent' => 'Parent',
     'select_parent_for_items' => 'Select parent category to show items from',
     'select_parent_for_categories' => 'Select parent category to show subcategories from',
@@ -314,4 +317,7 @@ return [
     'fetching' => 'Fetching',
     'name' => 'Name',
     'type' => 'Type',
+    'success' => 'Success',
+    'error' => 'Error',
+    'image_fetched' => 'Image fetched successfully',
 ];
