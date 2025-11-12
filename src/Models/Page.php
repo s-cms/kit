@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use SmartCms\Kit\Casts\PageStatusCast;
 use SmartCms\Kit\Components\PageComponent;
 use SmartCms\Kit\Support\Augmentation\HasAugmentations;
+use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Kit\Support\Traits\HasBlocks;
 use SmartCms\Support\Traits\HasBreadcrumbs;
 use SmartCms\Support\Traits\HasParent;
@@ -146,8 +147,12 @@ class Page extends Model
                 array_unshift($slugs, $current->slug);
                 $current = $current->getCachedParent();
             }
+            $path = implode('/', $slugs);
+            if(blank($path)) {
+                $path = '/';
+            }
 
-            return tRoute('cms.page', ['path' => implode('/', $slugs)]);
+            return tRoute('cms.page', ['path' => $path]);
         });
     }
 
@@ -271,7 +276,9 @@ class Page extends Model
             $page->created_by = auth()?->id();
             $page->updated_by = auth()?->id();
 
-            // Auto-set type from $pageType if not already set
+            if(blank($page->title) && !blank($page->name)) {
+                $page->title = $page->name;
+            }
             if (empty($page->type) && static::$pageType !== null) {
                 $page->type = static::getPageType();
             }
@@ -291,7 +298,7 @@ class Page extends Model
             $page->depth = $page->parent_id ? $page->getDepth() : 0;
 
             // Auto-fill published_at if status is 'published' and not already set
-            if ($page->status?->value === 'published' && empty($page->published_at)) {
+            if ($page->status === PageStatus::Published->value && empty($page->published_at)) {
                 $page->published_at = now();
             }
         });
@@ -391,7 +398,7 @@ class Page extends Model
     public function generatePreviewUrl(): ?string
     {
         // Only generate preview for non-published pages
-        if ($this->status?->value === 'published') {
+        if ($this->status == PageStatus::Published) {
             return null;
         }
 

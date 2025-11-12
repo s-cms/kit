@@ -57,8 +57,8 @@ class PageResource extends Resource
             'index' => ListPages::route('/'),
             'create' => CreatePage::route('/create'),
             'edit' => EditPage::route('/{record}/edit'),
-            'template' => EditTemplateRelated::route('/{record}/template'),
-            'layout' => EditLayoutSettings::route('/{record}/layout'),
+            // 'template' => EditTemplateRelated::route('/{record}/template'),
+            // 'layout' => EditLayoutSettings::route('/{record}/layout'),
         ];
     }
 
@@ -66,7 +66,7 @@ class PageResource extends Resource
     {
         $subNavigation = [
             EditPage::class,
-            EditTemplateRelated::class,
+            // EditTemplateRelated::class,
         ];
         $schema = $page->record?->layout?->schema ?? [];
         if (count($schema) > 0) {

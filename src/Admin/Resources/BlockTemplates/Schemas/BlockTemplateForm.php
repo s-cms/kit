@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use SmartCms\Kit\Models\Block;
+use SmartCms\Kit\Models\Page;
 use SmartCms\Support\Admin\Components\Layout\LeftGrid;
 use SmartCms\Support\Admin\Components\Layout\RightGrid;
 
@@ -41,18 +42,19 @@ class BlockTemplateForm
                                             Select::make('id')
                                                 ->label(__('kit::admin.block'))
                                                 ->options(Block::query()->where('status', true)->pluck('title', 'id'))
+                                                ->preload()
                                                 ->required()
                                                 ->searchable()
-                                                ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                                // ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                                 ->columnSpanFull(),
                                             Grid::make(2)->schema([
                                                 Toggle::make('status')
                                                     ->label(__('kit::admin.active'))
                                                     ->default(true),
-                                                TextInput::make('sorting')
-                                                    ->label(__('kit::admin.sorting'))
-                                                    ->numeric()
-                                                    ->default(fn ($get, $livewire) => $livewire->mountedTableActionRecord ? count($livewire->mountedTableActionRecord->blocks) + 1 : 1),
+                                                // TextInput::make('sorting')
+                                                //     ->label(__('kit::admin.sorting'))
+                                                //     ->numeric()
+                                                //     ->default(fn($get, $livewire) => $livewire->mountedTableActionRecord ? count($livewire->mountedTableActionRecord->blocks) + 1 : 1),
                                             ]),
                                             Grid::make(2)->schema([
                                                 DateTimePicker::make('show_from')
@@ -65,7 +67,7 @@ class BlockTemplateForm
                                         ])
                                         ->columns(2)
                                         ->collapsible()
-                                        ->itemLabel(fn (array $state): ?string => Block::find($state['id'])?->title),
+                                        ->itemLabel(fn(array $state): ?string => Block::find($state['id'])?->title),
                                 ]),
                         ]),
                         RightGrid::make()->schema([
@@ -75,11 +77,17 @@ class BlockTemplateForm
                                         ->label(__('kit::admin.template_name'))
                                         ->required()
                                         ->maxLength(255),
-                                    TextInput::make('type')
+                                    Select::make('type')
+                                        ->label(__('kit::admin.page_type'))
+                                        ->options(Page::query()->select('type')->distinct()->pluck('type', 'type'))
                                         ->label(__('kit::admin.page_type'))
                                         ->helperText(__('kit::admin.template_type_helper'))
                                         ->placeholder(__('kit::admin.template_type_placeholder'))
-                                        ->maxLength(255),
+                                        ->default(null)
+                                        // ->required()
+                                        ->searchable()
+                                        ->preload()
+                                        ->columnSpanFull(),
                                 ]),
                         ]),
                     ]),

@@ -3,9 +3,11 @@
 namespace SmartCms\Kit\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Support\Contracts\PageStatus;
 
 class PreviewController
 {
@@ -14,7 +16,7 @@ class PreviewController
      *
      * @param  string  $token  The preview token
      */
-    public function __invoke(string $token): Response
+    public function __invoke(string $token): Response | RedirectResponse
     {
         // Validate token and get page ID
         $pageId = Cache::get("preview.{$token}");
@@ -28,9 +30,8 @@ class PreviewController
         if (! $page) {
             abort(404, __('kit::admin.page_not_found'));
         }
-
         // Only allow preview for non-published pages
-        if ($page->status?->value === 'published') {
+        if ($page->status != PageStatus::Draft->value) {
             // Redirect to the actual page if it's already published
             return redirect()->to($page->route());
         }

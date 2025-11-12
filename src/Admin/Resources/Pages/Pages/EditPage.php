@@ -47,7 +47,7 @@ class EditPage extends EditRecord
                     ->color('info')
                     ->url(fn (Page $record): ?string => $record->generatePreviewUrl())
                     ->openUrlInNewTab()
-                    ->visible(fn (Page $record): bool => $record->status?->value !== 'published'),
+                    ->visible(fn (Page $record): bool => $record->status != PageStatus::Published),
                 Action::make('clone')
                     ->label(__('kit::admin.clone_page'))
                     ->icon(Heroicon::DocumentDuplicate)

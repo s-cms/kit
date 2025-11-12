@@ -71,6 +71,8 @@ class KitPlugin implements Plugin
             ->login(Login::class)
             ->authGuard('admin')
             ->topNavigation()
+            // ->topbar(false)
+            // ->sidebarWidth('18rem')
             ->brandName(config('app.name', 'SmartCms'))
             ->spa()
             ->unsavedChangesAlerts()
@@ -90,7 +92,7 @@ class KitPlugin implements Plugin
             ->renderHook(PanelsRenderHook::HEAD_START, fn (): string => '<meta name="robots" content="noindex, nofollow" />')
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetInboxButton::run())
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetViewButton::run())
-            ->breadcrumbs(false)
+            // ->breadcrumbs(false)
             ->maxContentWidth(Width::Full)
             ->pages([
                 Layout::class,

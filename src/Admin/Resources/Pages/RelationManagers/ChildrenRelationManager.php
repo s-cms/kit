@@ -2,15 +2,16 @@
 
 namespace SmartCms\Kit\Admin\Resources\Pages\RelationManagers;
 
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,7 @@ class ChildrenRelationManager extends RelationManager
 
         return $table
             ->heading(__('kit::admin.child_pages'))
+            ->recordAction('edit')
             ->description(__('kit::admin.child_pages_description'))
             ->modifyQueryUsing(fn (Builder $query) => $query->orderBy('sorting'))
             ->reorderable('sorting')
@@ -103,7 +105,7 @@ class ChildrenRelationManager extends RelationManager
                             ->default('page')
                             ->required(),
                     ])
-                    ->mutateFormDataUsing(function (array $data) use ($ownerRecord): array {
+                    ->mutateDataUsing(function (array $data) use ($ownerRecord): array {
                         $data['parent_id'] = $ownerRecord->id;
                         $data['depth'] = $ownerRecord->depth + 1;
 
@@ -130,7 +132,7 @@ class ChildrenRelationManager extends RelationManager
                     ->label(__('kit::admin.clone_page'))
                     ->icon('heroicon-o-document-duplicate')
                     ->color('gray')
-                    ->form([
+                    ->schema([
                         PageNameField::make()
                             ->default(fn (Page $record) => $record->name . ' (Copy)'),
                         PageSlugField::make()
@@ -175,7 +177,7 @@ class ChildrenRelationManager extends RelationManager
                         redirect()->to(PageResource::getUrl('edit', ['record' => $clone]));
                     }),
 
-                Tables\Actions\Action::make('view')
+                Action::make('_view')
                     ->label(__('kit::admin.view'))
                     ->icon('heroicon-o-eye')
                     ->url(fn (Page $record): string => $record->route())
@@ -184,14 +186,17 @@ class ChildrenRelationManager extends RelationManager
                 DeleteAction::make()
                     ->hidden(fn (Page $record): bool => $record->children()->count() > 0),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->before(function (DeleteBulkAction $action, $records) {
                             // Check if any record has children
                             foreach ($records as $record) {
                                 if ($record->children()->count() > 0) {
-                                    $action->failureNotificationTitle = __('kit::admin.cannot_delete_pages_with_children');
+                                    Notification::make()
+                                        ->title(__('kit::admin.cannot_delete_pages_with_children'))
+                                        ->danger()
+                                        ->send();
                                     $action->halt();
                                 }
                             }

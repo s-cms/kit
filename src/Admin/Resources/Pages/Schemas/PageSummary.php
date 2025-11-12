@@ -2,7 +2,7 @@
 
 namespace SmartCms\Kit\Admin\Resources\Pages\Schemas;
 
-use Filament\Forms\Components\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
@@ -42,11 +42,6 @@ class PageSummary extends Page
             Section::make()->compact()->schema([
                 ImageUpload::make('image', $imagePath, __('kit::admin.image')),
                 ImageUpload::make('banner', $imagePath, __('kit::admin.banner')),
-            ])->columns(1),
-            Section::make()->compact()->schema([
-                Select::make('layout_id')
-                    ->options(fn (ModelsPage $record) => $record->getAvailableLayouts())
-                    ->label(__('kit::admin.layout')),
             ])->columns(1),
             Section::make(__('kit::admin.indexation'))->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
                 $index = $get('is_index') ?? true;

@@ -113,7 +113,7 @@ class BlocksRelationManager extends RelationManager
             ->headerActions([
                 Action::make('apply_template')
                     ->label(__('kit::admin.apply_template'))
-                    ->icon(Heroicon::LayoutTemplate)
+                    ->icon(Heroicon::OutlinedArrowPathRoundedSquare)
                     ->color('info')
                     ->form([
                         Forms\Components\Select::make('template_id')
