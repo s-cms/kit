@@ -86,6 +86,7 @@ class ImageProcessingService
             \Log::error('WebP conversion failed for media ' . $media->id, [
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -120,6 +121,7 @@ class ImageProcessingService
                 \Log::warning('Failed to generate responsive image at width ' . $width . ' for media ' . $media->id, [
                     'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }

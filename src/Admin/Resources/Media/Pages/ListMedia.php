@@ -127,6 +127,7 @@ class ListMedia extends ListRecords
                             if ($media) {
                                 $media->name = $data['url_name'];
                                 $media->save();
+
                                 return $media;
                             }
                         }
