@@ -19,7 +19,7 @@ class MediaTable
             ->columns([
                 ImageColumn::make('preview')
                     ->label(__('kit::admin.preview'))
-                    ->getStateUsing(fn ($record) => $record->getUrl('thumb'))
+                    ->getStateUsing(fn ($record) => $record->getConversionUrl('thumb'))
                     ->size(60)
                     ->square(),
 
@@ -37,7 +37,7 @@ class MediaTable
 
                 TextColumn::make('dimensions')
                     ->label(__('kit::admin.dimensions'))
-                    ->getStateUsing(fn ($record) => $record->getCustomProperty('width', 0) . ' × ' . $record->getCustomProperty('height', 0))
+                    ->getStateUsing(fn ($record) => ($record->width ?? 0) . ' × ' . ($record->height ?? 0))
                     ->toggleable(),
 
                 TextColumn::make('size')

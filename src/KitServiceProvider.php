@@ -43,7 +43,9 @@ use SmartCms\Kit\Http\Middlewares\UserIdentifierMiddleware;
 use SmartCms\Kit\MenuTypes\DivisionCategoryMenyType;
 use SmartCms\Kit\MenuTypes\DivisionMenuType;
 use SmartCms\Kit\MenuTypes\PageMenuType;
+use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Observers\ContactFormObserver;
+use SmartCms\Kit\Observers\MediaObserver;
 use SmartCms\Kit\Support\AssetManager;
 use SmartCms\Kit\Support\MicrodataManager;
 use SmartCms\Kit\Support\Seo;
@@ -53,7 +55,6 @@ use SmartCms\Menu\MenuRegistry;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class KitServiceProvider extends PackageServiceProvider
 {
@@ -85,6 +86,7 @@ class KitServiceProvider extends PackageServiceProvider
                 'create_blockables_table',
                 'add_type_and_metadata_to_pages_table',
                 'create_block_templates_table',
+                'create_media_table',
             ])
             ->hasTranslations()
             ->hasRoute('static')
@@ -207,20 +209,7 @@ class KitServiceProvider extends PackageServiceProvider
         app(MenuRegistry::class)->register(DivisionMenuType::class);
         app(MenuRegistry::class)->register(DivisionCategoryMenyType::class);
         ContactForm::observe(ContactFormObserver::class);
-
-        // Add toImageArray macro to Media model
-        if (! Media::hasMacro('toImageArray')) {
-            Media::macro('toImageArray', function () {
-                /** @var Media $this */
-                return [
-                    'source' => $this->getFullUrl(),
-                    'width' => $this->getCustomProperty('width', 0),
-                    'height' => $this->getCustomProperty('height', 0),
-                    'alt' => $this->getCustomProperty('alt', []),
-                    'media_id' => $this->id,
-                ];
-            });
-        }
+        Media::observe(MediaObserver::class);
 
         // Routes and config must be loaded after all other services are booted
         $this->app->booted(function (): void {

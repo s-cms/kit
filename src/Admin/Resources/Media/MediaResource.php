@@ -12,7 +12,7 @@ use SmartCms\Kit\Admin\Resources\Media\Pages\EditMedia;
 use SmartCms\Kit\Admin\Resources\Media\Pages\ListMedia;
 use SmartCms\Kit\Admin\Resources\Media\Schemas\MediaForm;
 use SmartCms\Kit\Admin\Resources\Media\Tables\MediaTable;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use SmartCms\Kit\Models\Media;
 use UnitEnum;
 
 class MediaResource extends Resource

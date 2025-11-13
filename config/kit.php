@@ -27,6 +27,7 @@ return [
         'disk' => env('MEDIA_DISK', 'public'),
         'conversions_disk' => env('MEDIA_CONVERSIONS_DISK', 'public'),
         'auto_convert_to_webp' => env('MEDIA_AUTO_CONVERT_TO_WEBP', true),
+        'queue_connection' => env('MEDIA_QUEUE_CONNECTION', 'sync'),
         'conversions' => [
             'thumb' => [
                 'width' => 150,

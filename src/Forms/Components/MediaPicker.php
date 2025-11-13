@@ -2,143 +2,178 @@
 
 namespace SmartCms\Kit\Forms\Components;
 
-use Filament\Actions\Action;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ViewField;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use Spatie\Image\Image;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Illuminate\Support\Facades\Storage;
+use SmartCms\Kit\Models\Media;
+use SmartCms\Kit\Services\MediaLibraryService;
 
-class MediaPicker extends SpatieMediaLibraryFileUpload
+class MediaPicker extends Select
 {
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->disk(config('kit.media.disk', 'public'))
-            ->responsiveImages()
-            ->conversion('original-webp')
-            ->customProperties(function (TemporaryUploadedFile $file): array {
-                $image = Image::load($file->getRealPath());
-
-                return [
-                    'height' => $image->getHeight(),
-                    'width' => $image->getWidth(),
-                ];
+        $this->searchable()
+            ->preload()
+            ->native(false)
+            ->getSearchResultsUsing(function (string $search): array {
+                return Media::query()
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('file_name', 'like', "%{$search}%")
+                    ->limit(50)
+                    ->get()
+                    ->mapWithKeys(fn (Media $media) => [
+                        $media->id => $media->name . ' (' . $media->file_name . ')',
+                    ])
+                    ->toArray();
             })
-            ->hintActions([
-                // Action 1: Select from existing images
-                Action::make('selectFromExisting')
-                    ->icon('heroicon-o-photo')
-                    ->tooltip(__('kit::admin.select_from_existing'))
-                    ->modalHeading(__('kit::admin.select_from_existing'))
-                    ->modalWidth('5xl')
-                    ->modalSubmitActionLabel(__('kit::admin.select_image'))
-                    ->form([
-                        TextInput::make('library_search')
-                            ->label(__('kit::admin.search'))
-                            ->placeholder(__('kit::admin.search'))
-                            ->live(debounce: 300)
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                $service = app(\SmartCms\Kit\Services\MediaLibraryService::class);
-                                $media = $service->search($state ?: '', config('kit.media.collection_name'), 20);
+            ->getOptionLabelUsing(function ($value): string {
+                $media = Media::find($value);
 
-                                $set('library_results', $media->map(function ($item) {
-                                    return [
-                                        'id' => $item->id,
-                                        'uuid' => $item->uuid,
-                                        'name' => $item->name,
-                                        'thumb_url' => $item->getUrl('thumb'),
-                                    ];
-                                })->toArray());
-                            }),
+                return $media ? $media->name . ' (' . $media->file_name . ')' : '';
+            })
+            ->createOptionForm([
+                Tabs::make('media_tabs')
+                    ->tabs([
+                        Tab::make(__('kit::admin.upload'))
+                            ->schema([
+                                FileUpload::make('upload_file')
+                                    ->label(__('kit::admin.image'))
+                                    ->image()
+                                    ->disk(config('kit.media.disk', 'public'))
+                                    ->directory('temp')
+                                    ->required()
+                                    ->acceptedFileTypes(['image/*'])
+                                    ->maxSize(10240),
 
-                        ViewField::make('library_grid')
-                            ->view('kit::forms.components.library-grid')
-                            ->afterStateHydrated(function (callable $set) {
-                                $service = app(\SmartCms\Kit\Services\MediaLibraryService::class);
-                                $media = $service->search('', config('kit.media.collection_name'), 20);
+                                TextInput::make('upload_name')
+                                    ->label(__('kit::admin.name'))
+                                    ->placeholder(__('kit::admin.optional')),
+                            ]),
 
-                                $set('library_results', $media->map(function ($item) {
-                                    return [
-                                        'id' => $item->id,
-                                        'uuid' => $item->uuid,
-                                        'name' => $item->name,
-                                        'thumb_url' => $item->getUrl('thumb'),
-                                    ];
-                                })->toArray());
-                            }),
+                        Tab::make(__('kit::admin.import_from_url'))
+                            ->schema([
+                                TextInput::make('url_input')
+                                    ->label(__('kit::admin.image_url'))
+                                    ->url()
+                                    ->required()
+                                    ->placeholder('https://example.com/image.jpg'),
+
+                                TextInput::make('url_name')
+                                    ->label(__('kit::admin.name'))
+                                    ->placeholder(__('kit::admin.optional')),
+                            ]),
                     ])
-                    ->action(function (array $data, $livewire) {
-                        if (isset($data['library_selected_uuid'])) {
-                            // Set the media UUID directly in the component state
-                            $livewire->dispatch('fileUploadAttached', [
-                                'statePath' => $this->getStatePath(),
-                                'files' => [$data['library_selected_uuid']],
-                            ]);
-                        }
-                    }),
+                    ->contained(false),
+            ])
+            ->createOptionUsing(function (array $data): int {
+                $service = app(MediaLibraryService::class);
 
-                // Action 2: Import by URL
-                Action::make('importByUrl')
-                    ->icon('heroicon-o-link')
-                    ->tooltip(__('kit::admin.import_from_url'))
-                    ->modalHeading(__('kit::admin.import_from_url'))
-                    ->modalWidth('2xl')
-                    ->modalSubmitActionLabel(__('kit::admin.fetch_image'))
-                    ->form([
-                        TextInput::make('url_input')
-                            ->label(__('kit::admin.image_url'))
-                            ->url()
-                            ->required()
-                            ->placeholder('https://example.com/image.jpg'),
-                    ])
-                    ->action(function (array $data, $livewire) {
-                        if (! isset($data['url_input']) || empty($data['url_input'])) {
-                            return;
-                        }
+                // Check which tab was used
+                if (! empty($data['upload_file'])) {
+                    // Handle file upload
+                    $disk = config('kit.media.disk', 'public');
+                    $tempPath = $data['upload_file'];
 
+                    // Get the temporary file
+                    $file = Storage::disk($disk)->get($tempPath);
+                    $mimeType = Storage::disk($disk)->mimeType($tempPath);
+                    $size = Storage::disk($disk)->size($tempPath);
+
+                    // Generate file name
+                    $baseName = $data['upload_name'] ?? pathinfo($tempPath, PATHINFO_FILENAME);
+                    $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
+                    $slug = \Illuminate\Support\Str::slug($baseName);
+                    $hash = substr(md5($file), 0, 8);
+                    $fileName = $slug . '-' . $hash . '.' . $extension;
+
+                    // Generate path
+                    $path = config('kit.media.collection_name', 'library') . '/' . date('Y/m');
+
+                    // Move from temp to final location
+                    Storage::disk($disk)->put($path . '/' . $fileName, $file);
+                    Storage::disk($disk)->delete($tempPath);
+
+                    // Get full path for image processing
+                    $fullPath = Storage::disk($disk)->path($path . '/' . $fileName);
+
+                    // Extract dimensions
+                    $dimensions = [];
+                    if (str_starts_with($mimeType, 'image/')) {
                         try {
-                            $service = app(\SmartCms\Kit\Services\MediaLibraryService::class);
-                            $imageData = $service->storeFromUrl($data['url_input'], config('kit.media.collection_name'));
-
-                            if (isset($imageData['media_id'])) {
-                                $media = Media::find($imageData['media_id']);
-                                if ($media) {
-                                    // Set the media UUID directly in the component state
-                                    $livewire->dispatch('fileUploadAttached', [
-                                        'statePath' => $this->getStatePath(),
-                                        'files' => [$media->uuid],
-                                    ]);
-
-                                    \Filament\Notifications\Notification::make()
-                                        ->title(__('kit::admin.success'))
-                                        ->body(__('kit::admin.image_fetched'))
-                                        ->success()
-                                        ->send();
-                                }
-                            }
+                            $image = \Spatie\Image\Image::load($fullPath);
+                            $dimensions = [
+                                'width' => $image->getWidth(),
+                                'height' => $image->getHeight(),
+                            ];
                         } catch (\Exception $e) {
-                            \Filament\Notifications\Notification::make()
-                                ->title(__('kit::admin.error'))
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->send();
+                            // Ignore dimension extraction errors
                         }
-                    }),
+                    }
 
-                // Unsplash integration (commented out for now)
-                /*
-                Action::make('importFromUnsplash')
-                    ->icon('heroicon-o-sparkles')
-                    ->tooltip(__('kit::admin.browse_unsplash'))
-                    ->visible(fn () => config('kit.unsplash.enabled', false))
-                    ->modalHeading(__('kit::admin.browse_unsplash'))
-                    ->modalWidth('5xl')
-                    ->form([...])
-                    ->action(function (array $data) {...}),
-                */
-            ]);
+                    // Create media record
+                    $media = Media::create([
+                        'file_name' => $fileName,
+                        'name' => $baseName,
+                        'disk' => $disk,
+                        'path' => $path,
+                        'mime_type' => $mimeType,
+                        'size' => $size,
+                        'width' => $dimensions['width'] ?? null,
+                        'height' => $dimensions['height'] ?? null,
+                        'alt' => [],
+                        'conversions' => [],
+                        'responsive_images' => [],
+                        'custom_properties' => [],
+                    ]);
+
+                    return $media->id;
+                } elseif (! empty($data['url_input'])) {
+                    // Handle URL import
+                    $result = $service->storeFromUrl(
+                        $data['url_input'],
+                        config('kit.media.collection_name', 'library'),
+                        []
+                    );
+
+                    // Update name if provided
+                    if (! empty($data['url_name']) && isset($result['media_id'])) {
+                        $media = Media::find($result['media_id']);
+                        if ($media) {
+                            $media->name = $data['url_name'];
+                            $media->save();
+                        }
+                    }
+
+                    return $result['media_id'];
+                }
+
+                throw new \Exception('No file or URL provided');
+            });
+    }
+
+    public function getImageData(): ?array
+    {
+        $mediaId = $this->getState();
+
+        if (! $mediaId) {
+            return null;
+        }
+
+        $media = Media::find($mediaId);
+
+        if (! $media) {
+            return null;
+        }
+
+        $service = app(MediaLibraryService::class);
+
+        return $service->mediaToImageArray($media);
     }
 }

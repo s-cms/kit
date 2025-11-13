@@ -2,61 +2,48 @@
 
 namespace SmartCms\Kit\Services;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use SmartCms\Kit\Models\Media;
+use Spatie\Image\Image as SpatieImage;
 
 class MediaLibraryService
 {
-    /**
-     * Container model for media library items
-     */
-    protected function getMediaContainer(): HasMedia
-    {
-        // Create a simple container model for media library
-        return new class extends Model implements HasMedia
-        {
-            use InteractsWithMedia;
-
-            protected $table = 'pages'; // Use existing table, we just need an ID
-
-            public function registerMediaCollections(): void
-            {
-                $this->addMediaCollection(config('kit.media.collection_name', 'library'));
-            }
-
-            public function registerMediaConversions(?Media $media = null): void
-            {
-                $conversions = config('kit.media.conversions', []);
-
-                foreach ($conversions as $name => $settings) {
-                    $conversion = $this->addMediaConversion($name)
-                        ->width($settings['width'])
-                        ->height($settings['height'])
-                        ->nonQueued();
-
-                    if (isset($settings['format']) && $settings['format']) {
-                        $conversion->format($settings['format']);
-                    }
-                }
-            }
-        };
-    }
-
     /**
      * Store an uploaded file
      */
     public function storeUploadedFile(UploadedFile $file, string $collection = 'library'): array
     {
-        $container = $this->getMediaContainer();
-        $container->id = 1; // Use a fixed ID for the container
+        $disk = config('kit.media.disk', 'public');
+        $fileName = $this->generateFileName($file);
+        $path = $this->generatePath($collection);
 
-        $media = $container->addMedia($file)
-            ->toMediaCollection($collection);
+        // Store the file
+        Storage::disk($disk)->putFileAs($path, $file, $fileName);
+
+        // Get full path for image processing
+        $fullPath = Storage::disk($disk)->path($path . '/' . $fileName);
+
+        // Extract dimensions if it's an image
+        $dimensions = $this->extractDimensions($fullPath, $file->getMimeType());
+
+        // Create media record
+        $media = Media::create([
+            'file_name' => $fileName,
+            'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+            'disk' => $disk,
+            'path' => $path,
+            'mime_type' => $file->getMimeType(),
+            'size' => $file->getSize(),
+            'width' => $dimensions['width'] ?? null,
+            'height' => $dimensions['height'] ?? null,
+            'alt' => [],
+            'conversions' => [],
+            'responsive_images' => [],
+            'custom_properties' => [],
+        ]);
 
         return $this->mediaToImageArray($media);
     }
@@ -93,23 +80,44 @@ class MediaLibraryService
         };
 
         // Generate filename
-        $filename = Str::slug(pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_FILENAME) ?: 'image') . '.' . $extension;
+        $baseName = Str::slug(pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_FILENAME) ?: 'image');
+        $fileName = $baseName . '.' . $extension;
 
         // Store temporarily
-        $tempPath = sys_get_temp_dir() . '/' . uniqid() . '_' . $filename;
+        $tempPath = sys_get_temp_dir() . '/' . uniqid() . '_' . $fileName;
         file_put_contents($tempPath, $content);
 
         try {
-            $container = $this->getMediaContainer();
-            $container->id = 1;
+            $disk = config('kit.media.disk', 'public');
+            $path = $this->generatePath($collection);
 
-            $media = $container->addMedia($tempPath)
-                ->usingFileName($filename)
-                ->withCustomProperties(array_merge(
+            // Store the file
+            Storage::disk($disk)->put($path . '/' . $fileName, file_get_contents($tempPath));
+
+            // Get full path for image processing
+            $fullPath = Storage::disk($disk)->path($path . '/' . $fileName);
+
+            // Extract dimensions
+            $dimensions = $this->extractDimensions($fullPath, $contentType);
+
+            // Create media record
+            $media = Media::create([
+                'file_name' => $fileName,
+                'name' => $baseName,
+                'disk' => $disk,
+                'path' => $path,
+                'mime_type' => $contentType,
+                'size' => strlen($content),
+                'width' => $dimensions['width'] ?? null,
+                'height' => $dimensions['height'] ?? null,
+                'alt' => [],
+                'conversions' => [],
+                'responsive_images' => [],
+                'custom_properties' => array_merge(
                     ['source' => 'url'],
                     $customProperties
-                ))
-                ->toMediaCollection($collection);
+                ),
+            ]);
 
             return $this->mediaToImageArray($media);
         } finally {
@@ -139,7 +147,7 @@ class MediaLibraryService
             return false;
         }
 
-        return $media->delete();
+        return $media->deleteWithFiles();
     }
 
     /**
@@ -153,7 +161,7 @@ class MediaLibraryService
             return false;
         }
 
-        $media->setCustomProperty('alt', $alt);
+        $media->alt = $alt;
         $media->save();
 
         return true;
@@ -165,7 +173,7 @@ class MediaLibraryService
     public function search(string $query, string $collection = 'library', int $limit = 20)
     {
         return Media::query()
-            ->where('collection_name', $collection)
+            ->where('path', 'like', "%/{$collection}%")
             ->where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
                     ->orWhere('file_name', 'like', "%{$query}%");
@@ -181,11 +189,53 @@ class MediaLibraryService
     public function mediaToImageArray(Media $media): array
     {
         return [
-            'source' => $media->getFullUrl(),
-            'width' => $media->getCustomProperty('width', 0),
-            'height' => $media->getCustomProperty('height', 0),
-            'alt' => $media->getCustomProperty('alt', []),
+            'source' => $media->getUrl(),
+            'width' => $media->width ?? 0,
+            'height' => $media->height ?? 0,
+            'alt' => $media->alt ?? [],
             'media_id' => $media->id,
         ];
+    }
+
+    /**
+     * Generate a unique file name
+     */
+    protected function generateFileName(UploadedFile $file): string
+    {
+        $baseName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $extension = $file->getClientOriginalExtension();
+        $slug = Str::slug($baseName);
+        $hash = substr(md5($file->getContent()), 0, 8);
+
+        return $slug . '-' . $hash . '.' . $extension;
+    }
+
+    /**
+     * Generate storage path for collection
+     */
+    protected function generatePath(string $collection): string
+    {
+        return $collection . '/' . date('Y/m');
+    }
+
+    /**
+     * Extract dimensions from image file
+     */
+    protected function extractDimensions(string $path, string $mimeType): array
+    {
+        if (! str_starts_with($mimeType, 'image/')) {
+            return [];
+        }
+
+        try {
+            $image = SpatieImage::load($path);
+
+            return [
+                'width' => $image->getWidth(),
+                'height' => $image->getHeight(),
+            ];
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 }
