@@ -4,8 +4,8 @@ namespace SmartCms\Kit\Services;
 
 use Illuminate\Support\Facades\Storage;
 use SmartCms\Kit\Models\Media;
-use Spatie\Image\Image;
 use Spatie\Image\Enums\Fit;
+use Spatie\Image\Image;
 
 class ImageProcessingService
 {
@@ -75,7 +75,8 @@ class ImageProcessingService
 
             $webpPath = Storage::disk($media->disk)->path($media->path . '/' . $webpFileName);
 
-            $image->format(\Spatie\Image\Enums\ImageDriver::Imagick === $image->getDriver()
+            $image->format(
+                $image->getDriver() === \Spatie\Image\Enums\ImageDriver::Imagick
                 ? \Imagick::COMPRESSION_WEBP
                 : 'webp'
             );
@@ -109,7 +110,8 @@ class ImageProcessingService
                 $height = (int) round(($width / $media->width) * $media->height);
 
                 $image->fit(Fit::Max, $width, $height);
-                $image->format(\Spatie\Image\Enums\ImageDriver::Imagick === $image->getDriver()
+                $image->format(
+                    $image->getDriver() === \Spatie\Image\Enums\ImageDriver::Imagick
                     ? \Imagick::COMPRESSION_WEBP
                     : 'webp'
                 );
