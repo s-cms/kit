@@ -11,8 +11,8 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Http;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Image\Image;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {
@@ -83,12 +83,12 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                                         ViewField::make('url_result_preview')
                                             ->view('kit::forms.components.image-preview')
-                                            ->visible(fn($get) => filled($get('url_result'))),
+                                            ->visible(fn ($get) => filled($get('url_result'))),
                                     ]),
 
                                 // Unsplash Tab
                                 Tab::make(__('kit::admin.browse_unsplash'))
-                                    ->visible(fn() => config('kit.unsplash.enabled', false))
+                                    ->visible(fn () => config('kit.unsplash.enabled', false))
                                     ->schema([
                                         Grid::make(1)->schema([
                                             TextInput::make('unsplash_query')
@@ -126,7 +126,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                                             ViewField::make('unsplash_grid')
                                                 ->view('kit::forms.components.unsplash-grid')
-                                                ->visible(fn($get) => filled($get('unsplash_results'))),
+                                                ->visible(fn ($get) => filled($get('unsplash_results'))),
                                         ]),
                                     ]),
 
