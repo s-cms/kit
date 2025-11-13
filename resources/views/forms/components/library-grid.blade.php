@@ -7,7 +7,7 @@
         <div class="grid grid-cols-4 gap-2 mt-3 max-h-96 overflow-y-auto">
             @foreach($results as $media)
                 <div
-                    wire:click="$set('selected_source', 'library'); $set('library_selected', @js($media['image']))"
+                    wire:click="$set('library_selected_uuid', '{{ $media['uuid'] }}')"
                     class="relative aspect-square cursor-pointer rounded-lg overflow-hidden hover:ring-2 hover:ring-primary-600 transition-all"
                 >
                     <img

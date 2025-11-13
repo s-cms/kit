@@ -228,6 +228,7 @@ return [
     'success' => 'Success',
     'error' => 'Error',
     'image_fetched' => 'Image fetched successfully',
+    'select_from_existing' => 'Select from existing',
     'parent' => 'Parent',
     'select_parent_for_items' => 'Select parent category to show items from',
     'select_parent_for_categories' => 'Select parent category to show subcategories from',
@@ -320,4 +321,5 @@ return [
     'success' => 'Success',
     'error' => 'Error',
     'image_fetched' => 'Image fetched successfully',
+    'select_from_existing' => 'Select from existing',
 ];
