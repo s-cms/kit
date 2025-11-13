@@ -10,7 +10,7 @@ use Spatie\Image\Image;
 class ImageProcessingService
 {
     /**
-     * Process image: create WebP conversion and responsive images
+     * Process image: convert original to WebP and create responsive images
      */
     public function processImage(Media $media): void
     {
@@ -30,30 +30,24 @@ class ImageProcessingService
             return;
         }
 
-        $conversions = [];
-        $responsiveImages = [];
-
         try {
-            // Create WebP conversion
-            $webpFileName = $this->createWebPConversion($media, $originalPath);
+            // Convert original to WebP (replaces the original file)
+            $webpFileName = $this->convertOriginalToWebP($media, $originalPath);
+
             if ($webpFileName) {
-                $conversions['webp'] = $webpFileName;
+                // Update media record with new WebP file name
+                $media->file_name = $webpFileName;
+                $media->mime_type = 'image/webp';
+
+                // Get new path for WebP file
+                $webpPath = $disk->path($media->path . '/' . $webpFileName);
+
+                // Generate responsive images from WebP original
+                $responsiveImages = $this->generateResponsiveImages($media, $webpPath);
+                $media->responsive_images = $responsiveImages;
+
+                $media->save();
             }
-
-            // Generate responsive images
-            $responsiveFileNames = $this->generateResponsiveImages($media, $originalPath);
-            $responsiveImages = $responsiveFileNames;
-
-            // Create thumbnail for admin preview
-            $thumbFileName = $this->createThumbnail($media, $originalPath);
-            if ($thumbFileName) {
-                $conversions['thumb'] = $thumbFileName;
-            }
-
-            // Update media record with conversions
-            $media->conversions = $conversions;
-            $media->responsive_images = $responsiveImages;
-            $media->save();
         } catch (\Exception $e) {
             // Log error but don't fail the upload
             \Log::error('Image processing failed for media ' . $media->id, [
@@ -63,33 +57,43 @@ class ImageProcessingService
     }
 
     /**
-     * Create WebP conversion of the original image
+     * Convert original image to WebP format (replaces original)
      */
-    protected function createWebPConversion(Media $media, string $originalPath): ?string
+    protected function convertOriginalToWebP(Media $media, string $originalPath): ?string
     {
         try {
+            // Skip if already WebP
+            if ($media->mime_type === 'image/webp') {
+                return $media->file_name;
+            }
+
             $baseName = pathinfo($media->file_name, PATHINFO_FILENAME);
             $webpFileName = $baseName . '.webp';
 
             $image = Image::load($originalPath);
-
             $webpPath = Storage::disk($media->disk)->path($media->path . '/' . $webpFileName);
-            $image->optimize()->format(
-                'webp'
-            );
 
+            $image->optimize()->format('webp');
             $image->save($webpPath);
+
+            // Delete the original non-WebP file
+            if (file_exists($originalPath) && $originalPath !== $webpPath) {
+                @unlink($originalPath);
+            }
 
             return $webpFileName;
         } catch (\Exception $e) {
+            \Log::error('WebP conversion failed for media ' . $media->id, [
+                'error' => $e->getMessage(),
+            ]);
             return null;
         }
     }
 
     /**
-     * Generate responsive images at various widths
+     * Generate responsive images at various widths from WebP original
      */
-    protected function generateResponsiveImages(Media $media, string $originalPath): array
+    protected function generateResponsiveImages(Media $media, string $webpPath): array
     {
         $widths = $this->getResponsiveWidths($media->width);
         $responsiveImages = [];
@@ -101,45 +105,26 @@ class ImageProcessingService
                 $fileName = $baseName . '___w_' . $width . '.webp';
                 $targetPath = Storage::disk($media->disk)->path($media->path . '/' . $fileName);
 
-                $image = Image::load($originalPath);
+                $image = Image::load($webpPath);
+
                 // Calculate proportional height
                 $height = (int) round(($width / $media->width) * $media->height);
 
                 $image->fit(Fit::Max, $width, $height);
-                $image->optimize()->format(
-                    'webp'
-                );
+                $image->optimize()->format('webp');
                 $image->save($targetPath);
 
                 $responsiveImages[] = $fileName;
             } catch (\Exception $e) {
                 // Skip this width if it fails
+                \Log::warning('Failed to generate responsive image at width ' . $width . ' for media ' . $media->id, [
+                    'error' => $e->getMessage(),
+                ]);
                 continue;
             }
         }
 
         return $responsiveImages;
-    }
-
-    /**
-     * Create thumbnail for admin preview
-     */
-    protected function createThumbnail(Media $media, string $originalPath): ?string
-    {
-        try {
-            $baseName = pathinfo($media->file_name, PATHINFO_FILENAME);
-            $thumbFileName = $baseName . '-thumb.jpg';
-
-            $image = Image::load($originalPath);
-            $thumbPath = Storage::disk($media->disk)->path($media->path . '/' . $thumbFileName);
-
-            $image->fit(Fit::Contain, 150, 150);
-            $image->save($thumbPath);
-
-            return $thumbFileName;
-        } catch (\Exception $e) {
-            return null;
-        }
     }
 
     /**
@@ -149,7 +134,7 @@ class ImageProcessingService
     protected function getResponsiveWidths(int $originalWidth): array
     {
         // Default widths similar to Spatie's responsive images
-        $defaultWidths = [540, 720, 1366, 1920];
+        $defaultWidths = [340, 540, 720, 1024, 1366, 1600, 1920];
 
         // Only use widths smaller than the original
         return array_filter($defaultWidths, fn ($width) => $width < $originalWidth);

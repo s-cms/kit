@@ -19,7 +19,7 @@ class MediaTable
             ->columns([
                 ImageColumn::make('preview')
                     ->label(__('kit::admin.preview'))
-                    ->getStateUsing(fn ($record) => $record->getConversionUrl('thumb'))
+                    ->getStateUsing(fn ($record) => $record->getUrl())
                     ->size(60)
                     ->square(),
 

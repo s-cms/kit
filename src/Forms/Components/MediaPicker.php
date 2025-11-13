@@ -3,10 +3,9 @@
 namespace SmartCms\Kit\Forms\Components;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Storage;
 use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Services\MediaLibraryService;
@@ -27,47 +26,44 @@ class MediaPicker extends Select
                     ->limit(50)
                     ->get()
                     ->mapWithKeys(fn (Media $media) => [
-                        $media->id => $media->name . ' (' . $media->file_name . ')',
+                        $media->id => $media->name,
                     ])
                     ->toArray();
             })
             ->getOptionLabelUsing(function ($value): string {
                 $media = Media::find($value);
 
-                return $media ? $media->name . ' (' . $media->file_name . ')' : '';
+                return $media ? $media->name : '';
             })
             ->createOptionForm([
-                Tabs::make('media_tabs')
-                    ->tabs([
-                        Tab::make(__('kit::admin.upload'))
-                            ->schema([
-                                FileUpload::make('upload_file')
-                                    ->label(__('kit::admin.image'))
-                                    ->image()
-                                    ->disk(config('kit.media.disk', 'public'))
-                                    // ->required()
-                                    ->acceptedFileTypes(['image/*'])
-                                    ->maxSize(10240),
+                Section::make(__('kit::admin.upload'))
+                    ->schema([
+                        FileUpload::make('upload_file')
+                            ->label(__('kit::admin.image'))
+                            ->image()
+                            ->disk(config('kit.media.disk', 'public'))
+                            ->directory('temp')
+                            ->acceptedFileTypes(['image/*'])
+                            ->maxSize(10240)
+                            ->helperText(__('kit::admin.upload_or_url_required')),
 
-                                TextInput::make('upload_name')
-                                    ->label(__('kit::admin.name'))
-                                    ->placeholder(__('kit::admin.optional')),
-                            ]),
+                        TextInput::make('upload_name')
+                            ->label(__('kit::admin.name'))
+                            ->placeholder(__('kit::admin.optional')),
+                    ]),
 
-                        Tab::make(__('kit::admin.import_from_url'))
-                            ->schema([
-                                TextInput::make('url_input')
-                                    ->label(__('kit::admin.image_url'))
-                                    ->url()
-                                    // ->required()
-                                    ->placeholder('https://example.com/image.jpg'),
+                Section::make(__('kit::admin.import_from_url'))
+                    ->schema([
+                        TextInput::make('url_input')
+                            ->label(__('kit::admin.image_url'))
+                            ->url()
+                            ->placeholder('https://example.com/image.jpg')
+                            ->helperText(__('kit::admin.upload_or_url_required')),
 
-                                TextInput::make('url_name')
-                                    ->label(__('kit::admin.name'))
-                                    ->placeholder(__('kit::admin.optional')),
-                            ]),
-                    ])
-                    ->contained(false),
+                        TextInput::make('url_name')
+                            ->label(__('kit::admin.name'))
+                            ->placeholder(__('kit::admin.optional')),
+                    ]),
             ])
             ->createOptionUsing(function (array $data): int {
                 $service = app(MediaLibraryService::class);
@@ -149,7 +145,7 @@ class MediaPicker extends Select
                     return $result['media_id'];
                 }
 
-                throw new \Exception('No file or URL provided');
+                throw new \Exception(__('kit::admin.upload_or_url_required'));
             });
     }
 
