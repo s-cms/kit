@@ -26,6 +26,7 @@ return [
         'collection_name' => 'library',
         'disk' => env('MEDIA_DISK', 'public'),
         'conversions_disk' => env('MEDIA_CONVERSIONS_DISK', 'public'),
+        'auto_convert_to_webp' => env('MEDIA_AUTO_CONVERT_TO_WEBP', true),
         'conversions' => [
             'thumb' => [
                 'width' => 150,

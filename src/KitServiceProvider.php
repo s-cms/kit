@@ -44,7 +44,6 @@ use SmartCms\Kit\MenuTypes\DivisionCategoryMenyType;
 use SmartCms\Kit\MenuTypes\DivisionMenuType;
 use SmartCms\Kit\MenuTypes\PageMenuType;
 use SmartCms\Kit\Observers\ContactFormObserver;
-use SmartCms\Kit\Observers\MediaObserver;
 use SmartCms\Kit\Support\AssetManager;
 use SmartCms\Kit\Support\MicrodataManager;
 use SmartCms\Kit\Support\Seo;
@@ -208,7 +207,6 @@ class KitServiceProvider extends PackageServiceProvider
         app(MenuRegistry::class)->register(DivisionMenuType::class);
         app(MenuRegistry::class)->register(DivisionCategoryMenyType::class);
         ContactForm::observe(ContactFormObserver::class);
-        Media::observe(MediaObserver::class);
 
         // Add toImageArray macro to Media model
         if (! Media::hasMacro('toImageArray')) {

@@ -25,7 +25,7 @@ class MediaResource extends Resource
 
     public static function getNavigationGroup(): string | UnitEnum | null
     {
-        return NavigationGroup::Content;
+        return NavigationGroup::Design;
     }
 
     public static function getNavigationLabel(): string
