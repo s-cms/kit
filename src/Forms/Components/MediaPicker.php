@@ -26,7 +26,7 @@ class MediaPicker extends Select
                     ->orWhere('file_name', 'like', "%{$search}%")
                     ->limit(50)
                     ->get()
-                    ->mapWithKeys(fn(Media $media) => [
+                    ->mapWithKeys(fn (Media $media) => [
                         $media->id => $media->name . ' (' . $media->file_name . ')',
                     ])
                     ->toArray();

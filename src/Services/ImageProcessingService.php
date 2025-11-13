@@ -152,6 +152,6 @@ class ImageProcessingService
         $defaultWidths = [540, 720, 1366, 1920];
 
         // Only use widths smaller than the original
-        return array_filter($defaultWidths, fn($width) => $width < $originalWidth);
+        return array_filter($defaultWidths, fn ($width) => $width < $originalWidth);
     }
 }

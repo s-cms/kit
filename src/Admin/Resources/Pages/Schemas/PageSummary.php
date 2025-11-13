@@ -17,7 +17,6 @@ use SmartCms\Kit\Forms\Components\MediaPicker;
 use SmartCms\Kit\Models\BlockTemplate;
 use SmartCms\Kit\Models\Page as ModelsPage;
 use SmartCms\Kit\Support\Contracts\PageStatus;
-use SmartCms\Support\Admin\Components\Forms\ImageUpload;
 
 class PageSummary extends Page
 {

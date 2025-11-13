@@ -4,7 +4,6 @@ namespace SmartCms\Kit\Observers;
 
 use SmartCms\Kit\Jobs\ProcessMediaJob;
 use SmartCms\Kit\Models\Media;
-use SmartCms\Kit\Services\ImageProcessingService;
 
 class MediaObserver
 {
