@@ -4,6 +4,7 @@ namespace SmartCms\Kit\Admin\Resources\Pages\Schemas;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
@@ -12,6 +13,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
+use SmartCms\Kit\Forms\Components\MediaPicker;
 use SmartCms\Kit\Models\BlockTemplate;
 use SmartCms\Kit\Models\Page as ModelsPage;
 use SmartCms\Kit\Support\Contracts\PageStatus;
@@ -40,8 +42,8 @@ class PageSummary extends Page
                     DateTimePicker::make('published_at')->reactive()->seconds(false)->default(now())->hidden(fn ($get): bool => $get('status')?->value != 'scheduled'),
                 ]),
             Section::make()->compact()->schema([
-                ImageUpload::make('image', $imagePath, __('kit::admin.image')),
-                ImageUpload::make('banner', $imagePath, __('kit::admin.banner')),
+                FileUpload::make('image', $imagePath, __('kit::admin.image')),
+                MediaPicker::make('banner', $imagePath, __('kit::admin.banner')),
             ])->columns(1),
             Section::make(__('kit::admin.indexation'))->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
                 $index = $get('is_index') ?? true;

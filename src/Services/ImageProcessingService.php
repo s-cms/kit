@@ -74,11 +74,8 @@ class ImageProcessingService
             $image = Image::load($originalPath);
 
             $webpPath = Storage::disk($media->disk)->path($media->path . '/' . $webpFileName);
-
-            $image->format(
-                $image->getDriver() === \Spatie\Image\Enums\ImageDriver::Imagick
-                ? \Imagick::COMPRESSION_WEBP
-                : 'webp'
+            $image->optimize()->format(
+                'webp'
             );
 
             $image->save($webpPath);
@@ -105,15 +102,12 @@ class ImageProcessingService
                 $targetPath = Storage::disk($media->disk)->path($media->path . '/' . $fileName);
 
                 $image = Image::load($originalPath);
-
                 // Calculate proportional height
                 $height = (int) round(($width / $media->width) * $media->height);
 
                 $image->fit(Fit::Max, $width, $height);
-                $image->format(
-                    $image->getDriver() === \Spatie\Image\Enums\ImageDriver::Imagick
-                    ? \Imagick::COMPRESSION_WEBP
-                    : 'webp'
+                $image->optimize()->format(
+                    'webp'
                 );
                 $image->save($targetPath);
 
@@ -155,9 +149,9 @@ class ImageProcessingService
     protected function getResponsiveWidths(int $originalWidth): array
     {
         // Default widths similar to Spatie's responsive images
-        $defaultWidths = [340, 540, 720, 1024, 1366, 1600, 1920];
+        $defaultWidths = [540, 720, 1366, 1920];
 
         // Only use widths smaller than the original
-        return array_filter($defaultWidths, fn ($width) => $width < $originalWidth);
+        return array_filter($defaultWidths, fn($width) => $width < $originalWidth);
     }
 }

@@ -22,17 +22,7 @@ class MediaObserver
         if ($media->mime_type === 'image/svg+xml') {
             return;
         }
-
-        // Process images in queue (or sync if queue is not configured)
-        $connection = config('kit.media.queue_connection', 'sync');
-
-        if ($connection === 'sync') {
-            // Process immediately
-            app(ImageProcessingService::class)->processImage($media);
-        } else {
-            // Process in queue
-            ProcessMediaJob::dispatch($media)->onConnection($connection);
-        }
+        ProcessMediaJob::dispatch($media)->onConnection(config('kit.media.queue_connection', 'sync'));
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace SmartCms\Kit\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Image\Image;
 
@@ -47,7 +48,7 @@ class Media extends Model
      */
     public function getUrl(): string
     {
-        return \Storage::disk($this->disk)->url($this->path . '/' . $this->file_name);
+        return Storage::disk($this->disk)->url($this->path . '/' . $this->file_name);
     }
 
     /**
@@ -61,7 +62,7 @@ class Media extends Model
             return $this->getUrl();
         }
 
-        return \Storage::disk($this->disk)->url($this->path . '/' . $conversions[$conversion]);
+        return Storage::disk($this->disk)->url($this->path . '/' . $conversions[$conversion]);
     }
 
     /**
@@ -69,7 +70,7 @@ class Media extends Model
      */
     public function getPath(): string
     {
-        return \Storage::disk($this->disk)->path($this->path . '/' . $this->file_name);
+        return Storage::disk($this->disk)->path($this->path . '/' . $this->file_name);
     }
 
     /**
@@ -83,7 +84,7 @@ class Media extends Model
             return $this->getPath();
         }
 
-        return \Storage::disk($this->disk)->path($this->path . '/' . $conversions[$conversion]);
+        return Storage::disk($this->disk)->path($this->path . '/' . $conversions[$conversion]);
     }
 
     /**
@@ -125,7 +126,7 @@ class Media extends Model
         $urls = [];
 
         foreach ($responsiveImages as $fileName) {
-            $urls[] = \Storage::disk($this->disk)->url($this->path . '/' . $fileName);
+            $urls[] = Storage::disk($this->disk)->url($this->path . '/' . $fileName);
         }
 
         return $urls;
@@ -143,7 +144,7 @@ class Media extends Model
             // Extract width from filename (format: name___w_1200.webp)
             if (preg_match('/___w_(\d+)\./', $fileName, $matches)) {
                 $width = $matches[1];
-                $url = \Storage::disk($this->disk)->url($this->path . '/' . $fileName);
+                $url = Storage::disk($this->disk)->url($this->path . '/' . $fileName);
                 $srcset[] = "{$url} {$width}w";
             }
         }
@@ -156,7 +157,7 @@ class Media extends Model
      */
     public function deleteWithFiles(): bool
     {
-        $disk = \Storage::disk($this->disk);
+        $disk = Storage::disk($this->disk);
 
         // Delete original file
         if ($disk->exists($this->path . '/' . $this->file_name)) {

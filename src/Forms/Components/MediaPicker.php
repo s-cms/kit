@@ -4,10 +4,9 @@ namespace SmartCms\Kit\Forms\Components;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Storage;
 use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Services\MediaLibraryService;
@@ -27,7 +26,7 @@ class MediaPicker extends Select
                     ->orWhere('file_name', 'like', "%{$search}%")
                     ->limit(50)
                     ->get()
-                    ->mapWithKeys(fn (Media $media) => [
+                    ->mapWithKeys(fn(Media $media) => [
                         $media->id => $media->name . ' (' . $media->file_name . ')',
                     ])
                     ->toArray();
@@ -46,8 +45,7 @@ class MediaPicker extends Select
                                     ->label(__('kit::admin.image'))
                                     ->image()
                                     ->disk(config('kit.media.disk', 'public'))
-                                    ->directory('temp')
-                                    ->required()
+                                    // ->required()
                                     ->acceptedFileTypes(['image/*'])
                                     ->maxSize(10240),
 
@@ -61,7 +59,7 @@ class MediaPicker extends Select
                                 TextInput::make('url_input')
                                     ->label(__('kit::admin.image_url'))
                                     ->url()
-                                    ->required()
+                                    // ->required()
                                     ->placeholder('https://example.com/image.jpg'),
 
                                 TextInput::make('url_name')
@@ -73,13 +71,11 @@ class MediaPicker extends Select
             ])
             ->createOptionUsing(function (array $data): int {
                 $service = app(MediaLibraryService::class);
-
                 // Check which tab was used
                 if (! empty($data['upload_file'])) {
                     // Handle file upload
                     $disk = config('kit.media.disk', 'public');
                     $tempPath = $data['upload_file'];
-
                     // Get the temporary file
                     $file = Storage::disk($disk)->get($tempPath);
                     $mimeType = Storage::disk($disk)->mimeType($tempPath);
