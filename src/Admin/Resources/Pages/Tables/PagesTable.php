@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
@@ -46,6 +47,14 @@ class PagesTable
                     ->label(__('kit::admin.parent'))
                     ->formatStateUsing(fn ($state, Page $record) => $record->parent ? $record->parent->getTranslation('name', main_lang()) : '-')
                     ->toggleable(),
+                TextColumn::make('tags.name')
+                    ->label(__('kit::admin.tags'))
+                    ->badge()
+                    ->color('gray')
+                    ->formatStateUsing(fn ($state, Page $record) => $record->tags->map(fn ($tag) => $tag->getTranslation('name', main_lang()))->toArray())
+                    ->limitList(3)
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('depth')
                     ->label(__('kit::admin.depth'))
                     ->badge()
@@ -71,6 +80,18 @@ class PagesTable
             ->reorderable('sorting')
             ->filters([
                 StatusFilter::make(),
+                SelectFilter::make('tags')
+                    ->label(__('kit::admin.tags'))
+                    ->multiple()
+                    ->relationship('tags', 'name->' . main_lang())
+                    ->preload()
+                    ->searchable(),
+                SelectFilter::make('type')
+                    ->label(__('kit::admin.type'))
+                    ->options([
+                        'page' => __('kit::admin.type_page'),
+                        'category' => __('kit::admin.type_category'),
+                    ]),
                 // Add augmented filters from augmentations
                 ...Page::getAugmentedFilters(),
             ])

@@ -12,6 +12,7 @@ use SmartCms\Seo\Admin\Seos\Schemas\RelatedSeoForm;
 use SmartCms\Support\Admin\Components\Layout\FormGrid;
 use SmartCms\Support\Admin\Components\Layout\LeftGrid;
 use SmartCms\Support\Admin\Components\Layout\RightGrid;
+use Spatie\Tags\Tag;
 
 class PageForm
 {
@@ -48,6 +49,28 @@ class PageForm
                                     ->placeholder(__('kit::admin.no_parent'))
                                     ->helperText(fn ($get) => self::getDepthHelperText($get('parent_id')))
                                     ->hidden(fn ($record): bool => $record?->id == 1),
+                                Select::make('tags')
+                                    ->label(__('kit::admin.tags'))
+                                    ->multiple()
+                                    ->relationship('tags', 'name->' . main_lang())
+                                    ->preload()
+                                    ->createOptionForm([
+                                        \Filament\Forms\Components\TextInput::make('name.' . main_lang())
+                                            ->label(__('kit::admin.tag_name'))
+                                            ->required(),
+                                        \Filament\Forms\Components\TextInput::make('type')
+                                            ->label(__('kit::admin.tag_type'))
+                                            ->placeholder('general'),
+                                    ])
+                                    ->createOptionUsing(function (array $data) {
+                                        $tag = Tag::create([
+                                            'name' => $data['name'],
+                                            'type' => $data['type'] ?? null,
+                                        ]);
+
+                                        return $tag->id;
+                                    })
+                                    ->searchable(),
                             ]),
                             ...RelatedSeoForm::configure($schema)->getComponents(),
                             // Add augmented schema from augmentations

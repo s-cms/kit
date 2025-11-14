@@ -335,4 +335,12 @@ return [
     'regenerate' => 'Regenerate',
     'responsive_images_regenerated' => 'Responsive images have been successfully regenerated',
     'failed_to_regenerate_responsive_images' => 'Failed to regenerate responsive images',
+
+    // Tags
+    'tags' => 'Tags',
+    'tag_name' => 'Tag Name',
+    'tag_type' => 'Tag Type',
+    'tag_type_helper' => 'Optional: group tags by type (e.g., blog, product, category)',
+    'tag_slug_helper' => 'URL-friendly version of the tag name',
+    'usage_count' => 'Usage Count',
 ];

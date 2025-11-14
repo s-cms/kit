@@ -24,6 +24,7 @@
         "codewithdennis/filament-lucide-icons": "^4.0",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.0",
+        "google-gemini-php/laravel": "*",
         "laravel-notification-channels/telegram": "^6.0",
         "laravel/mcp": "^0.3.2",
         "lorisleiva/laravel-actions": "^2.8",
@@ -39,6 +40,7 @@
         "smart-cms/theme": "^1.0",
         "spatie/laravel-medialibrary": "^11.0",
         "spatie/laravel-package-tools": "^1.15.0",
+        "spatie/laravel-tags": "*",
         "spatie/laravel-translatable": "^6.11"
     },
     "require-dev": {

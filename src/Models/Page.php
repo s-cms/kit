@@ -23,6 +23,7 @@ use SmartCms\TemplateBuilder\Traits\HasTemplate;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Tags\HasTags;
 use Spatie\Translatable\HasTranslations;
 
 /**
@@ -71,6 +72,7 @@ class Page extends Model implements HasMedia
     // use HasSorting;
     use HasSlug;
     use HasStatus;
+    use HasTags;
     use HasTemplate;
     use HasTranslations;
     use InteractsWithMedia;

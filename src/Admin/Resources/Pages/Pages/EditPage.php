@@ -20,6 +20,7 @@ use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Models\Admin;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Services\AI\GeminiService;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Actions\SaveAction;
 use SmartCms\Support\Admin\Components\Actions\SaveAndClose;
@@ -131,6 +132,88 @@ class EditPage extends EditRecord
                             ->send();
 
                         $this->redirect(PageResource::getUrl('edit', ['record' => $clone]));
+                    }),
+                Action::make('generate_seo')
+                    ->label('Generate SEO Fields')
+                    ->icon(Heroicon::Sparkles)
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Generate SEO Fields with AI')
+                    ->modalDescription('This will use Google Gemini AI to generate meta description, keywords, and summary based on the page title and content.')
+                    ->visible(fn () => app(GeminiService::class)->isConfigured())
+                    ->action(function (Page $record): void {
+                        $gemini = app(GeminiService::class);
+
+                        try {
+                            $title = $record->getTranslation('title', main_lang()) ?? $record->getTranslation('name', main_lang());
+                            $content = $record->getTranslation('content', main_lang());
+
+                            $seoFields = $gemini->generateSeoFields($title, $content);
+
+                            // Only update empty fields
+                            if (empty($record->getTranslation('description', main_lang()))) {
+                                $record->setTranslation('description', main_lang(), $seoFields['description']);
+                            }
+
+                            if (empty($record->getTranslation('keywords', main_lang()))) {
+                                $record->setTranslation('keywords', main_lang(), $seoFields['keywords']);
+                            }
+
+                            if (empty($record->getTranslation('summary', main_lang())) && $seoFields['summary']) {
+                                $record->setTranslation('summary', main_lang(), $seoFields['summary']);
+                            }
+
+                            $record->save();
+
+                            Notification::make()
+                                ->success()
+                                ->title('SEO fields generated successfully')
+                                ->body('Meta description, keywords, and summary have been generated.')
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Failed to generate SEO fields')
+                                ->body($e->getMessage())
+                                ->send();
+                        }
+                    }),
+                Action::make('translate_content')
+                    ->label('Translate to All Languages')
+                    ->icon(Heroicon::Language)
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->modalHeading('Translate Content')
+                    ->modalDescription('This will translate all fields to other configured languages. Only empty fields will be filled.')
+                    ->visible(fn () => app(GeminiService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
+                    ->action(function (Page $record): void {
+                        $gemini = app(GeminiService::class);
+
+                        try {
+                            $translations = $gemini->translatePage($record);
+
+                            $updatedCount = 0;
+                            foreach ($translations as $lang => $fields) {
+                                foreach ($fields as $field => $value) {
+                                    $record->setTranslation($field, $lang, $value);
+                                    $updatedCount++;
+                                }
+                            }
+
+                            $record->save();
+
+                            Notification::make()
+                                ->success()
+                                ->title('Content translated successfully')
+                                ->body("Translated {$updatedCount} fields to other languages.")
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Translation failed')
+                                ->body($e->getMessage())
+                                ->send();
+                        }
                     }),
                 DeleteAction::make()->hidden(fn (Page $record): bool => $record->is_system || $record->is_root),
                 Action::make('change_published_at')
