@@ -16,7 +16,7 @@ class MediaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        if(is_string($this->resource) || is_int($this->resource)) {
+        if (is_string($this->resource) || is_int($this->resource)) {
             $media = Media::find($this->resource);
         } else {
             /**
@@ -24,7 +24,7 @@ class MediaResource extends JsonResource
              */
             $media = $this->resource;
         }
-        if(!$media ||! $media instanceof Media) {
+        if (! $media || ! $media instanceof Media) {
             return [
                 'alt' => '',
                 'src' => no_image(),
@@ -33,6 +33,7 @@ class MediaResource extends JsonResource
                 'height' => 0,
             ];
         }
+
         return [
             'alt' => $media->name,
             'src' => $media->getUrl() ?? no_image(),

@@ -33,7 +33,7 @@ class MediaPicker extends Select
             ->preload()
             ->native(false)
             ->wrapOptionLabels(false)
-            ->options(Media::query()->get()->mapWithKeys(fn(Media $media) => [$media->id => $this->transformMediaToOption($media)])->pluck('name', 'id')->toArray())
+            ->options(Media::query()->get()->mapWithKeys(fn (Media $media) => [$media->id => $this->transformMediaToOption($media)])->pluck('name', 'id')->toArray())
             // ->getSearchResultsUsing(function (string $search): array {
             //     return Media::query()
             //         ->where('name', 'like', "%{$search}%")
@@ -93,7 +93,7 @@ class MediaPicker extends Select
                     $size = Storage::disk($disk)->size($tempPath);
 
                     // Generate file name
-                    if (!$baseName) {
+                    if (! $baseName) {
                         $baseName = pathinfo($tempPath, PATHINFO_FILENAME);
                     }
                     $extension = pathinfo($tempPath, PATHINFO_EXTENSION);

@@ -7,7 +7,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Utilities\Get;
 use SmartCms\Kit\Http\Resources\SimplePageResource;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Models\Pages\SimplePage;
@@ -29,7 +28,7 @@ class PopularItems implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn($item): array => (new SimplePageResource($item))->toArray(request()));
+        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
@@ -47,7 +46,7 @@ class PopularItems implements VariableTypeInterface
                 ->label(__('kit::admin.items_limit'))
                 ->default(self::DEFAULT_LIMIT)
                 ->numeric()
-                ->formatStateUsing(fn($state) => $state ?? self::DEFAULT_LIMIT),
+                ->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
         ]);
     }
 
@@ -68,6 +67,6 @@ class PopularItems implements VariableTypeInterface
             ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
             ->orderBy('views', 'desc');
 
-        return $query->get()->map(fn($item): array => (new SimplePageResource($item))->toArray(request()));
+        return $query->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
     }
 }
