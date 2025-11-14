@@ -2,30 +2,46 @@
 
 namespace SmartCms\Kit\Services\AI;
 
-use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use OpenAI;
 use SmartCms\Kit\Models\Page;
 
 /**
- * Gemini AI Service
+ * OpenRouter AI Service
  *
- * Provides AI-powered content generation using Google's Gemini API
+ * Provides AI-powered content generation using OpenRouter API
+ * Supports multiple AI models (Claude, GPT, Gemini, Llama, etc.)
  *
  * Features:
  * - Generate SEO meta descriptions
  * - Generate keywords from content
  * - Generate summaries
  * - Translate content to multiple languages
+ * - Configurable model selection per task type
  */
-class GeminiService
+class OpenRouterService
 {
+    protected $client;
+
+    public function __construct()
+    {
+        if ($this->isConfigured()) {
+            $this->client = OpenAI::factory()
+                ->withApiKey(config('openrouter.api_key'))
+                ->withBaseUri('https://openrouter.ai/api/v1')
+                ->withHttpHeader('HTTP-Referer', config('openrouter.site_url'))
+                ->withHttpHeader('X-Title', config('openrouter.site_name'))
+                ->make();
+        }
+    }
+
     /**
      * Generate SEO meta description from page title and content
      */
     public function generateMetaDescription(string $title, ?string $content = null): string
     {
-        $cacheKey = 'gemini:meta:' . md5($title . $content);
+        $cacheKey = 'openrouter:meta:' . md5($title . $content);
 
         return Cache::remember($cacheKey, now()->addDay(), function () use ($title, $content) {
             $prompt = "Write a compelling SEO meta description (maximum 155 characters) for a webpage with the following title: \"{$title}\".";
@@ -37,10 +53,14 @@ class GeminiService
 
             $prompt .= "\n\nRequirements:\n- Maximum 155 characters\n- Include relevant keywords\n- Make it engaging and click-worthy\n- Don't include quotes or special characters\n\nGenerate only the description text, nothing else:";
 
-            $response = Gemini::generativeModel('gemini-2.0-flash-exp')
-                ->generateContent($prompt);
+            $response = $this->client->chat()->create([
+                'model' => config('openrouter.models.generation'),
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+            ]);
 
-            return Str::limit($response->text(), 155);
+            return Str::limit($response->choices[0]->message->content, 155);
         });
     }
 
@@ -49,7 +69,7 @@ class GeminiService
      */
     public function generateKeywords(string $title, ?string $content = null): string
     {
-        $cacheKey = 'gemini:keywords:' . md5($title . $content);
+        $cacheKey = 'openrouter:keywords:' . md5($title . $content);
 
         return Cache::remember($cacheKey, now()->addDay(), function () use ($title, $content) {
             $prompt = "Extract the most relevant SEO keywords for a webpage with the title: \"{$title}\".";
@@ -61,10 +81,14 @@ class GeminiService
 
             $prompt .= "\n\nRequirements:\n- Generate 5-10 relevant keywords\n- Separate with commas\n- Focus on search-relevant terms\n- Don't include the word 'keywords' or explanations\n\nGenerate only the comma-separated keywords:";
 
-            $response = Gemini::generativeModel('gemini-2.0-flash-exp')
-                ->generateContent($prompt);
+            $response = $this->client->chat()->create([
+                'model' => config('openrouter.models.generation'),
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+            ]);
 
-            return $response->text();
+            return $response->choices[0]->message->content;
         });
     }
 
@@ -73,17 +97,21 @@ class GeminiService
      */
     public function generateSummary(string $title, string $content): string
     {
-        $cacheKey = 'gemini:summary:' . md5($title . $content);
+        $cacheKey = 'openrouter:summary:' . md5($title . $content);
 
         return Cache::remember($cacheKey, now()->addDay(), function () use ($title, $content) {
             $contentPreview = Str::limit(strip_tags($content), 1000);
 
             $prompt = "Write a concise summary (2-3 sentences, maximum 200 characters) for the following content:\n\nTitle: {$title}\n\nContent: {$contentPreview}\n\nRequirements:\n- 2-3 sentences maximum\n- Maximum 200 characters\n- Capture the main points\n- Clear and engaging\n\nGenerate only the summary text:";
 
-            $response = Gemini::generativeModel('gemini-2.0-flash-exp')
-                ->generateContent($prompt);
+            $response = $this->client->chat()->create([
+                'model' => config('openrouter.models.generation'),
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+            ]);
 
-            return Str::limit($response->text(), 200);
+            return Str::limit($response->choices[0]->message->content, 200);
         });
     }
 
@@ -104,7 +132,7 @@ class GeminiService
      */
     public function translate(string $text, string $targetLanguage, string $sourceLanguage = 'en'): string
     {
-        $cacheKey = 'gemini:translate:' . md5($text . $targetLanguage);
+        $cacheKey = 'openrouter:translate:' . md5($text . $targetLanguage);
 
         return Cache::remember($cacheKey, now()->addWeek(), function () use ($text, $targetLanguage, $sourceLanguage) {
             $languageNames = [
@@ -127,10 +155,14 @@ class GeminiService
 
             $prompt = "Translate the following text from {$sourceLang} to {$targetLang}.\n\nText to translate:\n{$text}\n\nRequirements:\n- Maintain the original meaning and tone\n- Keep any HTML tags intact if present\n- Natural, fluent translation\n- Don't add explanations or notes\n\nTranslated text:";
 
-            $response = Gemini::generativeModel('gemini-2.0-flash-exp')
-                ->generateContent($prompt);
+            $response = $this->client->chat()->create([
+                'model' => config('openrouter.models.translation'),
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+            ]);
 
-            return $response->text();
+            return $response->choices[0]->message->content;
         });
     }
 
@@ -183,19 +215,27 @@ class GeminiService
     }
 
     /**
-     * Check if Gemini API is configured
+     * Check if OpenRouter API is configured
      */
     public function isConfigured(): bool
     {
-        return ! empty(config('gemini.api_key'));
+        return ! empty(config('openrouter.api_key'));
+    }
+
+    /**
+     * Get current model configuration
+     */
+    public function getModels(): array
+    {
+        return config('openrouter.models');
     }
 
     /**
      * Get API usage estimate (tokens)
+     * Rough estimation: 1 token ≈ 4 characters
      */
     public function estimateTokens(string $text): int
     {
-        // Rough estimation: 1 token ≈ 4 characters
         return (int) ceil(strlen($text) / 4);
     }
 }

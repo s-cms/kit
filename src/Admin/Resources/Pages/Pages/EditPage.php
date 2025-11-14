@@ -20,7 +20,7 @@ use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Models\Admin;
 use SmartCms\Kit\Models\Page;
-use SmartCms\Kit\Services\AI\GeminiService;
+use SmartCms\Kit\Services\AI\OpenRouterService;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Actions\SaveAction;
 use SmartCms\Support\Admin\Components\Actions\SaveAndClose;
@@ -139,16 +139,16 @@ class EditPage extends EditRecord
                     ->color('success')
                     ->requiresConfirmation()
                     ->modalHeading('Generate SEO Fields with AI')
-                    ->modalDescription('This will use Google Gemini AI to generate meta description, keywords, and summary based on the page title and content.')
-                    ->visible(fn () => app(GeminiService::class)->isConfigured())
+                    ->modalDescription('This will use OpenRouter AI to generate meta description, keywords, and summary based on the page title and content.')
+                    ->visible(fn () => app(OpenRouterService::class)->isConfigured())
                     ->action(function (Page $record): void {
-                        $gemini = app(GeminiService::class);
+                        $ai = app(OpenRouterService::class);
 
                         try {
                             $title = $record->getTranslation('title', main_lang()) ?? $record->getTranslation('name', main_lang());
                             $content = $record->getTranslation('content', main_lang());
 
-                            $seoFields = $gemini->generateSeoFields($title, $content);
+                            $seoFields = $ai->generateSeoFields($title, $content);
 
                             // Only update empty fields
                             if (empty($record->getTranslation('description', main_lang()))) {
@@ -185,12 +185,12 @@ class EditPage extends EditRecord
                     ->requiresConfirmation()
                     ->modalHeading('Translate Content')
                     ->modalDescription('This will translate all fields to other configured languages. Only empty fields will be filled.')
-                    ->visible(fn () => app(GeminiService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
+                    ->visible(fn () => app(OpenRouterService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
                     ->action(function (Page $record): void {
-                        $gemini = app(GeminiService::class);
+                        $ai = app(OpenRouterService::class);
 
                         try {
-                            $translations = $gemini->translatePage($record);
+                            $translations = $ai->translatePage($record);
 
                             $updatedCount = 0;
                             foreach ($translations as $lang => $fields) {
