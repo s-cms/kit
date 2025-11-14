@@ -14,7 +14,7 @@ beforeEach(function () {
 });
 
 it('returns robots txt with correct content type', function () {
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     expect($response->getStatusCode())->toBe(200);
@@ -26,7 +26,7 @@ it('disallows all when indexation is disabled', function () {
         ->with('indexation', false)
         ->andReturn(false);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -41,7 +41,7 @@ it('allows indexation when enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -55,7 +55,7 @@ it('disallows admin routes when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -68,7 +68,7 @@ it('disallows cart routes when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -81,7 +81,7 @@ it('disallows checkout routes when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -94,7 +94,7 @@ it('disallows search routes when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -107,7 +107,7 @@ it('disallows register routes when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -120,7 +120,7 @@ it('disallows reset-password routes when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -133,7 +133,7 @@ it('disallows pagination routes when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -146,7 +146,7 @@ it('includes sitemap url when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -160,7 +160,7 @@ it('includes host when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -174,7 +174,7 @@ it('returns minimal robots txt when indexation is disabled', function () {
         ->with('indexation', false)
         ->andReturn(false);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -187,7 +187,7 @@ it('returns comprehensive robots txt when indexation is enabled', function () {
         ->with('indexation', false)
         ->andReturn(true);
 
-    $handler = new RobotsHandler();
+    $handler = new RobotsHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();

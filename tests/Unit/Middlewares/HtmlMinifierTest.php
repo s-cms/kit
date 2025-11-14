@@ -5,13 +5,13 @@ use Illuminate\Http\Response;
 use SmartCms\Kit\Http\Middlewares\HtmlMinifier;
 
 it('can instantiate html minifier', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     expect($minifier)->toBeInstanceOf(HtmlMinifier::class);
 });
 
 it('removes html comments', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = '<div><!-- This is a comment -->Content</div>';
     $minified = $minifier->minify($html);
@@ -21,7 +21,7 @@ it('removes html comments', function () {
 });
 
 it('preserves php tags with space', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = '<?php echo "test"; ?>';
     $minified = $minifier->minify($html);
@@ -30,7 +30,7 @@ it('preserves php tags with space', function () {
 });
 
 it('removes carriage returns', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = "<div>\r\nContent\r\n</div>";
     $minified = $minifier->minify($html);
@@ -39,7 +39,7 @@ it('removes carriage returns', function () {
 });
 
 it('removes newlines', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = "<div>\nContent\n</div>";
     $minified = $minifier->minify($html);
@@ -48,7 +48,7 @@ it('removes newlines', function () {
 });
 
 it('removes tabs', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = "<div>\t\tContent\t</div>";
     $minified = $minifier->minify($html);
@@ -57,7 +57,7 @@ it('removes tabs', function () {
 });
 
 it('condenses multiple spaces into single space', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = '<div>     Content     </div>';
     $minified = $minifier->minify($html);
@@ -67,7 +67,7 @@ it('condenses multiple spaces into single space', function () {
 });
 
 it('removes spaces between tags', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = '<div> <span>Content</span> </div>';
     $minified = $minifier->minify($html);
@@ -76,7 +76,7 @@ it('removes spaces between tags', function () {
 });
 
 it('minifies complex html', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = '
         <!-- Header -->
@@ -98,7 +98,7 @@ it('minifies complex html', function () {
 });
 
 it('handles empty string', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $minified = $minifier->minify('');
 
@@ -106,7 +106,7 @@ it('handles empty string', function () {
 });
 
 it('handles string with only whitespace', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $minified = $minifier->minify("   \n\t   ");
 
@@ -114,7 +114,7 @@ it('handles string with only whitespace', function () {
 });
 
 it('middleware passes request through without minification', function () {
-    $middleware = new HtmlMinifier();
+    $middleware = new HtmlMinifier;
 
     $request = Request::create('/test');
     $response = new Response('<div>   Content   </div>');
@@ -129,7 +129,7 @@ it('middleware passes request through without minification', function () {
 });
 
 it('preserves script tags content', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = '<script>console.log("test");</script>';
     $minified = $minifier->minify($html);
@@ -140,7 +140,7 @@ it('preserves script tags content', function () {
 });
 
 it('preserves style tags content', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = '<style>body { color: red; }</style>';
     $minified = $minifier->minify($html);
@@ -151,7 +151,7 @@ it('preserves style tags content', function () {
 });
 
 it('handles nested tags correctly', function () {
-    $minifier = new HtmlMinifier();
+    $minifier = new HtmlMinifier;
 
     $html = '
         <div>

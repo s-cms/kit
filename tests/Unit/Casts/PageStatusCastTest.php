@@ -13,8 +13,8 @@ beforeEach(function () {
 });
 
 it('returns draft status when value is null', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     $result = $cast->get($model, 'status', null, []);
 
@@ -22,8 +22,8 @@ it('returns draft status when value is null', function () {
 });
 
 it('returns draft status when value is false', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     $result = $cast->get($model, 'status', false, []);
 
@@ -31,8 +31,8 @@ it('returns draft status when value is false', function () {
 });
 
 it('returns draft status when value is empty string', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     $result = $cast->get($model, 'status', '', []);
 
@@ -40,8 +40,8 @@ it('returns draft status when value is empty string', function () {
 });
 
 it('returns actual value when value is truthy', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     $result = $cast->get($model, 'status', PageStatus::Published->value, []);
 
@@ -49,8 +49,8 @@ it('returns actual value when value is truthy', function () {
 });
 
 it('returns published status for existing value', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     $result = $cast->get($model, 'status', 'published', []);
 
@@ -58,8 +58,8 @@ it('returns published status for existing value', function () {
 });
 
 it('sets published status for home page (id = 1)', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     $result = $cast->set($model, 'status', PageStatus::Draft->value, ['id' => 1]);
 
@@ -67,8 +67,8 @@ it('sets published status for home page (id = 1)', function () {
 });
 
 it('does not override status for non-home pages', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     $result = $cast->set($model, 'status', PageStatus::Draft->value, ['id' => 2]);
 
@@ -76,8 +76,8 @@ it('does not override status for non-home pages', function () {
 });
 
 it('handles PageStatus enum instance', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     $result = $cast->set($model, 'status', PageStatus::Published, ['id' => 2]);
 
@@ -85,8 +85,8 @@ it('handles PageStatus enum instance', function () {
 });
 
 it('handles string status value', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     $result = $cast->set($model, 'status', 'draft', ['id' => 2]);
 
@@ -94,8 +94,8 @@ it('handles string status value', function () {
 });
 
 it('forces published status on home page regardless of input', function () {
-    $cast = new PageStatusCast();
-    $model = new Page();
+    $cast = new PageStatusCast;
+    $model = new Page;
 
     // Try to set draft on home page
     $result = $cast->set($model, 'status', PageStatus::Draft->value, ['id' => 1]);
@@ -137,7 +137,7 @@ it('defaults to draft for new pages', function () {
     ]);
 
     // Status should default to draft via cast
-    $cast = new PageStatusCast();
+    $cast = new PageStatusCast;
     $result = $cast->get($page, 'status', null, []);
 
     expect($result)->toBe(PageStatus::Draft->value);

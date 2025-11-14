@@ -20,7 +20,7 @@ it('notifies all admins when contact form is saved', function () {
     $contactForm = Mockery::mock(ContactForm::class);
     $contactForm->id = 1;
 
-    $observer = new ContactFormObserver();
+    $observer = new ContactFormObserver;
     $observer->saved($contactForm);
 
     Notification::assertSentTo(
@@ -37,13 +37,13 @@ it('sends notification to each admin individually', function () {
     $contactForm = Mockery::mock(ContactForm::class);
     $contactForm->id = 1;
 
-    $observer = new ContactFormObserver();
+    $observer = new ContactFormObserver;
     $observer->saved($contactForm);
 
     Notification::assertSentTo(
         $admin,
         NewContactFormNotification::class,
-        function ($notification, $channels) use ($contactForm) {
+        function ($notification, $channels) {
             return true;
         }
     );
@@ -57,7 +57,7 @@ it('handles multiple admins correctly', function () {
     $contactForm = Mockery::mock(ContactForm::class);
     $contactForm->id = 1;
 
-    $observer = new ContactFormObserver();
+    $observer = new ContactFormObserver;
     $observer->saved($contactForm);
 
     Notification::assertSentTimes(NewContactFormNotification::class, 5);
@@ -71,7 +71,7 @@ it('does not fail when no admins exist', function () {
     $contactForm = Mockery::mock(ContactForm::class);
     $contactForm->id = 1;
 
-    $observer = new ContactFormObserver();
+    $observer = new ContactFormObserver;
     $observer->saved($contactForm);
 
     Notification::assertNothingSent();
@@ -94,7 +94,7 @@ it('logs error when notification fails', function () {
         ->once()
         ->andReturn(collect([$admin]));
 
-    $observer = new ContactFormObserver();
+    $observer = new ContactFormObserver;
     $observer->saved($contactForm);
 
     Log::shouldHaveReceived('error')
@@ -120,7 +120,7 @@ it('logs error with correct context', function () {
         ->once()
         ->andReturn(collect([$admin]));
 
-    $observer = new ContactFormObserver();
+    $observer = new ContactFormObserver;
     $observer->saved($contactForm);
 
     Log::shouldHaveReceived('error')
@@ -159,7 +159,7 @@ it('continues notifying other admins if one fails', function () {
         ->once()
         ->andReturn($admins);
 
-    $observer = new ContactFormObserver();
+    $observer = new ContactFormObserver;
     $observer->saved($contactForm);
 
     // Should log one error but continue
@@ -174,13 +174,13 @@ it('passes contact form instance to notification', function () {
     $contactForm = Mockery::mock(ContactForm::class);
     $contactForm->id = 789;
 
-    $observer = new ContactFormObserver();
+    $observer = new ContactFormObserver;
     $observer->saved($contactForm);
 
     Notification::assertSentTo(
         $admin,
         NewContactFormNotification::class,
-        function ($notification) use ($contactForm) {
+        function ($notification) {
             // The notification should have the contact form
             return true;
         }
@@ -188,7 +188,7 @@ it('passes contact form instance to notification', function () {
 });
 
 it('observer can be instantiated', function () {
-    $observer = new ContactFormObserver();
+    $observer = new ContactFormObserver;
 
     expect($observer)->toBeInstanceOf(ContactFormObserver::class);
     expect($observer)->toHaveMethod('saved');

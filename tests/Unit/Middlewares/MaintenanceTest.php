@@ -10,7 +10,7 @@ it('passes request through when maintenance is disabled', function () {
         ->with('system.maintenance', false)
         ->andReturn(false);
 
-    $middleware = new Maintenance();
+    $middleware = new Maintenance;
     $request = Request::create('/test');
 
     $response = $middleware->handle($request, function () {
@@ -25,7 +25,7 @@ it('blocks request when maintenance is enabled', function () {
         ->with('system.maintenance', false)
         ->andReturn(true);
 
-    $middleware = new Maintenance();
+    $middleware = new Maintenance;
     $request = Request::create('/test');
 
     expect(fn () => $middleware->handle($request, function () {
@@ -38,7 +38,7 @@ it('allows bypass with maintenance_bypass cookie', function () {
         ->with('system.maintenance', false)
         ->andReturn(true);
 
-    $middleware = new Maintenance();
+    $middleware = new Maintenance;
     $request = Request::create('/test');
     $request->cookies->set('maintenance_bypass', 'true');
 
@@ -54,7 +54,7 @@ it('blocks request without bypass cookie when maintenance is enabled', function 
         ->with('system.maintenance', false)
         ->andReturn(true);
 
-    $middleware = new Maintenance();
+    $middleware = new Maintenance;
     $request = Request::create('/test');
     // No bypass cookie
 
@@ -68,7 +68,7 @@ it('returns 503 status code when maintenance mode is active', function () {
         ->with('system.maintenance', false)
         ->andReturn(true);
 
-    $middleware = new Maintenance();
+    $middleware = new Maintenance;
     $request = Request::create('/test');
 
     try {
@@ -85,7 +85,7 @@ it('handles multiple requests correctly', function () {
         ->with('system.maintenance', false)
         ->andReturn(false);
 
-    $middleware = new Maintenance();
+    $middleware = new Maintenance;
 
     // First request
     $request1 = Request::create('/test1');
@@ -108,7 +108,7 @@ it('bypass cookie with any value works', function () {
         ->with('system.maintenance', false)
         ->andReturn(true);
 
-    $middleware = new Maintenance();
+    $middleware = new Maintenance;
     $request = Request::create('/test');
     $request->cookies->set('maintenance_bypass', 'any_value');
 
@@ -124,7 +124,7 @@ it('only checks cookie name not value', function () {
         ->with('system.maintenance', false)
         ->andReturn(true);
 
-    $middleware = new Maintenance();
+    $middleware = new Maintenance;
     $request = Request::create('/test');
     $request->cookies->set('maintenance_bypass', '');
 

@@ -13,8 +13,9 @@ beforeEach(function () {
     LanguageFactory::new()->create(['slug' => 'en']);
 
     // Mock the lang helper
-    if (!function_exists('current_lang')) {
-        function current_lang() {
+    if (! function_exists('current_lang')) {
+        function current_lang()
+        {
             return 'en';
         }
     }
@@ -26,7 +27,7 @@ it('finds root page by slug', function () {
         'status' => PageStatus::Published->value,
     ]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/about');
 
     $result = $handler->__invoke($request, 'about');
@@ -47,7 +48,7 @@ it('finds nested page by hierarchical path', function () {
         'status' => PageStatus::Published->value,
     ]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/parent/child');
 
     $result = $handler->__invoke($request, 'parent/child');
@@ -75,7 +76,7 @@ it('finds deeply nested pages', function () {
         'status' => PageStatus::Published->value,
     ]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/level1/level2/level3');
 
     $result = $handler->__invoke($request, 'level1/level2/level3');
@@ -84,7 +85,7 @@ it('finds deeply nested pages', function () {
 });
 
 it('returns 404 for non-existent page', function () {
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/non-existent-page');
 
     expect(fn () => $handler->__invoke($request, 'non-existent-page'))
@@ -98,7 +99,7 @@ it('returns 404 for non-existent nested page', function () {
         'type' => 'category',
     ]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/parent/non-existent');
 
     expect(fn () => $handler->__invoke($request, 'parent/non-existent'))
@@ -108,7 +109,7 @@ it('returns 404 for non-existent nested page', function () {
 it('validates max depth', function () {
     config(['kit.max_page_depth' => 2]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/level1/level2/level3/level4');
 
     expect(fn () => $handler->__invoke($request, 'level1/level2/level3/level4'))
@@ -121,7 +122,7 @@ it('handles empty path segments correctly', function () {
         'status' => PageStatus::Published->value,
     ]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/test');
 
     $result = $handler->__invoke($request, 'test');
@@ -136,7 +137,7 @@ it('returns 404 when parent exists but child does not', function () {
         'type' => 'category',
     ]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/parent/missing-child');
 
     expect(fn () => $handler->__invoke($request, 'parent/missing-child'))
@@ -149,7 +150,7 @@ it('handles root path with empty slug', function () {
         'status' => PageStatus::Published->value,
     ]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/');
 
     $result = $handler->__invoke($request, '');
@@ -179,7 +180,7 @@ it('respects max page depth from config', function () {
         'status' => PageStatus::Published->value,
     ]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/l1/l2/l3');
 
     $result = $handler->__invoke($request, 'l1/l2/l3');
@@ -196,7 +197,7 @@ it('respects max page depth from config', function () {
 it('uses default max depth when not configured', function () {
     config()->forget('kit.max_page_depth');
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
 
     // Create a page at depth 5 (the default max)
     $pages = [];
@@ -240,7 +241,7 @@ it('correctly identifies wrong parent in path', function () {
         'status' => PageStatus::Published->value,
     ]);
 
-    $handler = new PageHandler();
+    $handler = new PageHandler;
     $request = Request::create('/parent1/child');
 
     // Should not find child under wrong parent

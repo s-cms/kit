@@ -1,9 +1,9 @@
 <?php
 
+use Filament\Panel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use SmartCms\Kit\Models\Admin;
-use Filament\Panel;
 
 uses(RefreshDatabase::class);
 

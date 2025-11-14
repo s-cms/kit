@@ -5,7 +5,7 @@ use SmartCms\Kit\Actions\Microdata\OrganizationMicrodata;
 use SmartCms\Kit\Actions\Microdata\WebsiteMicrodata;
 
 it('generates website microdata', function () {
-    $action = new WebsiteMicrodata();
+    $action = new WebsiteMicrodata;
     $microdata = $action->handle();
 
     expect($microdata)->toBeArray();
@@ -16,21 +16,21 @@ it('generates website microdata', function () {
 });
 
 it('website microdata has correct schema.org context', function () {
-    $action = new WebsiteMicrodata();
+    $action = new WebsiteMicrodata;
     $microdata = $action->handle();
 
     expect($microdata['@context'])->toBe('https://schema.org');
 });
 
 it('website microdata has WebSite type', function () {
-    $action = new WebsiteMicrodata();
+    $action = new WebsiteMicrodata;
     $microdata = $action->handle();
 
     expect($microdata['@type'])->toBe('WebSite');
 });
 
 it('generates organization microdata', function () {
-    $action = new OrganizationMicrodata();
+    $action = new OrganizationMicrodata;
     $microdata = $action->handle();
 
     expect($microdata)->toBeArray();
@@ -40,28 +40,28 @@ it('generates organization microdata', function () {
 });
 
 it('organization microdata has Organization type', function () {
-    $action = new OrganizationMicrodata();
+    $action = new OrganizationMicrodata;
     $microdata = $action->handle();
 
     expect($microdata['@type'])->toBe('Organization');
 });
 
 it('organization microdata includes company name', function () {
-    $action = new OrganizationMicrodata();
+    $action = new OrganizationMicrodata;
     $microdata = $action->handle();
 
     expect($microdata)->toHaveKey('name');
 });
 
 it('organization microdata includes logo', function () {
-    $action = new OrganizationMicrodata();
+    $action = new OrganizationMicrodata;
     $microdata = $action->handle();
 
     expect($microdata)->toHaveKey('logo');
 });
 
 it('generates breadcrumbs microdata with empty array', function () {
-    $action = new BreadcrumbsMicrodata();
+    $action = new BreadcrumbsMicrodata;
     $microdata = $action->handle([]);
 
     expect($microdata)->toBeArray();
@@ -71,14 +71,14 @@ it('generates breadcrumbs microdata with empty array', function () {
 });
 
 it('breadcrumbs microdata has correct type', function () {
-    $action = new BreadcrumbsMicrodata();
+    $action = new BreadcrumbsMicrodata;
     $microdata = $action->handle([]);
 
     expect($microdata['@type'])->toBe('BreadcrumbList');
 });
 
 it('breadcrumbs microdata includes home item by default', function () {
-    $action = new BreadcrumbsMicrodata();
+    $action = new BreadcrumbsMicrodata;
     $microdata = $action->handle([]);
 
     expect($microdata['itemListElement'])->toHaveCount(1);
@@ -87,7 +87,7 @@ it('breadcrumbs microdata includes home item by default', function () {
 });
 
 it('breadcrumbs microdata processes single breadcrumb', function () {
-    $action = new BreadcrumbsMicrodata();
+    $action = new BreadcrumbsMicrodata;
 
     $breadcrumbs = [
         ['name' => 'About Us', 'link' => url('/about')],
@@ -101,7 +101,7 @@ it('breadcrumbs microdata processes single breadcrumb', function () {
 });
 
 it('breadcrumbs microdata processes multiple breadcrumbs', function () {
-    $action = new BreadcrumbsMicrodata();
+    $action = new BreadcrumbsMicrodata;
 
     $breadcrumbs = [
         ['name' => 'Products', 'link' => url('/products')],
@@ -118,7 +118,7 @@ it('breadcrumbs microdata processes multiple breadcrumbs', function () {
 });
 
 it('breadcrumbs microdata sets correct positions', function () {
-    $action = new BreadcrumbsMicrodata();
+    $action = new BreadcrumbsMicrodata;
 
     $breadcrumbs = [
         ['name' => 'First', 'link' => url('/first')],
@@ -133,7 +133,7 @@ it('breadcrumbs microdata sets correct positions', function () {
 });
 
 it('breadcrumbs microdata includes links', function () {
-    $action = new BreadcrumbsMicrodata();
+    $action = new BreadcrumbsMicrodata;
 
     $breadcrumbs = [
         ['name' => 'Page', 'link' => url('/page')],
@@ -145,7 +145,7 @@ it('breadcrumbs microdata includes links', function () {
 });
 
 it('breadcrumbs microdata handles missing name with hostname', function () {
-    $action = new BreadcrumbsMicrodata();
+    $action = new BreadcrumbsMicrodata;
 
     $breadcrumbs = [
         ['link' => url('/page')],
@@ -157,7 +157,7 @@ it('breadcrumbs microdata handles missing name with hostname', function () {
 });
 
 it('breadcrumbs microdata handles missing link with default url', function () {
-    $action = new BreadcrumbsMicrodata();
+    $action = new BreadcrumbsMicrodata;
 
     $breadcrumbs = [
         ['name' => 'Page'],
@@ -169,7 +169,7 @@ it('breadcrumbs microdata handles missing link with default url', function () {
 });
 
 it('all microdata actions use schema.org context', function (string $className) {
-    $action = new $className();
+    $action = new $className;
     $microdata = $action->handle([]);
 
     expect($microdata['@context'])->toBe('https://schema.org');
@@ -180,7 +180,7 @@ it('all microdata actions use schema.org context', function (string $className) 
 ]);
 
 it('all microdata actions return arrays', function (string $className) {
-    $action = new $className();
+    $action = new $className;
     $microdata = $action->handle([]);
 
     expect($microdata)->toBeArray();

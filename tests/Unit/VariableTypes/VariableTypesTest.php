@@ -1,8 +1,8 @@
 <?php
 
 use SmartCms\Kit\VariableTypes\AddressType;
-use SmartCms\Kit\VariableTypes\EmailType;
 use SmartCms\Kit\VariableTypes\EmailsType;
+use SmartCms\Kit\VariableTypes\EmailType;
 use SmartCms\Kit\VariableTypes\FormType;
 use SmartCms\Kit\VariableTypes\ImageType;
 use SmartCms\Kit\VariableTypes\KeyValueType;

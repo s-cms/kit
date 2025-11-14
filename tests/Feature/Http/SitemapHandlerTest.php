@@ -16,7 +16,7 @@ beforeEach(function () {
 });
 
 it('returns sitemap index when no lang parameter is provided', function () {
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
 
     $response = $handler->handle();
 
@@ -29,7 +29,7 @@ it('generates sitemap with indexed pages', function () {
         'is_index' => true,
     ]);
 
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
     $response->header('lang', 'en');
 
@@ -52,7 +52,7 @@ it('excludes non-indexed pages from sitemap', function () {
     ]);
 
     request()->merge(['lang' => 'en']);
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -67,7 +67,7 @@ it('includes page priority in sitemap', function () {
     ]);
 
     request()->merge(['lang' => 'en']);
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -82,7 +82,7 @@ it('includes changefreq in sitemap', function () {
     ]);
 
     request()->merge(['lang' => 'en']);
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -98,7 +98,7 @@ it('includes lastmod in sitemap', function () {
     ]);
 
     request()->merge(['lang' => 'en']);
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -116,7 +116,7 @@ it('uses published_at for lastmod when available', function () {
     ]);
 
     request()->merge(['lang' => 'en']);
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -131,7 +131,7 @@ it('falls back to created_at for lastmod when published_at is null', function ()
     ]);
 
     request()->merge(['lang' => 'en']);
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
 
     $content = $response->getContent();
@@ -144,21 +144,21 @@ it('handles empty sitemap gracefully', function () {
     // No pages created
 
     request()->merge(['lang' => 'en']);
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
 
     expect($response->getStatusCode())->toBe(200);
 });
 
 it('sets correct content type header', function () {
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
 
     expect($response->headers->get('Content-Type'))->toContain('text/xml');
 });
 
 it('renders sitemap index without lang parameter', function () {
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->renderSitemap();
 
     expect($response->getStatusCode())->toBe(200);
@@ -173,7 +173,7 @@ it('switches locale based on lang parameter', function () {
     $originalLocale = app()->getLocale();
 
     request()->merge(['lang' => 'uk']);
-    $handler = new SitemapHandler();
+    $handler = new SitemapHandler;
     $response = $handler->handle();
 
     expect($response->getStatusCode())->toBe(200);
