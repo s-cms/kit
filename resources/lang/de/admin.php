@@ -72,4 +72,9 @@ return [
     'layout' => 'Layout',
     'header_blocks' => 'Header Blocks',
     'footer_blocks' => 'Footer Blocks',
+    'regenerate_responsive_images' => 'Responsive Bilder neu generieren',
+    'regenerate_responsive_images_description' => 'Dies generiert alle responsiven Bildgrößen für diese Mediendatei neu. Alte responsive Bilder werden gelöscht und neue werden basierend auf der Originaldatei generiert.',
+    'regenerate' => 'Neu generieren',
+    'responsive_images_regenerated' => 'Responsive Bilder wurden erfolgreich neu generiert',
+    'failed_to_regenerate_responsive_images' => 'Fehler beim Neugenerieren der responsiven Bilder',
 ];

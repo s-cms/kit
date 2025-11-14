@@ -2,6 +2,7 @@
 
 namespace SmartCms\Kit\Services;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use SmartCms\Kit\Models\Media;
 use Spatie\Image\Enums\Fit;
@@ -50,7 +51,7 @@ class ImageProcessingService
             }
         } catch (\Exception $e) {
             // Log error but don't fail the upload
-            \Log::error('Image processing failed for media ' . $media->id, [
+            Log::error('Image processing failed for media ' . $media->id, [
                 'error' => $e->getMessage(),
             ]);
         }
@@ -83,7 +84,7 @@ class ImageProcessingService
 
             return $webpFileName;
         } catch (\Exception $e) {
-            \Log::error('WebP conversion failed for media ' . $media->id, [
+            Log::error('WebP conversion failed for media ' . $media->id, [
                 'error' => $e->getMessage(),
             ]);
 
@@ -96,6 +97,9 @@ class ImageProcessingService
      */
     protected function generateResponsiveImages(Media $media, string $webpPath): array
     {
+        // Delete old responsive images before generating new ones
+        $this->deleteOldResponsiveImages($media);
+
         $widths = $this->getResponsiveWidths($media->width);
         $responsiveImages = [];
 
@@ -118,7 +122,7 @@ class ImageProcessingService
                 $responsiveImages[] = $fileName;
             } catch (\Exception $e) {
                 // Skip this width if it fails
-                \Log::warning('Failed to generate responsive image at width ' . $width . ' for media ' . $media->id, [
+                Log::warning('Failed to generate responsive image at width ' . $width . ' for media ' . $media->id, [
                     'error' => $e->getMessage(),
                 ]);
 
@@ -127,6 +131,29 @@ class ImageProcessingService
         }
 
         return $responsiveImages;
+    }
+
+    /**
+     * Delete old responsive images before regenerating
+     */
+    protected function deleteOldResponsiveImages(Media $media): void
+    {
+        $disk = Storage::disk($media->disk);
+        $responsiveImages = $media->responsive_images ?? [];
+
+        foreach ($responsiveImages as $fileName) {
+            $filePath = $media->path . '/' . $fileName;
+            if ($disk->exists($filePath)) {
+                try {
+                    $disk->delete($filePath);
+                } catch (\Exception $e) {
+                    // Ignore errors when deleting old files
+                    Log::warning('Failed to delete old responsive image: ' . $fileName, [
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+        }
     }
 
     /**

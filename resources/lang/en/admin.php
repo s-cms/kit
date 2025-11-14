@@ -330,4 +330,9 @@ return [
     'error' => 'Error',
     'image_fetched' => 'Image fetched successfully',
     'select_from_existing' => 'Select from existing',
+    'regenerate_responsive_images' => 'Regenerate Responsive Images',
+    'regenerate_responsive_images_description' => 'This will regenerate all responsive image sizes for this media file. Old responsive images will be deleted and new ones will be generated based on the original file.',
+    'regenerate' => 'Regenerate',
+    'responsive_images_regenerated' => 'Responsive images have been successfully regenerated',
+    'failed_to_regenerate_responsive_images' => 'Failed to regenerate responsive images',
 ];

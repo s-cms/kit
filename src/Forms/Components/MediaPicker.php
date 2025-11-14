@@ -3,40 +3,62 @@
 namespace SmartCms\Kit\Forms\Components;
 
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Text;
+use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Services\MediaLibraryService;
 
 class MediaPicker extends Select
 {
+    protected function transformMediaToOption(Media $media): array
+    {
+        return [
+            'id' => $media->id,
+            'name' => new HtmlString("<div style='display: flex; gap: 5px; align-items: center;'>
+                    <img src='{$media->getUrl('thumb')}' alt='{$media->name}' style='width: 20px; height: 20px; object-fit: cover; border-radius: 50%;' >
+                    <span>{$media->name}</span>
+                    </div>")->toHtml(),
+        ];
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->searchable()
             ->preload()
             ->native(false)
-            ->getSearchResultsUsing(function (string $search): array {
-                return Media::query()
-                    ->where('name', 'like', "%{$search}%")
-                    ->orWhere('file_name', 'like', "%{$search}%")
-                    ->limit(50)
-                    ->get()
-                    ->mapWithKeys(fn (Media $media) => [
-                        $media->id => $media->name,
-                    ])
-                    ->toArray();
-            })
-            ->getOptionLabelUsing(function ($value): string {
-                $media = Media::find($value);
-
-                return $media ? $media->name : '';
-            })
+            ->wrapOptionLabels(false)
+            ->options(Media::query()->get()->mapWithKeys(fn(Media $media) => [$media->id => $this->transformMediaToOption($media)])->pluck('name', 'id')->toArray())
+            // ->getSearchResultsUsing(function (string $search): array {
+            //     return Media::query()
+            //         ->where('name', 'like', "%{$search}%")
+            //         ->orWhere('file_name', 'like', "%{$search}%")
+            //         ->limit(50)
+            //         ->get()
+            //         ->map
+            //         ->mapWithKeys(fn(Media $media) => [
+            //             $media->id => $this->transformMediaToOption($media),
+            //         ])
+            //         ->toArray();
+            // })
+            // ->getOptionLabelUsing(function ($value): string |HtmlString {
+            //     $media = Media::find($value);
+            //     if ($media) {
+            //         return new HtmlString("<div class='flex items-center gap-2'>
+            //         <img src='{$media->getUrl('thumb')}' alt='{$media->name}' class='w-6 h-6 rounded-full'>
+            //         <span>{$media->name}</span>
+            //         </div>");
+            //     }
+            //     return $media ? $media->name : '';
+            // })
+            ->allowHtml()
             ->createOptionForm([
-                Section::make(__('kit::admin.upload'))
+                Section::make()
                     ->schema([
                         FileUpload::make('upload_file')
                             ->label(__('kit::admin.image'))
@@ -46,21 +68,13 @@ class MediaPicker extends Select
                             ->acceptedFileTypes(['image/*'])
                             ->maxSize(10240)
                             ->helperText(__('kit::admin.upload_or_url_required')),
-
-                        TextInput::make('upload_name')
-                            ->label(__('kit::admin.name'))
-                            ->placeholder(__('kit::admin.optional')),
-                    ]),
-
-                Section::make(__('kit::admin.import_from_url'))
-                    ->schema([
+                        Text::make('Or')->weight(FontWeight::Bold)->columnSpanFull(),
                         TextInput::make('url_input')
                             ->label(__('kit::admin.image_url'))
                             ->url()
                             ->placeholder('https://example.com/image.jpg')
                             ->helperText(__('kit::admin.upload_or_url_required')),
-
-                        TextInput::make('url_name')
+                        TextInput::make('upload_name')
                             ->label(__('kit::admin.name'))
                             ->placeholder(__('kit::admin.optional')),
                     ]),
@@ -68,6 +82,7 @@ class MediaPicker extends Select
             ->createOptionUsing(function (array $data): int {
                 $service = app(MediaLibraryService::class);
                 // Check which tab was used
+                $baseName = $data['upload_name'] ?? null;
                 if (! empty($data['upload_file'])) {
                     // Handle file upload
                     $disk = config('kit.media.disk', 'public');
@@ -78,7 +93,9 @@ class MediaPicker extends Select
                     $size = Storage::disk($disk)->size($tempPath);
 
                     // Generate file name
-                    $baseName = $data['upload_name'] ?? pathinfo($tempPath, PATHINFO_FILENAME);
+                    if (!$baseName) {
+                        $baseName = pathinfo($tempPath, PATHINFO_FILENAME);
+                    }
                     $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
                     $slug = \Illuminate\Support\Str::slug($baseName);
                     $hash = substr(md5($file), 0, 8);

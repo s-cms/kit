@@ -41,8 +41,8 @@ class PageSummary extends Page
                     DateTimePicker::make('published_at')->reactive()->seconds(false)->default(now())->hidden(fn ($get): bool => $get('status')?->value != 'scheduled'),
                 ]),
             Section::make()->compact()->schema([
-                FileUpload::make('image', $imagePath, __('kit::admin.image')),
-                MediaPicker::make('banner', $imagePath, __('kit::admin.banner')),
+                MediaPicker::make('image')->label(__('kit::admin.image')),
+                MediaPicker::make('banner')->label(__('kit::admin.banner')),
             ])->columns(1),
             Section::make(__('kit::admin.indexation'))->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
                 $index = $get('is_index') ?? true;

@@ -5,9 +5,9 @@ namespace SmartCms\Kit\Admin\Resources\Media\Pages;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Storage;
 use SmartCms\Kit\Admin\Resources\Media\MediaResource;
 use SmartCms\Kit\Models\Media;
@@ -23,7 +23,7 @@ class ListMedia extends ListRecords
             CreateAction::make()
                 ->label(__('kit::admin.upload_image'))
                 ->icon('heroicon-o-plus')
-                ->form([
+                ->schema([
                     Section::make(__('kit::admin.upload'))
                         ->schema([
                             FileUpload::make('upload_file')
@@ -141,7 +141,7 @@ class ListMedia extends ListRecords
             Action::make('upload_multiple')
                 ->label(__('kit::admin.upload_multiple'))
                 ->icon('heroicon-o-photo')
-                ->form([
+                ->schema([
                     FileUpload::make('files')
                         ->label(__('kit::admin.images'))
                         ->image()

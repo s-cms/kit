@@ -7,6 +7,21 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Image\Image;
 
+/**
+ * @property string $uuid
+ * @property string $file_name
+ * @property string $name
+ * @property string $disk
+ * @property string $path
+ * @property string $mime_type
+ * @property int $size
+ * @property int $width
+ * @property int $height
+ * @property array $alt
+ * @property array $conversions
+ * @property array $responsive_images
+ * @property array $custom_properties
+ */
 class Media extends Model
 {
     protected $table = 'media';
