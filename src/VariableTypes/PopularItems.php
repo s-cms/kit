@@ -29,33 +29,25 @@ class PopularItems implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
+        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn($item): array => (new SimplePageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
     {
         return Group::make([
-            Select::make($name . '.parent_id')
-                ->label(__('kit::admin.parent_category'))
-                ->options(Page::query()->where('type', 'category')->pluck('name', 'id'))
-                ->required()
-                ->live()
-                ->helperText(__('kit::admin.select_parent_for_items')),
             Select::make($name . '.categories')
                 ->label(__('kit::admin.filter_by_categories'))
-                ->options(fn (Get $get) => Page::query()
+                ->options(Page::query()
                     ->where('type', 'category')
-                    ->where('parent_id', $get($name . '.parent_id') ?? 0)
                     ->pluck('name', 'id'))
                 ->live()
                 ->multiple()
-                ->visible(fn (Get $get) => $get($name . '.parent_id'))
                 ->helperText(__('kit::admin.optional_category_filter')),
             TextInput::make($name . '.limit')
                 ->label(__('kit::admin.items_limit'))
                 ->default(self::DEFAULT_LIMIT)
                 ->numeric()
-                ->formatStateUsing(fn ($state) => $state ?? self::DEFAULT_LIMIT),
+                ->formatStateUsing(fn($state) => $state ?? self::DEFAULT_LIMIT),
         ]);
     }
 
@@ -65,30 +57,17 @@ class PopularItems implements VariableTypeInterface
             return $this->getDefaultValue();
         }
 
-        $parentId = $value['parent_id'] ?? null;
-        if (! $parentId) {
-            return $this->getDefaultValue();
-        }
-
         $categories = $value['categories'] ?? [];
 
         $query = SimplePage::query()
-            ->when(is_array($categories) && count($categories) > 0, function ($query) use ($categories) {
-                $query->whereIn('parent_id', $categories);
-            }, function ($query) use ($parentId) {
-                $parent = Page::find($parentId);
-                if ($parent) {
-                    $descendantIds = $parent->descendants()->pluck('id')->toArray();
-                    $descendantIds[] = $parentId;
-                    $query->whereIn('parent_id', $descendantIds);
-                }
-            })
+            ->whereIn('parent_id', $categories)
+            ->where('type', 'page')
             ->when(app()->bound('page'), function ($query) {
                 $query->where('id', '!=', app('page')->id);
             })
             ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
             ->orderBy('views', 'desc');
 
-        return $query->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
+        return $query->get()->map(fn($item): array => (new SimplePageResource($item))->toArray(request()));
     }
 }
