@@ -4,7 +4,7 @@ namespace SmartCms\Kit\Services\AI;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use OpenAI;
+use MoeMizrak\LaravelOpenrouter\Facades\OpenRouter;
 use SmartCms\Kit\Models\Page;
 
 /**
@@ -22,20 +22,6 @@ use SmartCms\Kit\Models\Page;
  */
 class OpenRouterService
 {
-    protected $client;
-
-    public function __construct()
-    {
-        if ($this->isConfigured()) {
-            $this->client = OpenAI::factory()
-                ->withApiKey(config('openrouter.api_key'))
-                ->withBaseUri('https://openrouter.ai/api/v1')
-                ->withHttpHeader('HTTP-Referer', config('openrouter.site_url'))
-                ->withHttpHeader('X-Title', config('openrouter.site_name'))
-                ->make();
-        }
-    }
-
     /**
      * Generate SEO meta description from page title and content
      */
@@ -53,14 +39,16 @@ class OpenRouterService
 
             $prompt .= "\n\nRequirements:\n- Maximum 155 characters\n- Include relevant keywords\n- Make it engaging and click-worthy\n- Don't include quotes or special characters\n\nGenerate only the description text, nothing else:";
 
-            $response = $this->client->chat()->create([
+            $response = OpenRouter::chatCompletion([
                 'model' => config('openrouter.models.generation'),
                 'messages' => [
                     ['role' => 'user', 'content' => $prompt],
                 ],
             ]);
 
-            return Str::limit($response->choices[0]->message->content, 155);
+            $text = $response['choices'][0]['message']['content'] ?? '';
+
+            return Str::limit($text, 155);
         });
     }
 
@@ -81,14 +69,14 @@ class OpenRouterService
 
             $prompt .= "\n\nRequirements:\n- Generate 5-10 relevant keywords\n- Separate with commas\n- Focus on search-relevant terms\n- Don't include the word 'keywords' or explanations\n\nGenerate only the comma-separated keywords:";
 
-            $response = $this->client->chat()->create([
+            $response = OpenRouter::chatCompletion([
                 'model' => config('openrouter.models.generation'),
                 'messages' => [
                     ['role' => 'user', 'content' => $prompt],
                 ],
             ]);
 
-            return $response->choices[0]->message->content;
+            return $response['choices'][0]['message']['content'] ?? '';
         });
     }
 
@@ -104,14 +92,16 @@ class OpenRouterService
 
             $prompt = "Write a concise summary (2-3 sentences, maximum 200 characters) for the following content:\n\nTitle: {$title}\n\nContent: {$contentPreview}\n\nRequirements:\n- 2-3 sentences maximum\n- Maximum 200 characters\n- Capture the main points\n- Clear and engaging\n\nGenerate only the summary text:";
 
-            $response = $this->client->chat()->create([
+            $response = OpenRouter::chatCompletion([
                 'model' => config('openrouter.models.generation'),
                 'messages' => [
                     ['role' => 'user', 'content' => $prompt],
                 ],
             ]);
 
-            return Str::limit($response->choices[0]->message->content, 200);
+            $text = $response['choices'][0]['message']['content'] ?? '';
+
+            return Str::limit($text, 200);
         });
     }
 
@@ -155,14 +145,14 @@ class OpenRouterService
 
             $prompt = "Translate the following text from {$sourceLang} to {$targetLang}.\n\nText to translate:\n{$text}\n\nRequirements:\n- Maintain the original meaning and tone\n- Keep any HTML tags intact if present\n- Natural, fluent translation\n- Don't add explanations or notes\n\nTranslated text:";
 
-            $response = $this->client->chat()->create([
+            $response = OpenRouter::chatCompletion([
                 'model' => config('openrouter.models.translation'),
                 'messages' => [
                     ['role' => 'user', 'content' => $prompt],
                 ],
             ]);
 
-            return $response->choices[0]->message->content;
+            return $response['choices'][0]['message']['content'] ?? '';
         });
     }
 

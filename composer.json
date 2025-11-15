@@ -27,7 +27,7 @@
         "laravel-notification-channels/telegram": "^6.0",
         "laravel/mcp": "^0.3.2",
         "lorisleiva/laravel-actions": "^2.8",
-        "openai-php/client": "*",
+        "moe-mizrak/laravel-openrouter": "*",
         "smart-cms/forms": "^1.0",
         "smart-cms/lang": "^1.0",
         "smart-cms/menu": "^1.0",

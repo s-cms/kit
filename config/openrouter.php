@@ -15,6 +15,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Site Configuration
+    |--------------------------------------------------------------------------
+    |
+    | These are used for OpenRouter's attribution and analytics
+    |
+    */
+
+    'site_url' => env('APP_URL'),
+    'site_name' => env('APP_NAME'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Model Selection
     |--------------------------------------------------------------------------
     |
@@ -44,6 +56,14 @@ return [
 
     'timeout' => env('OPENROUTER_TIMEOUT', 60),
 
-    'site_url' => env('APP_URL'),
-    'site_name' => env('APP_NAME'),
+    /*
+    |--------------------------------------------------------------------------
+    | Retry Configuration
+    |--------------------------------------------------------------------------
+    */
+
+    'retry' => [
+        'times' => (int) env('OPENROUTER_RETRY_TIMES', 2),
+        'sleep' => (int) env('OPENROUTER_RETRY_SLEEP', 1000), // milliseconds
+    ],
 ];
