@@ -24,6 +24,7 @@
         "codewithdennis/filament-lucide-icons": "^4.0",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.0",
+        "filament/spatie-laravel-tags-plugin": "^4.0",
         "laravel-notification-channels/telegram": "^6.0",
         "laravel/mcp": "^0.3.2",
         "lorisleiva/laravel-actions": "^2.8",

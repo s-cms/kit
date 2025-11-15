@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
@@ -53,6 +54,8 @@ class PageSummary extends Page
             })->compact()->schema([
                 Toggle::make('is_index')->label(__('kit::admin.is_index'))->hiddenLabel()->default(true)->reactive(),
             ]),
+            SpatieTagsInput::make('tags')
+            ->label(__('kit::admin.tags')),
             Section::make(__('kit::admin.child_templates'))
                 ->icon(Heroicon::Squares2x2)
                 ->compact()

@@ -237,7 +237,7 @@ class EditPage extends EditRecord
                         $textContent = $analyzer->formatAsText($analysis);
 
                         return [
-                            Placeholder::make('seo_analysis')
+                            TextEntry::make('seo_analysis')
                                 ->content(fn () => new \Illuminate\Support\HtmlString(
                                     '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
                                     nl2br(htmlspecialchars($textContent)) .

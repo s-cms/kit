@@ -5,7 +5,7 @@ namespace SmartCms\Kit\Admin\Resources\Pages\Schemas;
 use Filament\Actions\Action;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -59,31 +59,31 @@ class PageForm
                                     ->placeholder(__('kit::admin.no_parent'))
                                     ->helperText(fn ($get) => self::getDepthHelperText($get('parent_id')))
                                     ->hidden(fn ($record): bool => $record?->id == 1),
-                                TagsInput::make('tags')
-                                    ->label(__('kit::admin.tags'))
-                                    ->placeholder(__('kit::admin.tags_placeholder'))
-                                    ->suggestions(fn () => Tag::pluck('name->' . main_lang())->toArray())
-                                    ->newestFirst()
-                                    ->afterStateHydrated(function (TagsInput $component, $state, ?Page $record) {
-                                        if ($record && $record->exists) {
-                                            $tagNames = $record->tags->pluck('name->' . main_lang())->toArray();
-                                            $component->state($tagNames);
-                                        }
-                                    })
-                                    ->dehydrated(false)
-                                    ->saveRelationshipsUsing(function (Page $record, $state) {
-                                        if (! $state) {
-                                            return;
-                                        }
+                            //     TagsInput::make('tags')
+                            //         ->label(__('kit::admin.tags'))
+                            //         ->placeholder(__('kit::admin.tags_placeholder'))
+                            //         ->suggestions(fn () => Tag::pluck('name->' . main_lang())->toArray())
+                            //         ->newestFirst()
+                            //         ->afterStateHydrated(function (TagsInput $component, $state, ?Page $record) {
+                            //             if ($record && $record->exists) {
+                            //                 $tagNames = $record->tags->pluck('name->' . main_lang())->toArray();
+                            //                 $component->state($tagNames);
+                            //             }
+                            //         })
+                            //         ->dehydrated(false)
+                            //         ->saveRelationshipsUsing(function (Page $record, $state) {
+                            //             if (! $state) {
+                            //                 return;
+                            //             }
 
-                                        $tagIds = collect($state)->map(function ($tagName) {
-                                            $tag = Tag::findOrCreate($tagName, null, main_lang());
+                            //             $tagIds = collect($state)->map(function ($tagName) {
+                            //                 $tag = Tag::findOrCreate($tagName, null, main_lang());
 
-                                            return $tag->id;
-                                        })->toArray();
+                            //                 return $tag->id;
+                            //             })->toArray();
 
-                                        $record->syncTags($tagIds);
-                                    }),
+                            //             $record->syncTags($tagIds);
+                            //         }),
                             ]),
                             Tabs::make('seo')->schema(
                                 app('lang')->adminLanguages()->map(function ($language) {

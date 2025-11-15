@@ -22,6 +22,8 @@ class TagResource extends Resource
 
     protected static string | BackedEnum | null $navigationIcon = LucideIcon::Tags;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getNavigationBadge(): ?string
     {
         return Tag::query()->count();
@@ -36,8 +38,6 @@ class TagResource extends Resource
     {
         return __('kit::admin.tags');
     }
-
-    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
