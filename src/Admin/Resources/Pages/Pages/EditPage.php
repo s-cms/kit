@@ -11,6 +11,8 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
@@ -22,6 +24,7 @@ use SmartCms\Kit\Models\Admin;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Services\AI\OpenRouterService;
 use SmartCms\Kit\Services\SEO\SeoAnalyzer;
+use SmartCms\Kit\Services\SEO\SocialMediaPreview;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Actions\SaveAction;
 use SmartCms\Support\Admin\Components\Actions\SaveAndClose;
@@ -243,6 +246,76 @@ class EditPage extends EditRecord
                                     '</div>'
                                 ))
                                 ->columnSpanFull(),
+                        ];
+                    }),
+                Action::make('social_media_preview')
+                    ->label('Social Media Preview')
+                    ->icon(Heroicon::Share)
+                    ->color('info')
+                    ->modalHeading('Social Media Preview')
+                    ->modalDescription('Preview how your page will appear when shared on social media')
+                    ->modalWidth('3xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->schema(function (Page $record): array {
+                        // Generate social media previews
+                        $preview = new SocialMediaPreview($record);
+                        $previews = $preview->generatePreviews();
+                        $formattedPreviews = $preview->formatAsText($previews);
+
+                        return [
+                            Tabs::make('social_previews')
+                                ->tabs([
+                                    Tab::make('Google')
+                                        ->icon(Heroicon::MagnifyingGlass)
+                                        ->schema([
+                                            TextEntry::make('google_preview')
+                                                ->label('')
+                                                ->content(fn () => new \Illuminate\Support\HtmlString(
+                                                    '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
+                                                    nl2br(htmlspecialchars($formattedPreviews['google'])) .
+                                                    '</div>'
+                                                ))
+                                                ->columnSpanFull(),
+                                        ]),
+                                    Tab::make('Facebook')
+                                        ->icon(Heroicon::AtSymbol)
+                                        ->schema([
+                                            TextEntry::make('facebook_preview')
+                                                ->label('')
+                                                ->content(fn () => new \Illuminate\Support\HtmlString(
+                                                    '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
+                                                    nl2br(htmlspecialchars($formattedPreviews['facebook'])) .
+                                                    '</div>'
+                                                ))
+                                                ->columnSpanFull(),
+                                        ]),
+                                    Tab::make('Twitter')
+                                        ->icon(Heroicon::ChatBubbleLeft)
+                                        ->schema([
+                                            TextEntry::make('twitter_preview')
+                                                ->label('')
+                                                ->content(fn () => new \Illuminate\Support\HtmlString(
+                                                    '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
+                                                    nl2br(htmlspecialchars($formattedPreviews['twitter'])) .
+                                                    '</div>'
+                                                ))
+                                                ->columnSpanFull(),
+                                        ]),
+                                    Tab::make('LinkedIn')
+                                        ->icon(Heroicon::Briefcase)
+                                        ->schema([
+                                            TextEntry::make('linkedin_preview')
+                                                ->label('')
+                                                ->content(fn () => new \Illuminate\Support\HtmlString(
+                                                    '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
+                                                    nl2br(htmlspecialchars($formattedPreviews['linkedin'])) .
+                                                    '</div>'
+                                                ))
+                                                ->columnSpanFull(),
+                                        ]),
+                                ])
+                                ->contained(false),
                         ];
                     }),
                 DeleteAction::make()->hidden(fn (Page $record): bool => $record->is_system || $record->is_root),
