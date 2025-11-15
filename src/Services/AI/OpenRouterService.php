@@ -148,6 +148,65 @@ class OpenRouterService
     }
 
     /**
+     * Generate SEO improvement suggestions based on identified problems
+     *
+     * @param  string  $checkName  The name of the SEO check (e.g., 'Meta Title', 'Content Length')
+     * @param  string  $problem  Description of the identified problem
+     * @param  array  $context  Additional context about the problem (current values, targets, page info)
+     * @return array Up to 3 improvement suggestions
+     */
+    public function generateSeoImprovements(string $checkName, string $problem, array $context): array
+    {
+        $cacheKey = 'openrouter:seo-improve:' . md5($checkName . $problem . json_encode($context));
+
+        return Cache::remember($cacheKey, now()->addDay(), function () use ($checkName, $problem, $context) {
+            $prompt = "You are an SEO expert. Provide up to 3 specific, actionable improvement suggestions for the following SEO issue:\n\n";
+            $prompt .= "Issue Category: {$checkName}\n";
+            $prompt .= "Problem: {$problem}\n\n";
+
+            // Add context information
+            if (! empty($context)) {
+                $prompt .= "Context:\n";
+                foreach ($context as $key => $value) {
+                    if (is_string($value)) {
+                        $value = Str::limit($value, 200);
+                    }
+                    $prompt .= '- ' . ucfirst(str_replace('_', ' ', $key)) . ": {$value}\n";
+                }
+                $prompt .= "\n";
+            }
+
+            $prompt .= "Requirements:\n";
+            $prompt .= "- Provide 1-3 specific, actionable suggestions\n";
+            $prompt .= "- Each suggestion should be concise (1-2 sentences)\n";
+            $prompt .= "- Focus on practical improvements\n";
+            $prompt .= "- Consider SEO best practices\n";
+            $prompt .= "- Return ONLY the suggestions, one per line\n";
+            $prompt .= "- Start each suggestion with a number (1., 2., 3.)\n\n";
+            $prompt .= 'Suggestions:';
+
+            $chatData = $this->getChatData($prompt);
+            $response = $this->getResponse($chatData);
+
+            // Parse response into array of suggestions
+            $suggestions = [];
+            $lines = explode("\n", trim($response));
+
+            foreach ($lines as $line) {
+                $line = trim($line);
+                // Remove numbering if present
+                $line = preg_replace('/^[\d\.\-\*\•]\s*/', '', $line);
+                if (! empty($line) && strlen($line) > 10) {
+                    $suggestions[] = $line;
+                }
+            }
+
+            // Limit to 3 suggestions
+            return array_slice($suggestions, 0, 3);
+        });
+    }
+
+    /**
      * Translate content to a specific language
      */
     public function translate(string $text, string $targetLanguage, string $sourceLanguage = 'en'): string

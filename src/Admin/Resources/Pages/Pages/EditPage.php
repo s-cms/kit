@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -21,6 +22,7 @@ use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Models\Admin;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Services\AI\OpenRouterService;
+use SmartCms\Kit\Services\SEO\SeoAnalyzer;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Actions\SaveAction;
 use SmartCms\Support\Admin\Components\Actions\SaveAndClose;
@@ -217,6 +219,32 @@ class EditPage extends EditRecord
                                 ->body($e->getMessage())
                                 ->send();
                         }
+                    }),
+                Action::make('seo_health_check')
+                    ->label('SEO Health Check')
+                    ->icon(Heroicon::ChartBar)
+                    ->color('warning')
+                    ->modalHeading('SEO Health Check Report')
+                    ->modalDescription('Comprehensive SEO analysis with AI-powered improvement suggestions')
+                    ->modalWidth('3xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->schema(function (Page $record): array {
+                        // Run SEO analysis with AI suggestions
+                        $aiEnabled = app(OpenRouterService::class)->isConfigured();
+                        $analyzer = new SeoAnalyzer($record, withAiSuggestions: $aiEnabled);
+                        $analysis = $analyzer->analyze();
+                        $textContent = $analyzer->formatAsText($analysis);
+
+                        return [
+                            Placeholder::make('seo_analysis')
+                                ->content(fn () => new \Illuminate\Support\HtmlString(
+                                    '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
+                                    nl2br(htmlspecialchars($textContent)) .
+                                    '</div>'
+                                ))
+                                ->columnSpanFull(),
+                        ];
                     }),
                 DeleteAction::make()->hidden(fn (Page $record): bool => $record->is_system || $record->is_root),
                 Action::make('change_published_at')

@@ -13,7 +13,7 @@ use SmartCms\Kit\Admin\Resources\Tags\Pages\EditTag;
 use SmartCms\Kit\Admin\Resources\Tags\Pages\ListTags;
 use SmartCms\Kit\Admin\Resources\Tags\Schemas\TagForm;
 use SmartCms\Kit\Admin\Resources\Tags\Tables\TagsTable;
-use SmartCms\Kit\Models\Tag;
+use Spatie\Tags\Tag;
 use UnitEnum;
 
 class TagResource extends Resource

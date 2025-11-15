@@ -5,6 +5,7 @@ namespace SmartCms\Kit\Admin\Resources\Pages\Schemas;
 use Filament\Actions\Action;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -58,28 +59,31 @@ class PageForm
                                     ->placeholder(__('kit::admin.no_parent'))
                                     ->helperText(fn ($get) => self::getDepthHelperText($get('parent_id')))
                                     ->hidden(fn ($record): bool => $record?->id == 1),
-                                Select::make('tags')
+                                TagsInput::make('tags')
                                     ->label(__('kit::admin.tags'))
-                                    ->multiple()
-                                    ->relationship('tags', 'name->' . main_lang())
-                                    ->preload()
-                                    ->createOptionForm([
-                                        \Filament\Forms\Components\TextInput::make('name.' . main_lang())
-                                            ->label(__('kit::admin.tag_name'))
-                                            ->required(),
-                                        \Filament\Forms\Components\TextInput::make('type')
-                                            ->label(__('kit::admin.tag_type'))
-                                            ->placeholder('general'),
-                                    ])
-                                    ->createOptionUsing(function (array $data) {
-                                        $tag = Tag::create([
-                                            'name' => $data['name'],
-                                            'type' => $data['type'] ?? null,
-                                        ]);
-
-                                        return $tag->id;
+                                    ->placeholder(__('kit::admin.tags_placeholder'))
+                                    ->suggestions(fn () => Tag::pluck('name->' . main_lang())->toArray())
+                                    ->newestFirst()
+                                    ->afterStateHydrated(function (TagsInput $component, $state, ?Page $record) {
+                                        if ($record && $record->exists) {
+                                            $tagNames = $record->tags->pluck('name->' . main_lang())->toArray();
+                                            $component->state($tagNames);
+                                        }
                                     })
-                                    ->searchable(),
+                                    ->dehydrated(false)
+                                    ->saveRelationshipsUsing(function (Page $record, $state) {
+                                        if (! $state) {
+                                            return;
+                                        }
+
+                                        $tagIds = collect($state)->map(function ($tagName) {
+                                            $tag = Tag::findOrCreate($tagName, null, main_lang());
+
+                                            return $tag->id;
+                                        })->toArray();
+
+                                        $record->syncTags($tagIds);
+                                    }),
                             ]),
                             Tabs::make('seo')->schema(
                                 app('lang')->adminLanguages()->map(function ($language) {
