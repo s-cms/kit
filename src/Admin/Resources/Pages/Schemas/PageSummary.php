@@ -55,7 +55,7 @@ class PageSummary extends Page
                 Toggle::make('is_index')->label(__('kit::admin.is_index'))->hiddenLabel()->default(true)->reactive(),
             ]),
             SpatieTagsInput::make('tags')
-            ->label(__('kit::admin.tags')),
+                ->label(__('kit::admin.tags')),
             Section::make(__('kit::admin.child_templates'))
                 ->icon(Heroicon::Squares2x2)
                 ->compact()

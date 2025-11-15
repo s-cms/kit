@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Model;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
-use SmartCms\Kit\Admin\Resources\Pages\Tables\PagesTable;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 
@@ -60,8 +59,8 @@ class ChildrenRelationManager extends RelationManager
                     ->badge()
                     ->formatStateUsing(fn ($state) => PageStatus::tryFrom($state)?->getLabel()),
                 SpatieTagsColumn::make('tags')
-                ->label(__('kit::admin.tags'))
-                ->limitList(3),
+                    ->label(__('kit::admin.tags'))
+                    ->limitList(3),
 
                 Tables\Columns\TextColumn::make('children_count')
                     ->label(__('kit::admin.children_count'))
