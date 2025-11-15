@@ -26,10 +26,12 @@ use SmartCms\Kit\Models\Page;
 class OpenRouterService
 {
     public string $model;
+
     public string $max_tokens;
+
     public function __construct()
     {
-        $this->model = 'moonshotai/kimi-k2:free'; //config('openrouter.models.generation');
+        $this->model = 'moonshotai/kimi-k2:free'; // config('openrouter.models.generation');
         $this->max_tokens = config('openrouter.max_tokens', 10000);
     }
 
@@ -39,6 +41,7 @@ class OpenRouterService
             content: $prompt,
             role: RoleType::USER,
         );
+
         return new ChatData(messages: [$messageData], model: $this->model, max_tokens: $this->max_tokens);
     }
 
@@ -46,8 +49,10 @@ class OpenRouterService
     {
         $chatResponse = LaravelOpenRouter::chatRequest($chatData);
         $response = $chatResponse->toArray();
+
         return $response['choices'][0]['message']['content'] ?? '';
     }
+
     /**
      * Generate SEO meta description from page title and content
      */
@@ -115,6 +120,7 @@ class OpenRouterService
     public function generateHeading(string $title, ?string $content = null): string
     {
         $cacheKey = 'openrouter:heading:' . md5($title . $content);
+
         return Cache::remember($cacheKey, now()->addDay(), function () use ($title, $content) {
             $prompt = "Generate a heading for a webpage with the title: \"{$title}\". Use the content to understand the topic and generate a heading that is relevant to the content.";
             if ($content) {
@@ -123,6 +129,7 @@ class OpenRouterService
             }
             $prompt .= "\n\nRequirements:\n- Maximum 200 characters\n- Include relevant keywords\n- Make it engaging and click-worthy\n- Don't include quotes or special characters\n\nGenerate only the heading text, nothing else:";
             $chatData = $this->getChatData($prompt);
+
             return $this->getResponse($chatData);
         });
     }

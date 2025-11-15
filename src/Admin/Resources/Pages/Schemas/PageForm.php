@@ -18,7 +18,6 @@ use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Services\AI\OpenRouterService;
-use SmartCms\Seo\Admin\Seos\Schemas\RelatedSeoForm;
 use SmartCms\Support\Admin\Components\Layout\FormGrid;
 use SmartCms\Support\Admin\Components\Layout\LeftGrid;
 use SmartCms\Support\Admin\Components\Layout\RightGrid;
@@ -44,21 +43,21 @@ class PageForm
                         LeftGrid::make()->schema([
                             Section::make([
                                 PageNameField::make(),
-                                PageSlugField::make()->hidden(fn($record): bool => $record?->id == 1),
+                                PageSlugField::make()->hidden(fn ($record): bool => $record?->id == 1),
                                 Select::make('type')
                                     ->label(__('kit::admin.page_type'))
                                     ->options(self::getAvailableTypes())
                                     ->default('page')
                                     ->required()
                                     ->reactive()
-                                    ->hidden(fn($record): bool => $record?->id == 1),
+                                    ->hidden(fn ($record): bool => $record?->id == 1),
                                 Select::make('parent_id')
                                     ->label(__('kit::admin.parent_page'))
-                                    ->options(fn($record) => self::getParentOptions($record))
+                                    ->options(fn ($record) => self::getParentOptions($record))
                                     ->searchable()
                                     ->placeholder(__('kit::admin.no_parent'))
-                                    ->helperText(fn($get) => self::getDepthHelperText($get('parent_id')))
-                                    ->hidden(fn($record): bool => $record?->id == 1),
+                                    ->helperText(fn ($get) => self::getDepthHelperText($get('parent_id')))
+                                    ->hidden(fn ($record): bool => $record?->id == 1),
                                 Select::make('tags')
                                     ->label(__('kit::admin.tags'))
                                     ->multiple()

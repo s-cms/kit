@@ -20,7 +20,7 @@ class AiAction extends Action
         $this->icon(Heroicon::Sparkles)
             ->color('success')
             ->iconButton()
-            ->visible(fn() => self::isAiConfigured());
+            ->visible(fn () => self::isAiConfigured());
     }
 
     /**
