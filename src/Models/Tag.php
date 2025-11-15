@@ -35,46 +35,12 @@ class Tag extends BaseTag
         'order_column',
     ];
 
-    /**
-     * Get the table associated with the model.
-     */
-    public function getTable(): string
-    {
-        return config('tags.table_names.tags', 'tags');
-    }
+    // /**
+    //  * Get the table associated with the model.
+    //  */
+    // public function getTable(): string
+    // {
+    //     return config('tags.table_names.tags', 'tags');
+    // }
 
-    /**
-     * Override findFromString to handle translatable names
-     */
-    public static function findFromString(string $name, ?string $type = null, ?string $locale = null): self
-    {
-        $locale = $locale ?? app()->getLocale();
-
-        return static::query()
-            ->where("name->{$locale}", $name)
-            ->when($type !== null, fn ($query) => $query->where('type', $type))
-            ->first() ?? static::create([
-                'name' => [$locale => $name],
-                'type' => $type,
-            ]);
-    }
-
-    /**
-     * Override findOrCreate to handle translatable names
-     */
-    public static function findOrCreate(
-        string | array | iterable $values,
-        ?string $type = null,
-        ?string $locale = null
-    ): \Illuminate\Support\Collection | self | static {
-        $tags = collect($values)->map(function ($value) use ($type, $locale) {
-            if ($value instanceof self) {
-                return $value;
-            }
-
-            return static::findFromString($value, $type, $locale);
-        });
-
-        return is_string($values) ? $tags->first() : $tags;
-    }
 }

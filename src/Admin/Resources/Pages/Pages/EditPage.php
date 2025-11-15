@@ -46,18 +46,18 @@ class EditPage extends EditRecord
                     ->label(__('kit::admin.preview_page'))
                     ->icon(Heroicon::Eye)
                     ->color('info')
-                    ->url(fn (Page $record): ?string => $record->generatePreviewUrl())
+                    ->url(fn(Page $record): ?string => $record->generatePreviewUrl())
                     ->openUrlInNewTab()
-                    ->visible(fn (Page $record): bool => $record->status != PageStatus::Published),
+                    ->visible(fn(Page $record): bool => $record->status != PageStatus::Published),
                 Action::make('clone')
                     ->label(__('kit::admin.clone_page'))
                     ->icon(Heroicon::DocumentDuplicate)
                     ->color('gray')
                     ->schema([
                         PageNameField::make()
-                            ->default(fn (Page $record) => $record->name . ' (Copy)'),
+                            ->default(fn(Page $record) => $record->name . ' (Copy)'),
                         PageSlugField::make()
-                            ->default(fn (Page $record) => $record->slug . '-copy'),
+                            ->default(fn(Page $record) => $record->slug . '-copy'),
                         Select::make('parent_id')
                             ->label(__('kit::admin.parent_page'))
                             ->options(function (Page $record) {
@@ -84,7 +84,7 @@ class EditPage extends EditRecord
                                     })
                                     ->toArray();
                             })
-                            ->default(fn (Page $record) => $record->parent_id)
+                            ->default(fn(Page $record) => $record->parent_id)
                             ->searchable()
                             ->placeholder(__('kit::admin.no_parent')),
                     ])
@@ -140,10 +140,9 @@ class EditPage extends EditRecord
                     ->requiresConfirmation()
                     ->modalHeading('Generate SEO Fields with AI')
                     ->modalDescription('This will use OpenRouter AI to generate meta description, keywords, and summary based on the page title and content.')
-                    ->visible(fn () => app(OpenRouterService::class)->isConfigured())
+                    ->visible(fn() => app(OpenRouterService::class)->isConfigured())
                     ->action(function (Page $record): void {
                         $ai = app(OpenRouterService::class);
-
                         try {
                             $title = $record->getTranslation('title', main_lang()) ?? $record->getTranslation('name', main_lang());
                             $content = $record->getTranslation('content', main_lang());
@@ -154,10 +153,13 @@ class EditPage extends EditRecord
                             if (empty($record->getTranslation('description', main_lang()))) {
                                 $record->setTranslation('description', main_lang(), $seoFields['description']);
                             }
-
-                            if (empty($record->getTranslation('keywords', main_lang()))) {
-                                $record->setTranslation('keywords', main_lang(), $seoFields['keywords']);
+                            if (empty($record->getTranslation('heading', main_lang()))) {
+                                $record->setTranslation('heading', main_lang(), $seoFields['heading']);
                             }
+
+                            // if (empty($record->getTranslation('keywords', main_lang()))) {
+                            //     $record->setTranslation('keywords', main_lang(), $seoFields['keywords']);
+                            // }
 
                             if (empty($record->getTranslation('summary', main_lang())) && $seoFields['summary']) {
                                 $record->setTranslation('summary', main_lang(), $seoFields['summary']);
@@ -185,7 +187,7 @@ class EditPage extends EditRecord
                     ->requiresConfirmation()
                     ->modalHeading('Translate Content')
                     ->modalDescription('This will translate all fields to other configured languages. Only empty fields will be filled.')
-                    ->visible(fn () => app(OpenRouterService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
+                    ->visible(fn() => app(OpenRouterService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
                     ->action(function (Page $record): void {
                         $ai = app(OpenRouterService::class);
 
@@ -215,7 +217,7 @@ class EditPage extends EditRecord
                                 ->send();
                         }
                     }),
-                DeleteAction::make()->hidden(fn (Page $record): bool => $record->is_system || $record->is_root),
+                DeleteAction::make()->hidden(fn(Page $record): bool => $record->is_system || $record->is_root),
                 Action::make('change_published_at')
                     ->label(__('kit::admin.change_published_date'))
                     ->icon(Heroicon::Calendar)
@@ -223,7 +225,7 @@ class EditPage extends EditRecord
                     ->schema([
                         DateTimePicker::make('published_at')
                             ->label(__('kit::admin.published_at'))
-                            ->default(fn (Page $record) => $record->published_at)
+                            ->default(fn(Page $record) => $record->published_at)
                             ->required(),
                     ])
                     ->action(function (Page $record, array $data): void {

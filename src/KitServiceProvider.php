@@ -87,6 +87,7 @@ class KitServiceProvider extends PackageServiceProvider
                 'add_type_and_metadata_to_pages_table',
                 'create_block_templates_table',
                 'create_media_table',
+                'create_tags_tables',
             ])
             ->hasTranslations()
             ->hasRoute('static')

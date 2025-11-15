@@ -4,7 +4,10 @@ namespace SmartCms\Kit\Services\AI;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use MoeMizrak\LaravelOpenrouter\Facades\OpenRouter;
+use MoeMizrak\LaravelOpenrouter\DTO\ChatData;
+use MoeMizrak\LaravelOpenrouter\DTO\MessageData;
+use MoeMizrak\LaravelOpenrouter\Facades\LaravelOpenRouter;
+use MoeMizrak\LaravelOpenrouter\Types\RoleType;
 use SmartCms\Kit\Models\Page;
 
 /**
@@ -22,6 +25,29 @@ use SmartCms\Kit\Models\Page;
  */
 class OpenRouterService
 {
+    public string $model;
+    public string $max_tokens;
+    public function __construct()
+    {
+        $this->model = 'moonshotai/kimi-k2:free'; //config('openrouter.models.generation');
+        $this->max_tokens = config('openrouter.max_tokens', 10000);
+    }
+
+    protected function getChatData(string $prompt): ChatData
+    {
+        $messageData = new MessageData(
+            content: $prompt,
+            role: RoleType::USER,
+        );
+        return new ChatData(messages: [$messageData], model: $this->model, max_tokens: $this->max_tokens);
+    }
+
+    protected function getResponse(ChatData $chatData): mixed
+    {
+        $chatResponse = LaravelOpenRouter::chatRequest($chatData);
+        $response = $chatResponse->toArray();
+        return $response['choices'][0]['message']['content'] ?? '';
+    }
     /**
      * Generate SEO meta description from page title and content
      */
@@ -38,15 +64,8 @@ class OpenRouterService
             }
 
             $prompt .= "\n\nRequirements:\n- Maximum 155 characters\n- Include relevant keywords\n- Make it engaging and click-worthy\n- Don't include quotes or special characters\n\nGenerate only the description text, nothing else:";
-
-            $response = OpenRouter::chatCompletion([
-                'model' => config('openrouter.models.generation'),
-                'messages' => [
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-            ]);
-
-            $text = $response['choices'][0]['message']['content'] ?? '';
+            $chatData = $this->getChatData($prompt);
+            $text = $this->getResponse($chatData);
 
             return Str::limit($text, 155);
         });
@@ -69,14 +88,9 @@ class OpenRouterService
 
             $prompt .= "\n\nRequirements:\n- Generate 5-10 relevant keywords\n- Separate with commas\n- Focus on search-relevant terms\n- Don't include the word 'keywords' or explanations\n\nGenerate only the comma-separated keywords:";
 
-            $response = OpenRouter::chatCompletion([
-                'model' => config('openrouter.models.generation'),
-                'messages' => [
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-            ]);
+            $chatData = $this->getChatData($prompt);
 
-            return $response['choices'][0]['message']['content'] ?? '';
+            return $this->getResponse($chatData);
         });
     }
 
@@ -92,16 +106,24 @@ class OpenRouterService
 
             $prompt = "Write a concise summary (2-3 sentences, maximum 200 characters) for the following content:\n\nTitle: {$title}\n\nContent: {$contentPreview}\n\nRequirements:\n- 2-3 sentences maximum\n- Maximum 200 characters\n- Capture the main points\n- Clear and engaging\n\nGenerate only the summary text:";
 
-            $response = OpenRouter::chatCompletion([
-                'model' => config('openrouter.models.generation'),
-                'messages' => [
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-            ]);
+            $chatData = $this->getChatData($prompt);
 
-            $text = $response['choices'][0]['message']['content'] ?? '';
+            return Str::limit($this->getResponse($chatData), 200);
+        });
+    }
 
-            return Str::limit($text, 200);
+    public function generateHeading(string $title, ?string $content = null): string
+    {
+        $cacheKey = 'openrouter:heading:' . md5($title . $content);
+        return Cache::remember($cacheKey, now()->addDay(), function () use ($title, $content) {
+            $prompt = "Generate a heading for a webpage with the title: \"{$title}\". Use the content to understand the topic and generate a heading that is relevant to the content.";
+            if ($content) {
+                $contentPreview = Str::limit(strip_tags($content), 500);
+                $prompt .= "\n\nContent preview: {$contentPreview}";
+            }
+            $prompt .= "\n\nRequirements:\n- Maximum 200 characters\n- Include relevant keywords\n- Make it engaging and click-worthy\n- Don't include quotes or special characters\n\nGenerate only the heading text, nothing else:";
+            $chatData = $this->getChatData($prompt);
+            return $this->getResponse($chatData);
         });
     }
 
@@ -112,7 +134,8 @@ class OpenRouterService
     {
         return [
             'description' => $this->generateMetaDescription($title, $content),
-            'keywords' => $this->generateKeywords($title, $content),
+            'heading' => $this->generateHeading($title, $content),
+            // 'keywords' => $this->generateKeywords($title, $content),
             'summary' => $content ? $this->generateSummary($title, $content) : null,
         ];
     }
@@ -145,14 +168,9 @@ class OpenRouterService
 
             $prompt = "Translate the following text from {$sourceLang} to {$targetLang}.\n\nText to translate:\n{$text}\n\nRequirements:\n- Maintain the original meaning and tone\n- Keep any HTML tags intact if present\n- Natural, fluent translation\n- Don't add explanations or notes\n\nTranslated text:";
 
-            $response = OpenRouter::chatCompletion([
-                'model' => config('openrouter.models.translation'),
-                'messages' => [
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-            ]);
+            $chatData = $this->getChatData($prompt);
 
-            return $response['choices'][0]['message']['content'] ?? '';
+            return $this->getResponse($chatData);
         });
     }
 
