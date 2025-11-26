@@ -51,18 +51,18 @@ class EditPage extends EditRecord
                     ->label(__('kit::admin.preview_page'))
                     ->icon(Heroicon::Eye)
                     ->color('info')
-                    ->url(fn(Page $record): ?string => $record->generatePreviewUrl())
+                    ->url(fn (Page $record): ?string => $record->generatePreviewUrl())
                     ->openUrlInNewTab()
-                    ->visible(fn(Page $record): bool => $record->status != PageStatus::Published),
+                    ->visible(fn (Page $record): bool => $record->status != PageStatus::Published),
                 Action::make('clone')
                     ->label(__('kit::admin.clone_page'))
                     ->icon(Heroicon::DocumentDuplicate)
                     ->color('gray')
                     ->schema([
                         PageNameField::make()
-                            ->default(fn(Page $record) => $record->name . ' (Copy)'),
+                            ->default(fn (Page $record) => $record->name . ' (Copy)'),
                         PageSlugField::make()
-                            ->default(fn(Page $record) => $record->slug . '-copy'),
+                            ->default(fn (Page $record) => $record->slug . '-copy'),
                         Select::make('parent_id')
                             ->label(__('kit::admin.parent_page'))
                             ->options(function (Page $record) {
@@ -89,7 +89,7 @@ class EditPage extends EditRecord
                                     })
                                     ->toArray();
                             })
-                            ->default(fn(Page $record) => $record->parent_id)
+                            ->default(fn (Page $record) => $record->parent_id)
                             ->searchable()
                             ->placeholder(__('kit::admin.no_parent')),
                     ])
@@ -145,7 +145,7 @@ class EditPage extends EditRecord
                     ->requiresConfirmation()
                     ->modalHeading('Generate SEO Fields with AI')
                     ->modalDescription('This will use OpenRouter AI to generate meta description, keywords, and summary based on the page title and content.')
-                    ->visible(fn() => app(OpenRouterService::class)->isConfigured())
+                    ->visible(fn () => app(OpenRouterService::class)->isConfigured())
                     ->action(function (Page $record): void {
                         $ai = app(OpenRouterService::class);
 
@@ -193,7 +193,7 @@ class EditPage extends EditRecord
                     ->requiresConfirmation()
                     ->modalHeading('Translate Content')
                     ->modalDescription('This will translate all fields to other configured languages. Only empty fields will be filled.')
-                    ->visible(fn() => app(OpenRouterService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
+                    ->visible(fn () => app(OpenRouterService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
                     ->action(function (Page $record): void {
                         $ai = app(OpenRouterService::class);
 
@@ -240,7 +240,7 @@ class EditPage extends EditRecord
                         $textContent = $analyzer->formatAsText($analysis);
 
                         return [
-                            Text::make(fn() => new \Illuminate\Support\HtmlString(
+                            Text::make(fn () => new \Illuminate\Support\HtmlString(
                                 '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
                                     nl2br(htmlspecialchars($textContent)) .
                                     '</div>'
@@ -269,7 +269,7 @@ class EditPage extends EditRecord
                                     Tab::make('Google')
                                         ->icon(Heroicon::MagnifyingGlass)
                                         ->schema([
-                                            Text::make(fn() => new \Illuminate\Support\HtmlString(
+                                            Text::make(fn () => new \Illuminate\Support\HtmlString(
                                                 $formattedPreviews['google']
                                             ))
                                                 ->columnSpanFull(),
@@ -277,27 +277,28 @@ class EditPage extends EditRecord
                                     Tab::make('Facebook')
                                         ->icon(Heroicon::AtSymbol)
                                         ->schema([
-                                            Text::make(fn() => new \Illuminate\Support\HtmlString($formattedPreviews['facebook']))
+                                            Text::make(fn () => new \Illuminate\Support\HtmlString($formattedPreviews['facebook']))
                                                 ->columnSpanFull(),
                                         ]),
                                     Tab::make('Twitter')
                                         ->icon(Heroicon::ChatBubbleLeft)
                                         ->schema([
-                                            Text::make(fn() => new \Illuminate\Support\HtmlString(
-                                                $formattedPreviews['twitter']))
+                                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                                                $formattedPreviews['twitter']
+                                            ))
                                                 ->columnSpanFull(),
                                         ]),
                                     Tab::make('LinkedIn')
                                         ->icon(Heroicon::Briefcase)
                                         ->schema([
-                                            Text::make(fn() => new \Illuminate\Support\HtmlString($formattedPreviews['linkedin']))
+                                            Text::make(fn () => new \Illuminate\Support\HtmlString($formattedPreviews['linkedin']))
                                                 ->columnSpanFull(),
                                         ]),
                                 ])
                                 ->contained(false),
                         ];
                     }),
-                DeleteAction::make()->hidden(fn(Page $record): bool => $record->is_system || $record->is_root),
+                DeleteAction::make()->hidden(fn (Page $record): bool => $record->is_system || $record->is_root),
                 Action::make('change_published_at')
                     ->label(__('kit::admin.change_published_date'))
                     ->icon(Heroicon::Calendar)
@@ -305,7 +306,7 @@ class EditPage extends EditRecord
                     ->schema([
                         DateTimePicker::make('published_at')
                             ->label(__('kit::admin.published_at'))
-                            ->default(fn(Page $record) => $record->published_at)
+                            ->default(fn (Page $record) => $record->published_at)
                             ->required(),
                     ])
                     ->action(function (Page $record, array $data): void {

@@ -13,10 +13,15 @@ use SmartCms\Kit\Models\Page;
 class SocialMediaPreview
 {
     protected string $title;
+
     protected ?string $description = null;
+
     protected ?string $image = null;
+
     protected ?string $url = null;
+
     protected ?string $imageWidth = null;
+
     protected ?string $imageHeight = null;
 
     public function __construct(
@@ -308,7 +313,7 @@ HTML;
             </div>
 HTML;
         } else {
-            $imageHtml = <<<HTML
+            $imageHtml = <<<'HTML'
             <div style="width: 100%; height: 315px; background: #f0f2f5; border-top-left-radius: 8px; border-top-right-radius: 8px; display: flex; align-items: center; justify-content: center; color: #8a8d91; font-size: 14px; margin-bottom: 12px;">
                 No image available
             </div>
@@ -473,7 +478,7 @@ HTML;
             </div>
 HTML;
         } else {
-            $imageHtml = <<<HTML
+            $imageHtml = <<<'HTML'
             <div style="width: 100%; height: 314px; background: #f3f2ef; border-top-left-radius: 8px; border-top-right-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 14px;">
                 No image available
             </div>
