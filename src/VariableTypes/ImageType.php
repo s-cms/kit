@@ -8,6 +8,10 @@ use SmartCms\Kit\Forms\Components\MediaPicker;
 use SmartCms\Kit\Http\Resources\MediaResource;
 use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Services\MediaLibraryService;
+use SmartCms\Kit\Forms\Components\MediaPicker;
+use SmartCms\Kit\Http\Resources\MediaResource;
+use SmartCms\Kit\Models\Media;
+use SmartCms\Kit\Services\MediaLibraryService;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class ImageType implements VariableTypeInterface
@@ -36,12 +40,14 @@ class ImageType implements VariableTypeInterface
     {
         return MediaPicker::make($name)
             ->label('Image');
+        return MediaPicker::make($name)
+            ->label('Image');
     }
 
     public function getValue(mixed $value): mixed
     {
         // If value is a media_id (integer), fetch the media data
-        return new MediaResource($value);
+        return MediaResource::make($value)->toArray(request());
         if (is_numeric($value)) {
             $media = Media::find($value);
 
@@ -98,6 +104,11 @@ class ImageType implements VariableTypeInterface
             $image = validateImage($value);
             $image['alt'] = $alt;
 
+            return $image;
+        }
+
+        // Invalid value, return default
+        return $this->getDefaultValue();
             return $image;
         }
 
