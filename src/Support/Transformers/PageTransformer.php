@@ -3,6 +3,7 @@
 namespace SmartCms\Kit\Support\Transformers;
 
 use Illuminate\Pipeline\Pipeline;
+use SmartCms\Kit\Http\Resources\MediaResource;
 
 class PageTransformer
 {
@@ -20,8 +21,8 @@ class PageTransformer
             'slug' => $page->slug,
             'url' => $page->route(),
             'breadcrumbs' => $page->getBreadcrumbs(),
-            'image' => $page->image,
-            'banner' => $page->banner,
+            'image' => new MediaResource($page->image),
+            'banner' => new MediaResource($page->banner),
             'title' => $page->title,
             'heading' => $page->heading,
             'summary' => $page->summary,

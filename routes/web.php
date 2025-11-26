@@ -1,8 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use SmartCms\Kit\Http\Controllers\MediaController;
 use SmartCms\Kit\Http\Controllers\PreviewController;
 use SmartCms\Kit\Http\Handlers\PageHandler;
+
+// Media API endpoint
+Route::get('/api/media/{id}', [MediaController::class, 'show'])
+    ->name('api.media.show')
+    ->middleware(['web', 'throttle:60,1']);
 
 // Preview route with rate limiting (Layer 4: Rate Limiting)
 Route::get('/preview/{token}', PreviewController::class)

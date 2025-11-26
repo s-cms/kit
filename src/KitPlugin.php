@@ -25,7 +25,9 @@ use SmartCms\Kit\Admin\Pages\TranslatesPage;
 use SmartCms\Kit\Admin\Resources\Admins\AdminResource;
 use SmartCms\Kit\Admin\Resources\Blocks\BlockResource;
 use SmartCms\Kit\Admin\Resources\BlockTemplates\BlockTemplateResource;
+use SmartCms\Kit\Admin\Resources\Media\MediaResource;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
+use SmartCms\Kit\Admin\Resources\Tags\TagResource;
 use SmartCms\Kit\Admin\Widgets\ContactFormStatsWidget;
 use SmartCms\Kit\Admin\Widgets\HealthCheck;
 use SmartCms\Kit\Admin\Widgets\InfoWidget;
@@ -48,6 +50,8 @@ class KitPlugin implements Plugin
         $resources = [
             BlockResource::class,
             BlockTemplateResource::class,
+            MediaResource::class,
+            TagResource::class,
         ];
         if (in_array($panel->getModelResource(Page::class), [null, '', '0'], true)) {
             $resources[] = PageResource::class;

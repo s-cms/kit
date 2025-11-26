@@ -75,4 +75,9 @@ return [
     'header_blocks' => 'Bloków nagłówka',
     'footer_blocks' => 'Bloków stopki',
     'block_copied_successfully' => 'Blok został skopiowany pomyślnie',
+    'regenerate_responsive_images' => 'Regeneruj obrazy responsywne',
+    'regenerate_responsive_images_description' => 'Spowoduje to regenerację wszystkich rozmiarów obrazów responsywnych dla tego pliku multimedialnego. Stare obrazy responsywne zostaną usunięte, a nowe zostaną wygenerowane na podstawie oryginalnego pliku.',
+    'regenerate' => 'Regeneruj',
+    'responsive_images_regenerated' => 'Obrazy responsywne zostały pomyślnie zregenerowane',
+    'failed_to_regenerate_responsive_images' => 'Nie udało się zregenerować obrazów responsywnych',
 ];

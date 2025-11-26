@@ -11,6 +11,9 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Text;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
@@ -20,6 +23,9 @@ use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Models\Admin;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Services\AI\OpenRouterService;
+use SmartCms\Kit\Services\SEO\SeoAnalyzer;
+use SmartCms\Kit\Services\SEO\SocialMediaPreview;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Actions\SaveAction;
 use SmartCms\Support\Admin\Components\Actions\SaveAndClose;
@@ -131,6 +137,166 @@ class EditPage extends EditRecord
                             ->send();
 
                         $this->redirect(PageResource::getUrl('edit', ['record' => $clone]));
+                    }),
+                Action::make('generate_seo')
+                    ->label('Generate SEO Fields')
+                    ->icon(Heroicon::Sparkles)
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Generate SEO Fields with AI')
+                    ->modalDescription('This will use OpenRouter AI to generate meta description, keywords, and summary based on the page title and content.')
+                    ->visible(fn () => app(OpenRouterService::class)->isConfigured())
+                    ->action(function (Page $record): void {
+                        $ai = app(OpenRouterService::class);
+
+                        try {
+                            $title = $record->getTranslation('title', main_lang()) ?? $record->getTranslation('name', main_lang());
+                            $content = $record->getTranslation('content', main_lang());
+
+                            $seoFields = $ai->generateSeoFields($title, $content);
+
+                            // Only update empty fields
+                            if (empty($record->getTranslation('description', main_lang()))) {
+                                $record->setTranslation('description', main_lang(), $seoFields['description']);
+                            }
+                            if (empty($record->getTranslation('heading', main_lang()))) {
+                                $record->setTranslation('heading', main_lang(), $seoFields['heading']);
+                            }
+
+                            // if (empty($record->getTranslation('keywords', main_lang()))) {
+                            //     $record->setTranslation('keywords', main_lang(), $seoFields['keywords']);
+                            // }
+
+                            if (empty($record->getTranslation('summary', main_lang())) && $seoFields['summary']) {
+                                $record->setTranslation('summary', main_lang(), $seoFields['summary']);
+                            }
+
+                            $record->save();
+
+                            Notification::make()
+                                ->success()
+                                ->title('SEO fields generated successfully')
+                                ->body('Meta description, keywords, and summary have been generated.')
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Failed to generate SEO fields')
+                                ->body($e->getMessage())
+                                ->send();
+                        }
+                    }),
+                Action::make('translate_content')
+                    ->label('Translate to All Languages')
+                    ->icon(Heroicon::Language)
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->modalHeading('Translate Content')
+                    ->modalDescription('This will translate all fields to other configured languages. Only empty fields will be filled.')
+                    ->visible(fn () => app(OpenRouterService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
+                    ->action(function (Page $record): void {
+                        $ai = app(OpenRouterService::class);
+
+                        try {
+                            $translations = $ai->translatePage($record);
+
+                            $updatedCount = 0;
+                            foreach ($translations as $lang => $fields) {
+                                foreach ($fields as $field => $value) {
+                                    $record->setTranslation($field, $lang, $value);
+                                    $updatedCount++;
+                                }
+                            }
+
+                            $record->save();
+
+                            Notification::make()
+                                ->success()
+                                ->title('Content translated successfully')
+                                ->body("Translated {$updatedCount} fields to other languages.")
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Translation failed')
+                                ->body($e->getMessage())
+                                ->send();
+                        }
+                    }),
+                Action::make('seo_health_check')
+                    ->label('SEO Health Check')
+                    ->icon(Heroicon::ChartBar)
+                    ->color('warning')
+                    ->modalHeading('SEO Health Check Report')
+                    ->modalDescription('Comprehensive SEO analysis with AI-powered improvement suggestions')
+                    ->modalWidth('3xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->schema(function (Page $record): array {
+                        // Run SEO analysis with AI suggestions
+                        $aiEnabled = app(OpenRouterService::class)->isConfigured();
+                        $analyzer = new SeoAnalyzer($record, withAiSuggestions: $aiEnabled);
+                        $analysis = $analyzer->analyze();
+                        $textContent = $analyzer->formatAsText($analysis);
+
+                        return [
+                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                                '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
+                                    nl2br(htmlspecialchars($textContent)) .
+                                    '</div>'
+                            ))
+                                ->columnSpanFull(),
+                        ];
+                    }),
+                Action::make('social_media_preview')
+                    ->label('Social Media Preview')
+                    ->icon(Heroicon::Share)
+                    ->color('info')
+                    ->modalHeading('Social Media Preview')
+                    ->modalDescription('Preview how your page will appear when shared on social media')
+                    ->modalWidth('3xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->schema(function (Page $record): array {
+                        // Generate social media previews
+                        $preview = new SocialMediaPreview($record);
+                        $previews = $preview->generatePreviews();
+                        $formattedPreviews = $preview->formatAsText($previews);
+
+                        return [
+                            Tabs::make('social_previews')
+                                ->tabs([
+                                    Tab::make('Google')
+                                        ->icon(Heroicon::MagnifyingGlass)
+                                        ->schema([
+                                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                                                $formattedPreviews['google']
+                                            ))
+                                                ->columnSpanFull(),
+                                        ]),
+                                    Tab::make('Facebook')
+                                        ->icon(Heroicon::AtSymbol)
+                                        ->schema([
+                                            Text::make(fn () => new \Illuminate\Support\HtmlString($formattedPreviews['facebook']))
+                                                ->columnSpanFull(),
+                                        ]),
+                                    Tab::make('Twitter')
+                                        ->icon(Heroicon::ChatBubbleLeft)
+                                        ->schema([
+                                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                                                $formattedPreviews['twitter']
+                                            ))
+                                                ->columnSpanFull(),
+                                        ]),
+                                    Tab::make('LinkedIn')
+                                        ->icon(Heroicon::Briefcase)
+                                        ->schema([
+                                            Text::make(fn () => new \Illuminate\Support\HtmlString($formattedPreviews['linkedin']))
+                                                ->columnSpanFull(),
+                                        ]),
+                                ])
+                                ->contained(false),
+                        ];
                     }),
                 DeleteAction::make()->hidden(fn (Page $record): bool => $record->is_system || $record->is_root),
                 Action::make('change_published_at')

@@ -77,4 +77,9 @@ return [
     'header_blocks' => 'Блоки хедера',
     'footer_blocks' => 'Блоки футера',
     'block_copied_successfully' => 'Блок успішно скопійовано',
+    'regenerate_responsive_images' => 'Регенерувати адаптивні зображення',
+    'regenerate_responsive_images_description' => 'Це регенерує всі розміри адаптивних зображень для цього медіа-файлу. Старі адаптивні зображення будуть видалені, а нові будуть створені на основі оригінального файлу.',
+    'regenerate' => 'Регенерувати',
+    'responsive_images_regenerated' => 'Адаптивні зображення успішно регенеровано',
+    'failed_to_regenerate_responsive_images' => 'Не вдалося регенерувати адаптивні зображення',
 ];

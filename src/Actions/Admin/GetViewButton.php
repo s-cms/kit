@@ -27,7 +27,7 @@ class GetViewButton
                 ->extraAttributes([
                     'style' => 'width:30%',
                 ])
-                ->iconSize(IconSize::Large)
+                ->iconSize(IconSize::Small)
                 ->color('gray')
                 ->url(url('/'))
                 ->openUrlInNewTab(),
@@ -40,7 +40,7 @@ class GetViewButton
                 ])
                 ->badgeColor(fn (Action $action) => $action->getBadge() > 0 ? 'warning' : 'gray')
                 ->icon(LucideIcon::Inbox)
-                ->iconSize(IconSize::Large)
+                ->iconSize(IconSize::Small)
                 ->outlined()
                 ->color('gray')
                 ->url(ContactFormResource::getUrl()),

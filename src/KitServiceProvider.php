@@ -43,7 +43,9 @@ use SmartCms\Kit\Http\Middlewares\UserIdentifierMiddleware;
 use SmartCms\Kit\MenuTypes\DivisionCategoryMenyType;
 use SmartCms\Kit\MenuTypes\DivisionMenuType;
 use SmartCms\Kit\MenuTypes\PageMenuType;
+use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Observers\ContactFormObserver;
+use SmartCms\Kit\Observers\MediaObserver;
 use SmartCms\Kit\Support\AssetManager;
 use SmartCms\Kit\Support\MicrodataManager;
 use SmartCms\Kit\Support\Seo;
@@ -84,9 +86,12 @@ class KitServiceProvider extends PackageServiceProvider
                 'create_blockables_table',
                 'add_type_and_metadata_to_pages_table',
                 'create_block_templates_table',
+                'create_media_table',
+                'create_tags_tables',
             ])
             ->hasTranslations()
             ->hasRoute('static')
+            ->hasRoute('admin')
             ->hasViews('kit')
             ->hasViewComponents('kit', Layout::class, Footer::class, Theme::class, Gtm::class, Header::class, PageComponent::class, Heading::class, Image::class, Link::class, Icon::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
@@ -116,6 +121,9 @@ class KitServiceProvider extends PackageServiceProvider
                         ]);
                         $command->callSilently('vendor:publish', [
                             '--tag' => 'notifications-migrations',
+                        ]);
+                        $command->callSilently('vendor:publish', [
+                            '--tag' => 'medialibrary-migrations',
                         ]);
                         $command->callSilently('vendor:publish', [
                             '--tag' => 'laravel-errors',
@@ -202,6 +210,7 @@ class KitServiceProvider extends PackageServiceProvider
         app(MenuRegistry::class)->register(DivisionMenuType::class);
         app(MenuRegistry::class)->register(DivisionCategoryMenyType::class);
         ContactForm::observe(ContactFormObserver::class);
+        Media::observe(MediaObserver::class);
 
         // Routes and config must be loaded after all other services are booted
         $this->app->booted(function (): void {

@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Columns\SpatieTagsColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -57,11 +58,9 @@ class ChildrenRelationManager extends RelationManager
                     ->label(__('kit::admin.status'))
                     ->badge()
                     ->formatStateUsing(fn ($state) => PageStatus::tryFrom($state)?->getLabel()),
-
-                Tables\Columns\TextColumn::make('depth')
-                    ->label(__('kit::admin.depth'))
-                    ->badge()
-                    ->color('gray'),
+                SpatieTagsColumn::make('tags')
+                    ->label(__('kit::admin.tags'))
+                    ->limitList(3),
 
                 Tables\Columns\TextColumn::make('children_count')
                     ->label(__('kit::admin.children_count'))

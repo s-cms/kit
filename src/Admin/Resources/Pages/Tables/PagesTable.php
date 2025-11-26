@@ -6,8 +6,11 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\SpatieTagsColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
@@ -27,8 +30,8 @@ class PagesTable
         return $table
             ->columns([
                 NameColumn::make()
-                    ->getStateUsing(fn ($record) => $record->getTranslation('name', main_lang()))
-                    ->description(fn (Page $record): string => $record->slug),
+                    ->getStateUsing(fn (Page $record) => $record->getTranslation('name', main_lang()))
+                    ->description(fn (Page $record): string => Str::limit($record->slug, 30)),
                 TextColumn::make('type')
                     ->label(__('kit::admin.type'))
                     ->badge()
@@ -46,6 +49,9 @@ class PagesTable
                     ->label(__('kit::admin.parent'))
                     ->formatStateUsing(fn ($state, Page $record) => $record->parent ? $record->parent->getTranslation('name', main_lang()) : '-')
                     ->toggleable(),
+                SpatieTagsColumn::make('tags')
+                    ->label(__('kit::admin.tags'))
+                    ->limitList(3),
                 TextColumn::make('depth')
                     ->label(__('kit::admin.depth'))
                     ->badge()
@@ -71,6 +77,18 @@ class PagesTable
             ->reorderable('sorting')
             ->filters([
                 StatusFilter::make(),
+                SelectFilter::make('tags')
+                    ->label(__('kit::admin.tags'))
+                    ->multiple()
+                    ->relationship('tags', 'name->' . main_lang())
+                    ->preload()
+                    ->searchable(),
+                SelectFilter::make('type')
+                    ->label(__('kit::admin.type'))
+                    ->options([
+                        'page' => __('kit::admin.type_page'),
+                        'category' => __('kit::admin.type_category'),
+                    ]),
                 // Add augmented filters from augmentations
                 ...Page::getAugmentedFilters(),
             ])

@@ -35,7 +35,7 @@ class DatabaseNotification extends BaseComponent
                 ->label(__('kit::admin.inbox'))
                 ->hiddenLabel()
                 ->button()
-                ->iconSize(IconSize::Large)
+                ->iconSize(IconSize::Small)
                 ->icon(LucideIcon::Bell)
                 ->outlined()
                 ->color('gray'),

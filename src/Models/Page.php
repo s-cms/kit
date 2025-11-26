@@ -16,11 +16,14 @@ use SmartCms\Support\Traits\HasBreadcrumbs;
 use SmartCms\Support\Traits\HasParent;
 use SmartCms\Support\Traits\HasRoute;
 use SmartCms\Support\Traits\HasSlug;
-use SmartCms\Support\Traits\HasSorting;
 use SmartCms\Support\Traits\HasStatus;
 use SmartCms\TemplateBuilder\Models\Layout;
 use SmartCms\TemplateBuilder\Traits\HasLayout;
 use SmartCms\TemplateBuilder\Traits\HasTemplate;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Tags\HasTags;
 use Spatie\Translatable\HasTranslations;
 
 /**
@@ -56,7 +59,7 @@ use Spatie\Translatable\HasTranslations;
  * @property-read array $breadcrumbs The breadcrumbs for this page.
  * @property-read \Illuminate\Database\Eloquent\Collection $children Child pages.
  */
-class Page extends Model
+class Page extends Model implements HasMedia
 {
     use HasAugmentations;
     use HasBlocks;
@@ -69,10 +72,24 @@ class Page extends Model
     // use HasSorting;
     use HasSlug;
     use HasStatus;
+    use HasTags;
     use HasTemplate;
     use HasTranslations;
+    use InteractsWithMedia;
 
     protected $guarded = [];
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        // Create WebP version matching original dimensions for responsive images
+        // This conversion maintains original size but converts format to WebP
+        if ($media && in_array(strtolower($media->extension), ['jpg', 'jpeg', 'png'])) {
+            $this->addMediaConversion('original-webp')
+                ->nonQueued()
+                ->format('webp')
+                ->quality(90);
+        }
+    }
 
     /**
      * The page type for this model.
@@ -102,8 +119,8 @@ class Page extends Model
         'settings' => 'array',
         'metadata' => 'array',
         'layout_settings' => 'array',
-        'image' => 'array',
-        'banner' => 'array',
+        // 'image' => 'array',
+        // 'banner' => 'array',
         'published_at' => 'datetime',
         'title' => 'array',
         'heading' => 'array',
