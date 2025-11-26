@@ -111,6 +111,47 @@ class BlocksRelationManager extends RelationManager
                     ->native(false),
             ])
             ->headerActions([
+                Action::make('make_template')
+                    ->label(__('kit::admin.make_template'))
+                    ->icon(Heroicon::BuildingOffice2)
+                    ->color('info')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label(__('kit::admin.template_name'))
+                            ->required()
+                            ->maxLength(255)
+                            ->default(fn (RelationManager $livewire) => $livewire->getOwnerRecord()->name . ' Template')
+                            ->unique(BlockTemplate::class, 'name', ignoreRecord: false)
+                            ->validationMessages([
+                                'unique' => __('kit::admin.template_name_already_exists'),
+                            ]),
+                    ])
+                    ->modalHeading(__('kit::admin.make_template'))
+                    ->modalDescription(__('kit::admin.make_template_description'))
+                    ->action(function (array $data, RelationManager $livewire) {
+                        $page = $livewire->getOwnerRecord();
+
+                        $template = BlockTemplate::create(['name' => $data['name']]);
+
+                        $blocksData = [];
+                        foreach ($page->blocks as $block) {
+                            $blocksData[$block->id] = [
+                                'status' => $block->pivot->status,
+                                'sorting' => $block->pivot->sorting,
+                                'show_from' => $block->pivot->show_from,
+                                'show_until' => $block->pivot->show_until,
+                            ];
+                        }
+
+                        if (! empty($blocksData)) {
+                            $template->blocks()->attach($blocksData);
+                        }
+
+                        Notification::make()
+                            ->title(__('kit::admin.template_created_successfully'))
+                            ->success()
+                            ->send();
+                    }),
                 Action::make('apply_template')
                     ->label(__('kit::admin.apply_template'))
                     ->icon(Heroicon::OutlinedArrowPathRoundedSquare)

@@ -2,6 +2,7 @@
 
 namespace SmartCms\Kit\Services\SEO;
 
+use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Models\Page;
 
 /**
@@ -11,88 +12,104 @@ use SmartCms\Kit\Models\Page;
  */
 class SocialMediaPreview
 {
-    public function __construct(protected Page $page) {}
+    protected string $title;
+    protected ?string $description = null;
+    protected ?string $image = null;
+    protected ?string $url = null;
+    protected ?string $imageWidth = null;
+    protected ?string $imageHeight = null;
+
+    public function __construct(
+        protected Page $page,
+        protected ?string $lang = null
+    ) {
+        $this->lang = $lang ?? main_lang();
+        $this->extractDataFromPage();
+    }
+
+    /**
+     * Extract data from Page model and populate properties
+     */
+    protected function extractDataFromPage(): void
+    {
+        $this->title = $this->page->getTranslation('title', $this->lang) ?? $this->page->getTranslation('name', $this->lang);
+        $this->description = $this->page->getTranslation('description', $this->lang);
+        $this->url = $this->page->route();
+
+        // Get featured image from media library
+        $featuredImage = Media::query()->find($this->page->image ?? $this->page->banner ?? null);
+        if ($featuredImage) {
+            $this->image = $featuredImage->getUrl();
+            $this->imageWidth = $featuredImage->width ?? 0;
+            $this->imageHeight = $featuredImage->height ?? 0;
+        }
+    }
 
     /**
      * Generate all social media previews
      */
     public function generatePreviews(): array
     {
-        $mainLang = main_lang();
-
         return [
-            'google' => $this->generateGooglePreview($mainLang),
-            'facebook' => $this->generateFacebookPreview($mainLang),
-            'twitter' => $this->generateTwitterPreview($mainLang),
-            'linkedin' => $this->generateLinkedInPreview($mainLang),
+            'google' => $this->generateGooglePreview(),
+            'facebook' => $this->generateFacebookPreview(),
+            'twitter' => $this->generateTwitterPreview(),
+            'linkedin' => $this->generateLinkedInPreview(),
         ];
     }
 
     /**
      * Generate Google Search Result Preview
      */
-    protected function generateGooglePreview(string $lang): array
+    protected function generateGooglePreview(): array
     {
-        $title = $this->page->getTranslation('title', $lang) ?? $this->page->getTranslation('name', $lang);
-        $description = $this->page->getTranslation('description', $lang);
-        $url = $this->page->getUrl();
-
         // Google limits
         $titleLimit = 60;
         $descriptionLimit = 160;
 
         return [
-            'title' => $title,
-            'title_length' => mb_strlen($title),
+            'title' => $this->title,
+            'title_length' => mb_strlen($this->title),
             'title_limit' => $titleLimit,
-            'title_status' => $this->getStatus(mb_strlen($title), $titleLimit),
-            'description' => $description,
-            'description_length' => mb_strlen($description ?? ''),
+            'title_status' => $this->getStatus(mb_strlen($this->title), $titleLimit),
+            'description' => $this->description,
+            'description_length' => mb_strlen($this->description ?? ''),
             'description_limit' => $descriptionLimit,
-            'description_status' => $this->getStatus(mb_strlen($description ?? ''), $descriptionLimit),
-            'url' => $url,
-            'display_url' => parse_url($url, PHP_URL_HOST) . parse_url($url, PHP_URL_PATH),
+            'description_status' => $this->getStatus(mb_strlen($this->description ?? ''), $descriptionLimit),
+            'url' => $this->url,
+            'display_url' => $this->url ? (parse_url($this->url, PHP_URL_HOST) . parse_url($this->url, PHP_URL_PATH)) : '',
         ];
     }
 
     /**
      * Generate Facebook Open Graph Preview
      */
-    protected function generateFacebookPreview(string $lang): array
+    protected function generateFacebookPreview(): array
     {
-        $title = $this->page->getTranslation('title', $lang) ?? $this->page->getTranslation('name', $lang);
-        $description = $this->page->getTranslation('description', $lang);
-        $image = $this->page->featuredImage?->getUrl('large');
-        $url = $this->page->getUrl();
-
         // Facebook limits
         $titleLimit = 60;
         $descriptionLimit = 200;
 
         // Get image dimensions if available
         $imageDimensions = null;
-        if ($this->page->featuredImage) {
-            $width = $this->page->featuredImage->getCustomProperty('width');
-            $height = $this->page->featuredImage->getCustomProperty('height');
-            if ($width && $height) {
-                $imageDimensions = "{$width}x{$height}";
-            }
+        if ($this->imageWidth && $this->imageHeight) {
+            $imageDimensions = "{$this->imageWidth}x{$this->imageHeight}";
         }
 
         return [
-            'title' => $title,
-            'title_length' => mb_strlen($title),
+            'title' => $this->title,
+            'title_length' => mb_strlen($this->title),
             'title_limit' => $titleLimit,
-            'title_status' => $this->getStatus(mb_strlen($title), $titleLimit),
-            'description' => $description,
-            'description_length' => mb_strlen($description ?? ''),
+            'title_status' => $this->getStatus(mb_strlen($this->title), $titleLimit),
+            'description' => $this->description,
+            'description_length' => mb_strlen($this->description ?? ''),
             'description_limit' => $descriptionLimit,
-            'description_status' => $this->getStatus(mb_strlen($description ?? ''), $descriptionLimit),
-            'image' => $image,
+            'description_status' => $this->getStatus(mb_strlen($this->description ?? ''), $descriptionLimit),
+            'image' => $this->image,
             'image_dimensions' => $imageDimensions,
-            'image_status' => $image ? 'valid' : 'missing',
-            'url' => $url,
-            'domain' => parse_url($url, PHP_URL_HOST),
+            'image_status' => $this->image ? 'valid' : 'missing',
+            'url' => $this->url,
+            'domain' => $this->url ? parse_url($this->url, PHP_URL_HOST) : '',
             'site_name' => config('app.name'),
         ];
     }
@@ -100,61 +117,51 @@ class SocialMediaPreview
     /**
      * Generate Twitter Card Preview
      */
-    protected function generateTwitterPreview(string $lang): array
+    protected function generateTwitterPreview(): array
     {
-        $title = $this->page->getTranslation('title', $lang) ?? $this->page->getTranslation('name', $lang);
-        $description = $this->page->getTranslation('description', $lang);
-        $image = $this->page->featuredImage?->getUrl('large');
-        $url = $this->page->getUrl();
-
         // Twitter limits
         $titleLimit = 70;
         $descriptionLimit = 200;
 
         return [
-            'title' => $title,
-            'title_length' => mb_strlen($title),
+            'title' => $this->title,
+            'title_length' => mb_strlen($this->title),
             'title_limit' => $titleLimit,
-            'title_status' => $this->getStatus(mb_strlen($title), $titleLimit),
-            'description' => $description,
-            'description_length' => mb_strlen($description ?? ''),
+            'title_status' => $this->getStatus(mb_strlen($this->title), $titleLimit),
+            'description' => $this->description,
+            'description_length' => mb_strlen($this->description ?? ''),
             'description_limit' => $descriptionLimit,
-            'description_status' => $this->getStatus(mb_strlen($description ?? ''), $descriptionLimit),
-            'image' => $image,
-            'image_status' => $image ? 'valid' : 'missing',
-            'url' => $url,
-            'domain' => parse_url($url, PHP_URL_HOST),
-            'card_type' => $image ? 'summary_large_image' : 'summary',
+            'description_status' => $this->getStatus(mb_strlen($this->description ?? ''), $descriptionLimit),
+            'image' => $this->image,
+            'image_status' => $this->image ? 'valid' : 'missing',
+            'url' => $this->url,
+            'domain' => $this->url ? parse_url($this->url, PHP_URL_HOST) : '',
+            'card_type' => $this->image ? 'summary_large_image' : 'summary',
         ];
     }
 
     /**
      * Generate LinkedIn Preview
      */
-    protected function generateLinkedInPreview(string $lang): array
+    protected function generateLinkedInPreview(): array
     {
-        $title = $this->page->getTranslation('title', $lang) ?? $this->page->getTranslation('name', $lang);
-        $description = $this->page->getTranslation('description', $lang);
-        $image = $this->page->featuredImage?->getUrl('large');
-        $url = $this->page->getUrl();
-
         // LinkedIn limits (similar to Facebook)
         $titleLimit = 60;
         $descriptionLimit = 200;
 
         return [
-            'title' => $title,
-            'title_length' => mb_strlen($title),
+            'title' => $this->title,
+            'title_length' => mb_strlen($this->title),
             'title_limit' => $titleLimit,
-            'title_status' => $this->getStatus(mb_strlen($title), $titleLimit),
-            'description' => $description,
-            'description_length' => mb_strlen($description ?? ''),
+            'title_status' => $this->getStatus(mb_strlen($this->title), $titleLimit),
+            'description' => $this->description,
+            'description_length' => mb_strlen($this->description ?? ''),
             'description_limit' => $descriptionLimit,
-            'description_status' => $this->getStatus(mb_strlen($description ?? ''), $descriptionLimit),
-            'image' => $image,
-            'image_status' => $image ? 'valid' : 'missing',
-            'url' => $url,
-            'domain' => parse_url($url, PHP_URL_HOST),
+            'description_status' => $this->getStatus(mb_strlen($this->description ?? ''), $descriptionLimit),
+            'image' => $this->image,
+            'image_status' => $this->image ? 'valid' : 'missing',
+            'url' => $this->url,
+            'domain' => $this->url ? parse_url($this->url, PHP_URL_HOST) : '',
         ];
     }
 
@@ -211,29 +218,67 @@ class SocialMediaPreview
      */
     protected function formatGooglePreview(array $data): string
     {
-        $output = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= "🔍 GOOGLE SEARCH RESULT PREVIEW\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+        $title = htmlspecialchars($this->truncateForDisplay($data['title'], $data['title_limit']), ENT_QUOTES, 'UTF-8');
+        $description = htmlspecialchars($this->truncateForDisplay($data['description'] ?? 'No description set', $data['description_limit']), ENT_QUOTES, 'UTF-8');
+        $displayUrl = htmlspecialchars($data['display_url'], ENT_QUOTES, 'UTF-8');
+        $url = htmlspecialchars($data['url'] ?? '', ENT_QUOTES, 'UTF-8');
 
-        // URL
-        $output .= "📌 {$data['display_url']}\n\n";
+        $titleStatusClass = $this->getStatusClass($data['title_status']);
+        $descStatusClass = $this->getStatusClass($data['description_status']);
 
-        // Title
-        $titleStatus = $this->getStatusIcon($data['title_status']);
-        $output .= "{$titleStatus} TITLE ({$data['title_length']}/{$data['title_limit']} chars)\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= $this->truncateForDisplay($data['title'], $data['title_limit']) . "\n\n";
+        return <<<HTML
+<div style="font-family: arial, sans-serif; max-width: 600px; padding: 20px; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;">
+    <div style="margin-bottom: 20px;">
+        <div style="font-size: 12px; color: #70757a; margin-bottom: 3px;">
+            {$displayUrl}
+        </div>
+        <h3 style="margin: 0; padding: 0; font-size: 20px; font-weight: 400; line-height: 1.3; margin-bottom: 3px;">
+            <a href="{$url}" style="color: #1a0dab; text-decoration: none; cursor: pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                {$title}
+            </a>
+        </h3>
+        <div style="font-size: 14px; line-height: 1.58; color: #4d5156; margin-top: 3px;">
+            {$description}
+        </div>
+    </div>
 
-        // Description
-        $descStatus = $this->getStatusIcon($data['description_status']);
-        $output .= "{$descStatus} DESCRIPTION ({$data['description_length']}/{$data['description_limit']} chars)\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= $this->truncateForDisplay($data['description'] ?? 'No description set', $data['description_limit']) . "\n\n";
+    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #70757a;">
+        <div style="margin-bottom: 8px;">
+            <strong>Title:</strong>
+            <span class="{$titleStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$data['title_length']}/{$data['title_limit']} chars
+            </span>
+        </div>
+        <div>
+            <strong>Description:</strong>
+            <span class="{$descStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$data['description_length']}/{$data['description_limit']} chars
+            </span>
+        </div>
+    </div>
 
-        // Validation
-        $output .= $this->getValidationMessages($data);
+    <style>
+        .status-good { background-color: #e8f5e9; color: #2e7d32; }
+        .status-warning { background-color: #fff3e0; color: #e65100; }
+        .status-error { background-color: #ffebee; color: #c62828; }
+        .status-empty { background-color: #f5f5f5; color: #616161; }
+    </style>
+</div>
+HTML;
+    }
 
-        return $output;
+    /**
+     * Get CSS class for status
+     */
+    protected function getStatusClass(string $status): string
+    {
+        return match ($status) {
+            'good' => 'status-good',
+            'warning' => 'status-warning',
+            'error' => 'status-error',
+            'empty' => 'status-empty',
+            default => 'status-empty',
+        };
     }
 
     /**
@@ -241,46 +286,82 @@ class SocialMediaPreview
      */
     protected function formatFacebookPreview(array $data): string
     {
-        $output = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= "📘 FACEBOOK OPEN GRAPH PREVIEW\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+        $title = htmlspecialchars($this->truncateForDisplay($data['title'], $data['title_limit']), ENT_QUOTES, 'UTF-8');
+        $description = htmlspecialchars($this->truncateForDisplay($data['description'] ?? 'No description set', $data['description_limit']), ENT_QUOTES, 'UTF-8');
+        $domain = htmlspecialchars($data['domain'], ENT_QUOTES, 'UTF-8');
+        $siteName = htmlspecialchars($data['site_name'] ?? '', ENT_QUOTES, 'UTF-8');
+        $imageUrl = htmlspecialchars($data['image'] ?? '', ENT_QUOTES, 'UTF-8');
+        $url = htmlspecialchars($data['url'] ?? '', ENT_QUOTES, 'UTF-8');
 
-        // Image
-        $imageStatus = $data['image_status'] === 'valid' ? '✓' : '✗';
-        $output .= "{$imageStatus} FEATURED IMAGE\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        if ($data['image']) {
-            $output .= "Image URL: {$data['image']}\n";
-            if ($data['image_dimensions']) {
-                $output .= "Dimensions: {$data['image_dimensions']}\n";
-                $output .= "Recommended: 1200x630px\n";
-            }
+        $titleStatusClass = $this->getStatusClass($data['title_status']);
+        $descStatusClass = $this->getStatusClass($data['description_status']);
+        $imageStatusClass = $data['image_status'] === 'valid' ? 'status-good' : 'status-empty';
+        $imageDimensions = ($data['image_dimensions'] ?? '') ? htmlspecialchars($data['image_dimensions'], ENT_QUOTES, 'UTF-8') : '';
+        $imageDimensionsHtml = $imageDimensions ? "<span style=\"margin-left: 8px; color: #606770;\">({$imageDimensions})</span>" : '';
+        $imageStatusText = $data['image_status'] === 'valid' ? 'Set' : 'Missing';
+
+        $imageHtml = '';
+        if ($imageUrl) {
+            $imageHtml = <<<HTML
+            <div style="width: 100%; height: 315px; background: #f0f2f5; border-top-left-radius: 8px; border-top-right-radius: 8px; overflow: hidden; margin-bottom: 12px;">
+                <img src="{$imageUrl}" alt="{$title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#8a8d91;font-size:14px;\'>No image available</div>';">
+            </div>
+HTML;
         } else {
-            $output .= "⚠ No image set - Facebook will use a default or first image from content\n";
+            $imageHtml = <<<HTML
+            <div style="width: 100%; height: 315px; background: #f0f2f5; border-top-left-radius: 8px; border-top-right-radius: 8px; display: flex; align-items: center; justify-content: center; color: #8a8d91; font-size: 14px; margin-bottom: 12px;">
+                No image available
+            </div>
+HTML;
         }
-        $output .= "\n";
 
-        // Title
-        $titleStatus = $this->getStatusIcon($data['title_status']);
-        $output .= "{$titleStatus} TITLE ({$data['title_length']}/{$data['title_limit']} chars)\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= $this->truncateForDisplay($data['title'], $data['title_limit']) . "\n\n";
+        return <<<HTML
+<div style="font-family: Helvetica, Arial, sans-serif; max-width: 500px; background: #fff; border: 1px solid #dadde1; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+    {$imageHtml}
+    <div style="padding: 12px;">
+        <div style="font-size: 12px; color: #606770; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.2px;">
+            {$domain}
+        </div>
+        <a href="{$url}" style="text-decoration: none; color: #050505; display: block; margin-bottom: 5px;">
+            <div style="font-size: 16px; font-weight: 600; line-height: 1.38; color: #050505;">
+                {$title}
+            </div>
+        </a>
+        <div style="font-size: 14px; line-height: 1.33; color: #606770; margin-top: 3px;">
+            {$description}
+        </div>
+    </div>
 
-        // Domain
-        $output .= "🌐 DOMAIN\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= "{$data['domain']}\n\n";
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e4e6eb; padding: 12px; font-size: 12px; color: #606770; background: #f0f2f5;">
+        <div style="margin-bottom: 8px;">
+            <strong>Title:</strong>
+            <span class="{$titleStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$data['title_length']}/{$data['title_limit']} chars
+            </span>
+        </div>
+        <div style="margin-bottom: 8px;">
+            <strong>Description:</strong>
+            <span class="{$descStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$data['description_length']}/{$data['description_limit']} chars
+            </span>
+        </div>
+        <div>
+            <strong>Image:</strong>
+            <span class="{$imageStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$imageStatusText}
+            </span>
+            {$imageDimensionsHtml}
+        </div>
+    </div>
 
-        // Description
-        $descStatus = $this->getStatusIcon($data['description_status']);
-        $output .= "{$descStatus} DESCRIPTION ({$data['description_length']}/{$data['description_limit']} chars)\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= $this->truncateForDisplay($data['description'] ?? 'No description set', $data['description_limit']) . "\n\n";
-
-        // Validation
-        $output .= $this->getValidationMessages($data);
-
-        return $output;
+    <style>
+        .status-good { background-color: #e8f5e9; color: #2e7d32; }
+        .status-warning { background-color: #fff3e0; color: #e65100; }
+        .status-error { background-color: #ffebee; color: #c62828; }
+        .status-empty { background-color: #f5f5f5; color: #616161; }
+    </style>
+</div>
+HTML;
     }
 
     /**
@@ -288,47 +369,84 @@ class SocialMediaPreview
      */
     protected function formatTwitterPreview(array $data): string
     {
-        $output = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= "🐦 TWITTER CARD PREVIEW\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+        $title = htmlspecialchars($this->truncateForDisplay($data['title'], $data['title_limit']), ENT_QUOTES, 'UTF-8');
+        $description = htmlspecialchars($this->truncateForDisplay($data['description'] ?? 'No description set', $data['description_limit']), ENT_QUOTES, 'UTF-8');
+        $domain = htmlspecialchars($data['domain'], ENT_QUOTES, 'UTF-8');
+        $imageUrl = htmlspecialchars($data['image'] ?? '', ENT_QUOTES, 'UTF-8');
+        $url = htmlspecialchars($data['url'] ?? '', ENT_QUOTES, 'UTF-8');
+        $cardType = htmlspecialchars($data['card_type'] ?? 'summary', ENT_QUOTES, 'UTF-8');
 
-        // Card Type
-        $output .= "📋 CARD TYPE: {$data['card_type']}\n\n";
+        $titleStatusClass = $this->getStatusClass($data['title_status']);
+        $descStatusClass = $this->getStatusClass($data['description_status']);
+        $imageStatusClass = $data['image_status'] === 'valid' ? 'status-good' : 'status-empty';
+        $imageStatusText = $data['image_status'] === 'valid' ? 'Set' : 'Missing';
 
-        // Image
-        $imageStatus = $data['image_status'] === 'valid' ? '✓' : '✗';
-        $output .= "{$imageStatus} FEATURED IMAGE\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        if ($data['image']) {
-            $output .= "Image URL: {$data['image']}\n";
-            $output .= "Card Type: Large Image (summary_large_image)\n";
-            $output .= "Recommended: 1200x628px or larger\n";
+        $isLargeImage = $cardType === 'summary_large_image';
+        $imageHeight = $isLargeImage ? '262px' : '120px';
+
+        $imageHtml = '';
+        if ($imageUrl) {
+            $imageHtml = <<<HTML
+            <div style="width: 100%; height: {$imageHeight}; background: #000; overflow: hidden; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <img src="{$imageUrl}" alt="{$title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-size:14px;\'>No image available</div>';">
+            </div>
+HTML;
         } else {
-            $output .= "⚠ No image set - Will use small summary card\n";
+            $imageHtml = <<<HTML
+            <div style="width: 100%; height: {$imageHeight}; background: #1d9bf0; border-top-left-radius: 16px; border-top-right-radius: 16px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px;">
+                No image available
+            </div>
+HTML;
         }
-        $output .= "\n";
 
-        // Title
-        $titleStatus = $this->getStatusIcon($data['title_status']);
-        $output .= "{$titleStatus} TITLE ({$data['title_length']}/{$data['title_limit']} chars)\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= $this->truncateForDisplay($data['title'], $data['title_limit']) . "\n\n";
+        return <<<HTML
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 500px; background: #000; border-radius: 16px; overflow: hidden; box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 15px, rgba(255, 255, 255, 0.15) 0px 0px 3px 1px;">
+    {$imageHtml}
+    <div style="padding: 12px; background: #000;">
+        <div style="font-size: 15px; color: #fff; font-weight: 700; line-height: 1.3125; margin-bottom: 2px;">
+            {$title}
+        </div>
+        <div style="font-size: 15px; color: #8b98a5; line-height: 1.3125; margin-top: 2px; margin-bottom: 12px;">
+            {$description}
+        </div>
+        <div style="display: flex; align-items: center; margin-top: 12px;">
+            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #8b98a5; margin-right: 4px;">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+            </svg>
+            <span style="font-size: 15px; color: #8b98a5;">{$domain}</span>
+        </div>
+    </div>
 
-        // Description
-        $descStatus = $this->getStatusIcon($data['description_status']);
-        $output .= "{$descStatus} DESCRIPTION ({$data['description_length']}/{$data['description_limit']} chars)\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= $this->truncateForDisplay($data['description'] ?? 'No description set', $data['description_limit']) . "\n\n";
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #2f3336; padding: 12px; font-size: 12px; color: #8b98a5; background: #16181c;">
+        <div style="margin-bottom: 8px;">
+            <strong style="color: #fff;">Title:</strong>
+            <span class="{$titleStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$data['title_length']}/{$data['title_limit']} chars
+            </span>
+        </div>
+        <div style="margin-bottom: 8px;">
+            <strong style="color: #fff;">Description:</strong>
+            <span class="{$descStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$data['description_length']}/{$data['description_limit']} chars
+            </span>
+        </div>
+        <div>
+            <strong style="color: #fff;">Image:</strong>
+            <span class="{$imageStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$imageStatusText}
+            </span>
+            <span style="margin-left: 8px; color: #8b98a5;">({$cardType})</span>
+        </div>
+    </div>
 
-        // Domain
-        $output .= "🌐 DOMAIN\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= "{$data['domain']}\n\n";
-
-        // Validation
-        $output .= $this->getValidationMessages($data);
-
-        return $output;
+    <style>
+        .status-good { background-color: #e8f5e9; color: #2e7d32; }
+        .status-warning { background-color: #fff3e0; color: #e65100; }
+        .status-error { background-color: #ffebee; color: #c62828; }
+        .status-empty { background-color: #f5f5f5; color: #616161; }
+    </style>
+</div>
+HTML;
     }
 
     /**
@@ -336,43 +454,78 @@ class SocialMediaPreview
      */
     protected function formatLinkedInPreview(array $data): string
     {
-        $output = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= "💼 LINKEDIN PREVIEW\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+        $title = htmlspecialchars($this->truncateForDisplay($data['title'], $data['title_limit']), ENT_QUOTES, 'UTF-8');
+        $description = htmlspecialchars($this->truncateForDisplay($data['description'] ?? 'No description set', $data['description_limit']), ENT_QUOTES, 'UTF-8');
+        $domain = htmlspecialchars($data['domain'], ENT_QUOTES, 'UTF-8');
+        $imageUrl = htmlspecialchars($data['image'] ?? '', ENT_QUOTES, 'UTF-8');
+        $url = htmlspecialchars($data['url'] ?? '', ENT_QUOTES, 'UTF-8');
 
-        // Image
-        $imageStatus = $data['image_status'] === 'valid' ? '✓' : '✗';
-        $output .= "{$imageStatus} FEATURED IMAGE\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        if ($data['image']) {
-            $output .= "Image URL: {$data['image']}\n";
-            $output .= "Recommended: 1200x627px\n";
+        $titleStatusClass = $this->getStatusClass($data['title_status']);
+        $descStatusClass = $this->getStatusClass($data['description_status']);
+        $imageStatusClass = $data['image_status'] === 'valid' ? 'status-good' : 'status-empty';
+        $imageStatusText = $data['image_status'] === 'valid' ? 'Set' : 'Missing';
+
+        $imageHtml = '';
+        if ($imageUrl) {
+            $imageHtml = <<<HTML
+            <div style="width: 100%; height: 314px; background: #f3f2ef; overflow: hidden; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                <img src="{$imageUrl}" alt="{$title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#666;font-size:14px;\'>No image available</div>';">
+            </div>
+HTML;
         } else {
-            $output .= "⚠ No image set - LinkedIn will use a default placeholder\n";
+            $imageHtml = <<<HTML
+            <div style="width: 100%; height: 314px; background: #f3f2ef; border-top-left-radius: 8px; border-top-right-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 14px;">
+                No image available
+            </div>
+HTML;
         }
-        $output .= "\n";
 
-        // Title
-        $titleStatus = $this->getStatusIcon($data['title_status']);
-        $output .= "{$titleStatus} TITLE ({$data['title_length']}/{$data['title_limit']} chars)\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= $this->truncateForDisplay($data['title'], $data['title_limit']) . "\n\n";
+        return <<<HTML
+<div style="font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Fira Sans', Ubuntu, Oxygen, 'Oxygen Sans', Cantarell, 'Droid Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Lucida Grande', Helvetica, Arial, sans-serif; max-width: 552px; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.08);">
+    {$imageHtml}
+    <div style="padding: 12px;">
+        <div style="font-size: 12px; color: rgba(0,0,0,0.6); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+            {$domain}
+        </div>
+        <a href="{$url}" style="text-decoration: none; color: rgba(0,0,0,0.9); display: block;">
+            <div style="font-size: 16px; font-weight: 600; line-height: 1.4; color: rgba(0,0,0,0.9); margin-bottom: 4px;">
+                {$title}
+            </div>
+        </a>
+        <div style="font-size: 14px; line-height: 1.4; color: rgba(0,0,0,0.6); margin-top: 4px;">
+            {$description}
+        </div>
+    </div>
 
-        // Domain
-        $output .= "🌐 DOMAIN\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= "{$data['domain']}\n\n";
+    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0e0e0; padding: 12px; font-size: 12px; color: rgba(0,0,0,0.6); background: #f3f2ef;">
+        <div style="margin-bottom: 8px;">
+            <strong style="color: rgba(0,0,0,0.9);">Title:</strong>
+            <span class="{$titleStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$data['title_length']}/{$data['title_limit']} chars
+            </span>
+        </div>
+        <div style="margin-bottom: 8px;">
+            <strong style="color: rgba(0,0,0,0.9);">Description:</strong>
+            <span class="{$descStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$data['description_length']}/{$data['description_limit']} chars
+            </span>
+        </div>
+        <div>
+            <strong style="color: rgba(0,0,0,0.9);">Image:</strong>
+            <span class="{$imageStatusClass}" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                {$imageStatusText}
+            </span>
+        </div>
+    </div>
 
-        // Description
-        $descStatus = $this->getStatusIcon($data['description_status']);
-        $output .= "{$descStatus} DESCRIPTION ({$data['description_length']}/{$data['description_limit']} chars)\n";
-        $output .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        $output .= $this->truncateForDisplay($data['description'] ?? 'No description set', $data['description_limit']) . "\n\n";
-
-        // Validation
-        $output .= $this->getValidationMessages($data);
-
-        return $output;
+    <style>
+        .status-good { background-color: #e8f5e9; color: #2e7d32; }
+        .status-warning { background-color: #fff3e0; color: #e65100; }
+        .status-error { background-color: #ffebee; color: #c62828; }
+        .status-empty { background-color: #f5f5f5; color: #616161; }
+    </style>
+</div>
+HTML;
     }
 
     /**
@@ -443,7 +596,7 @@ class SocialMediaPreview
             }
         }
 
-        if (empty($messages)) {
+        if (count($messages) === 0) {
             return '';
         }
 
