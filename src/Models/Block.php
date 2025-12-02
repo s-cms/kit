@@ -186,14 +186,14 @@ class Block extends Model
         });
 
         // If no custom types found, return array as-is
-        if (!$hasCustomTypes) {
+        if (! $hasCustomTypes) {
             return $items;
         }
 
         // Transform each item in the array
         return collect($items)->map(function ($item) use ($properties, $registry) {
             // Skip non-array items
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 return $item;
             }
 
