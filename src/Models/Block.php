@@ -88,7 +88,12 @@ class Block extends Model
         foreach ($properties as $fieldName => $fieldSchema) {
             $fieldValue = $data[$fieldName] ?? null;
             $variableType = $this->getVariableTypeForField($fieldSchema, $registry);
-            if ($variableType) {
+
+            // Handle array types with potential custom variable transformations
+            if (($fieldSchema['type'] ?? null) === 'array' && is_array($fieldValue)) {
+                $itemSchema = $fieldSchema['items'] ?? [];
+                $transformedData[$fieldName] = $this->transformArrayItems($fieldValue, $itemSchema, $registry);
+            } elseif ($variableType) {
                 // Transform the value using the variable type
                 $transformedData[$fieldName] = $this->transformFieldValue(
                     $fieldName,
@@ -156,6 +161,64 @@ class Block extends Model
 
             return $variableType->getDefaultValue();
         }
+    }
+
+    /**
+     * Transform array items recursively if they contain custom variable types
+     *
+     * @param  array  $items  Array of items to transform
+     * @param  array  $itemSchema  Schema definition for array items
+     * @param  VariableTypeRegistry  $registry  Variable type registry
+     * @return array Transformed array
+     */
+    protected function transformArrayItems(array $items, array $itemSchema, VariableTypeRegistry $registry): array
+    {
+        // If item schema has no properties, return as-is
+        if (empty($itemSchema['properties'] ?? [])) {
+            return $items;
+        }
+
+        $properties = $itemSchema['properties'];
+
+        // Check if any property has a custom variable type
+        $hasCustomTypes = collect($properties)->some(function ($fieldSchema) use ($registry) {
+            return $this->getVariableTypeForField($fieldSchema, $registry) !== null;
+        });
+
+        // If no custom types found, return array as-is
+        if (!$hasCustomTypes) {
+            return $items;
+        }
+
+        // Transform each item in the array
+        return collect($items)->map(function ($item) use ($properties, $registry) {
+            // Skip non-array items
+            if (!is_array($item)) {
+                return $item;
+            }
+
+            $transformedItem = [];
+
+            foreach ($properties as $fieldName => $fieldSchema) {
+                $fieldValue = $item[$fieldName] ?? null;
+                $variableType = $this->getVariableTypeForField($fieldSchema, $registry);
+
+                if ($variableType) {
+                    // Transform the value using the variable type
+                    $transformedItem[$fieldName] = $this->transformFieldValue(
+                        $fieldName,
+                        $fieldValue,
+                        $variableType,
+                        $fieldSchema
+                    );
+                } else {
+                    // No custom type, keep original value
+                    $transformedItem[$fieldName] = $fieldValue;
+                }
+            }
+
+            return $transformedItem;
+        })->toArray();
     }
 
     /**
