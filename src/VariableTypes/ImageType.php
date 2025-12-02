@@ -5,13 +5,9 @@ namespace SmartCms\Kit\VariableTypes;
 use Filament\Forms\Components\Field;
 use Filament\Schemas\Components\Component;
 use SmartCms\Kit\Forms\Components\MediaPicker;
-use SmartCms\Kit\Http\Resources\MediaResource;
-use SmartCms\Kit\Models\Media;
-use SmartCms\Kit\Services\MediaLibraryService;
 use SmartCms\Kit\Forms\Components\MediaPicker;
 use SmartCms\Kit\Http\Resources\MediaResource;
-use SmartCms\Kit\Models\Media;
-use SmartCms\Kit\Services\MediaLibraryService;
+use SmartCms\Kit\Http\Resources\MediaResource;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class ImageType implements VariableTypeInterface
@@ -40,6 +36,7 @@ class ImageType implements VariableTypeInterface
     {
         return MediaPicker::make($name)
             ->label('Image');
+
         return MediaPicker::make($name)
             ->label('Image');
     }
