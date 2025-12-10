@@ -24,10 +24,11 @@ class MediaResource extends JsonResource
              */
             $media = $this->resource;
         }
+        $defaultSrc = no_image()['source'] ?? '';
         if (! $media || ! $media instanceof Media) {
             return [
                 'alt' => '',
-                'src' => no_image(),
+                'src' => $defaultSrc,
                 'srcset' => '',
                 'width' => 0,
                 'height' => 0,
@@ -36,7 +37,7 @@ class MediaResource extends JsonResource
 
         return [
             'alt' => $media->name,
-            'src' => $media->getUrl() ?? no_image(),
+            'src' => $media->getUrl() ?? $defaultSrc,
             'srcset' => $media->getSrcset(),
             'width' => $media->width,
             'height' => $media->height,

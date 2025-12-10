@@ -89,11 +89,7 @@ class Block extends Model
             $fieldValue = $data[$fieldName] ?? null;
             $variableType = $this->getVariableTypeForField($fieldSchema, $registry);
 
-            // Handle array types with potential custom variable transformations
-            if (($fieldSchema['type'] ?? null) === 'array' && is_array($fieldValue)) {
-                $itemSchema = $fieldSchema['items'] ?? [];
-                $transformedData[$fieldName] = $this->transformArrayItems($fieldValue, $itemSchema, $registry);
-            } elseif ($variableType) {
+            if ($variableType) {
                 // Transform the value using the variable type
                 $transformedData[$fieldName] = $this->transformFieldValue(
                     $fieldName,
@@ -101,6 +97,12 @@ class Block extends Model
                     $variableType,
                     $fieldSchema
                 );
+            }
+
+            // Handle array types with potential custom variable transformations
+            if (($fieldSchema['type'] ?? null) === 'array' && is_array($fieldValue)) {
+                $itemSchema = $fieldSchema['items'] ?? [];
+                $transformedData[$fieldName] = $this->transformArrayItems($fieldValue, $itemSchema, $registry);
             } else {
                 // No custom type, keep original value
                 $transformedData[$fieldName] = $fieldValue;
@@ -284,7 +286,7 @@ class Block extends Model
 
     public static function getHeaderBlocks(): array
     {
-        return Block::query()->whereIn('id', app('s')->get('header_blocks', []))->get()->map(fn ($block): array => [
+        return Block::query()->whereIn('id', app('s')->get('header_blocks', []))->get()->map(fn($block): array => [
             'id' => $block->type,
             'data' => $block->transformedData(),
         ])->toArray();
@@ -292,7 +294,7 @@ class Block extends Model
 
     public static function getFooterBlocks(): array
     {
-        return Block::query()->whereIn('id', app('s')->get('footer_blocks', []))->get()->map(fn ($block): array => [
+        return Block::query()->whereIn('id', app('s')->get('footer_blocks', []))->get()->map(fn($block): array => [
             'id' => $block->type,
             'data' => $block->transformedData(),
         ])->toArray();
