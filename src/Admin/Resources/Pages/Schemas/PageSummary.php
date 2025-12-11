@@ -36,9 +36,9 @@ class PageSummary extends Page
             })->compact()
                 ->schema([
                     Radio::make('status')->hiddenLabel()
-                        ->disabled(fn($record): bool => $record->id == 1)
+                        ->disabled(fn ($record): bool => $record->id == 1)
                         ->options(PageStatus::class)->default('active')->reactive(),
-                    DateTimePicker::make('published_at')->reactive()->seconds(false)->default(now())->hidden(fn($get): bool => $get('status')?->value != 'scheduled'),
+                    DateTimePicker::make('published_at')->reactive()->seconds(false)->default(now())->hidden(fn ($get): bool => $get('status')?->value != 'scheduled'),
                 ]),
             Section::make()->compact()->schema([
                 MediaPicker::make('image')->label(__('kit::admin.image')),
@@ -60,7 +60,7 @@ class PageSummary extends Page
             Section::make(__('kit::admin.child_templates'))
                 ->icon(Heroicon::Squares2x2)
                 ->compact()
-                ->visible(fn(Get $get, ?ModelsPage $record) => $record?->canHaveChildren() ?? in_array($get('type'), ['category']))
+                ->visible(fn (Get $get, ?ModelsPage $record) => $record?->canHaveChildren() ?? in_array($get('type'), ['category']))
                 ->schema([
                     Select::make('settings.child_template_page')
                         ->label(__('kit::admin.template_for_child_pages'))
@@ -109,7 +109,7 @@ class PageSummary extends Page
                                         ->success()
                                         ->send();
                                 })
-                                ->visible(fn(Get $get, ?ModelsPage $record) => $record && $get('settings.child_template_page'))
+                                ->visible(fn (Get $get, ?ModelsPage $record) => $record && $get('settings.child_template_page'))
                         ),
                     Select::make('settings.child_template_category')
                         ->label(__('kit::admin.template_for_child_categories'))
@@ -158,7 +158,7 @@ class PageSummary extends Page
                                         ->success()
                                         ->send();
                                 })
-                                ->visible(fn(Get $get, ?ModelsPage $record) => $record && $get('settings.child_template_category'))
+                                ->visible(fn (Get $get, ?ModelsPage $record) => $record && $get('settings.child_template_category'))
                         ),
                 ]),
         ];
