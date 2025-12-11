@@ -14,6 +14,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Tables\Table;
 use Filament\View\PanelsRenderHook;
 use SmartCms\Forms\FormsPlugin;
+use SmartCms\Kit\Actions\Admin\GetInboxButton;
 use SmartCms\Kit\Actions\Admin\GetVersionHtml;
 use SmartCms\Kit\Actions\Admin\GetViewButton;
 use SmartCms\Kit\Admin\Pages\Dashboard;
@@ -71,7 +72,6 @@ class KitPlugin implements Plugin
             ->login(Login::class)
             ->authGuard('admin')
             // ->topNavigation()
-            ->topbar(false)
             ->sidebarWidth('16rem')
             ->brandName(config('app.name', 'SmartCms'))
             ->spa()
@@ -91,9 +91,10 @@ class KitPlugin implements Plugin
             ])
             ->renderHook(PanelsRenderHook::PAGE_END, GetVersionHtml::run())
             ->renderHook(PanelsRenderHook::HEAD_START, fn (): string => '<meta name="robots" content="noindex, nofollow" />')
-            ->renderHook(PanelsRenderHook::USER_MENU_BEFORE, GetViewButton::run())
             ->maxContentWidth(Width::Full)
             ->font('Roboto')
+            ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetInboxButton::run())
+            ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetViewButton::run())
             ->colors([
                 'primary' => '#28a0e7',
                 'danger' => Color::Rose,

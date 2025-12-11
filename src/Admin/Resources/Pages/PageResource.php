@@ -35,7 +35,7 @@ class PageResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return Page::query()->count();
+        return Page::query()->whereIn('type', ['page', 'category'])->count();
     }
 
     public static function form(Schema $schema): Schema

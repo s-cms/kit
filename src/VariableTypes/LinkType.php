@@ -67,7 +67,7 @@ class LinkType implements VariableTypeInterface
                 return [$component->statePath($name . '.' . $component->getName())];
             }),
             Grid::make(5)->schema([
-                TextInput::make($name . '.title')->label(__('kit::admin.title'))->placeholder(__('kit::admin.title'))->columnSpan(2),
+                TextInput::make($name . '.title')->label(__('kit::admin.title'))->placeholder(__('kit::admin.title'))->columnSpan(2)->required(),
                 IconInput::make($name . '.icon')->placeholder(__('kit::admin.icon'))->hint('')->columnSpan(2),
                 Toggle::make($name . '.is_external')->label(__('kit::admin.open_url_in_new_tab'))->inline(false),
 

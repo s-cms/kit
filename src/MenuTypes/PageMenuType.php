@@ -4,6 +4,7 @@ namespace SmartCms\Kit\MenuTypes;
 
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use SmartCms\Kit\Models\Page;
@@ -25,11 +26,16 @@ class PageMenuType implements MenuTypeInterface
     public function getSchema(): Field
     {
         return Select::make('url')
-            ->options(Page::query()->where('status', PageStatus::Published->value)->where('parent_id', null)->where('is_root', false)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, Set $set, Get $get): void {
+            ->options(Page::query()->where('status', PageStatus::Published->value)->where('parent_id', null)->where('is_root', false)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, $livewire, Component $component): void {
+                $statePath = $component->getStatePath();
+                $statePath = explode('.', $statePath);
+                array_shift($statePath);
+                $statePath[array_key_last($statePath)] = 'title';
+                $statePath = implode('.', $statePath);
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
                     if ($page) {
-                        $set('title', $page->name);
+                        $livewire->data = data_set($livewire->data, $statePath, $page->name);
                     }
                 }
             });
