@@ -227,14 +227,14 @@ class KitServiceProvider extends PackageServiceProvider
                 __DIR__ . '/../resources/dist/custom.css' => public_path('kit/css/custom.css'),
             ], 'kit-css');
         }
-        if (Schema::hasTable(config('settings.database_table_name', 'settings'))) {
-            View::composer('*', function ($view): void {
-                $vars = $this->getSharedVariables();
-                foreach ($vars as $key => $value) {
-                    $view->with($key, $value);
-                }
-            });
-        }
+        // if (Schema::hasTable(config('settings.database_table_name', 'settings'))) {
+        //     View::composer('*', function ($view): void {
+        //         $vars = $this->getSharedVariables();
+        //         foreach ($vars as $key => $value) {
+        //             $view->with($key, $value);
+        //         }
+        //     });
+        // }
     }
 
     protected function configureDefaults(): void
