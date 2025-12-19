@@ -14,7 +14,7 @@ class SocialsType implements VariableTypeInterface
 {
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 
     public static function getName(): string
@@ -32,7 +32,7 @@ class SocialsType implements VariableTypeInterface
                 'image' => 'https://www.facebook.com/favicon.ico',
             ],
         ])->map(
-            fn($item): \Illuminate\Support\Fluent => new Fluent([
+            fn ($item): \Illuminate\Support\Fluent => new Fluent([
                 'name' => $item['name'],
                 'url' => [
                     'title' => $item['name'],
@@ -46,7 +46,7 @@ class SocialsType implements VariableTypeInterface
         );
     }
 
-    public function getSchema(string $name): Field|Component
+    public function getSchema(string $name): Field | Component
     {
         return Select::make($name)
             ->options(collect(app('s')->get('branding.socials', []))->pluck('name'))
@@ -59,7 +59,7 @@ class SocialsType implements VariableTypeInterface
         return collect(app('s')->get('branding.socials', []))
             ->only($value)
             ->map(
-                fn($item): array => [
+                fn ($item): array => [
                     'name' => $item['name'],
                     'url' => [
                         'title' => $item['name'],

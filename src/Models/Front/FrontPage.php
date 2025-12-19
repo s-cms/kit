@@ -46,7 +46,7 @@ class FrontPage extends Page
         return new Attribute(
             get: function () {
                 // Only categories can have category children
-                if (!$this->canHaveChildren()) {
+                if (! $this->canHaveChildren()) {
                     return FrontPage::query()->where('id', 0);
                 }
 
@@ -84,13 +84,13 @@ class FrontPage extends Page
 
     public function breadcrumbs(): Attribute
     {
-        return new Attribute(get: fn(): array => $this->getBreadcrumbs());
+        return new Attribute(get: fn (): array => $this->getBreadcrumbs());
     }
 
     public function url(): Attribute
     {
         return new Attribute(
-            get: fn(): array => [
+            get: fn (): array => [
                 'title' => $this->name,
                 'is_external' => false,
                 'url' => $this->route(),

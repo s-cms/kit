@@ -2,7 +2,6 @@
 
 namespace SmartCms\Kit\Admin\Settings;
 
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -12,7 +11,6 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use SmartCms\Kit\Forms\Components\MediaPicker;
 use SmartCms\Lang\Models\Language;
-use SmartCms\Support\Admin\Components\Forms\ImageUpload;
 
 class GeneralForm
 {
@@ -36,14 +34,14 @@ class GeneralForm
                         'additional_languages',
                         array_filter(
                             $additionalLanguages,
-                            fn($language): bool => $language !== $state,
+                            fn ($language): bool => $language !== $state,
                         ),
                     );
                     $set(
                         'front_languages',
                         array_filter(
                             $frontLanguages,
-                            fn($language): bool => $language !== $state,
+                            fn ($language): bool => $language !== $state,
                         ),
                     );
                 })
@@ -66,7 +64,7 @@ class GeneralForm
                 ->multiple()
                 ->live()
                 ->required()
-                ->hidden(fn($get): bool => !$get('is_multi_lang')),
+                ->hidden(fn ($get): bool => ! $get('is_multi_lang')),
             Select::make('front_languages')
                 ->label(__('kit::admin.front_languages'))
                 ->options(function ($get) {
@@ -81,7 +79,7 @@ class GeneralForm
                 ->live()
                 ->multiple()
                 ->required()
-                ->hidden(fn($get): bool => !$get('is_multi_lang')),
+                ->hidden(fn ($get): bool => ! $get('is_multi_lang')),
             Flex::make([
                 MediaPicker::make('branding.logo')->label(
                     __('kit::admin.logo'),

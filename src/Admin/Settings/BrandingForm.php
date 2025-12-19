@@ -15,7 +15,6 @@ use Filament\Support\Enums\Alignment;
 use Filament\Support\Icons\Heroicon;
 use SmartCms\Kit\Admin\Components\IconInput;
 use SmartCms\Kit\Forms\Components\MediaPicker;
-use SmartCms\Support\Admin\Components\Forms\ImageUpload;
 
 class BrandingForm
 {
@@ -41,7 +40,7 @@ class BrandingForm
                             ->allowHtml()
                             ->searchable()
                             ->hint(
-                                fn() => str()
+                                fn () => str()
                                     ->of(
                                         "You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set",
                                     )
@@ -52,12 +51,12 @@ class BrandingForm
                 ])
                 ->collapsible()
                 ->collapsed()
-                ->itemLabel(fn(array $state): ?string => $state['name'] ?? __('kit::admin.social'))
+                ->itemLabel(fn (array $state): ?string => $state['name'] ?? __('kit::admin.social'))
                 ->cloneable()
                 ->compact()
                 ->addActionAlignment(Alignment::End)
-                ->collapseAllAction(fn(Action $action) => $action->hidden())
-                ->expandAllAction(fn(Action $action) => $action->hidden())
+                ->collapseAllAction(fn (Action $action) => $action->hidden())
+                ->expandAllAction(fn (Action $action) => $action->hidden())
                 ->default([]),
             Repeater::make('company_info.phones')
                 ->label(__('kit::admin.phones'))
@@ -71,13 +70,13 @@ class BrandingForm
                             ->mask('+999 99 999 99 99'),
                     ])->columns(3),
                 ])
-                ->itemLabel(fn(array $state): ?string => $state['value'] ?? __('kit::admin.phone'))
+                ->itemLabel(fn (array $state): ?string => $state['value'] ?? __('kit::admin.phone'))
                 ->collapsible()
                 ->collapsed()
                 ->cloneable()
                 ->compact()
-                ->collapseAllAction(fn(Action $action) => $action->hidden())
-                ->expandAllAction(fn(Action $action) => $action->hidden())
+                ->collapseAllAction(fn (Action $action) => $action->hidden())
+                ->expandAllAction(fn (Action $action) => $action->hidden())
                 ->addActionAlignment(Alignment::End),
             Repeater::make('company_info.emails')
                 ->label(__('kit::admin.emails'))
@@ -97,13 +96,13 @@ class BrandingForm
                             ]),
                     ])->columns(3),
                 ])
-                ->itemLabel(fn(array $state): ?string => $state['value'] ?? __('kit::admin.email'))
+                ->itemLabel(fn (array $state): ?string => $state['value'] ?? __('kit::admin.email'))
                 ->collapsible()
                 ->collapsed()
                 ->cloneable()
                 ->compact()
-                ->collapseAllAction(fn(Action $action) => $action->hidden())
-                ->expandAllAction(fn(Action $action) => $action->hidden())
+                ->collapseAllAction(fn (Action $action) => $action->hidden())
+                ->expandAllAction(fn (Action $action) => $action->hidden())
                 ->addActionAlignment(Alignment::End),
         ]);
     }

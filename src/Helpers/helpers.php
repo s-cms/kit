@@ -3,22 +3,22 @@
 use SmartCms\Kit\Http\Resources\MediaResource;
 use SmartCms\Kit\Models\Page;
 
-if (!function_exists('validateImage')) {
-    function validateImage(mixed $image = null): string|array
+if (! function_exists('validateImage')) {
+    function validateImage(mixed $image = null): string | array
     {
         $source = $image;
         if (is_array($image)) {
             $source = $image['source'] ?? null;
         }
-        if (!$source) {
+        if (! $source) {
             if (is_string($image)) {
                 return no_image()['source'];
             }
 
             return no_image();
         }
-        if (!str_contains((string) $source, 'storage')) {
-            if (!str_starts_with((string) $source, '/')) {
+        if (! str_contains((string) $source, 'storage')) {
+            if (! str_starts_with((string) $source, '/')) {
                 $source = '/' . $source;
             }
             $source = asset('storage' . $source);
@@ -33,12 +33,12 @@ if (!function_exists('validateImage')) {
     }
 }
 
-if (!function_exists('no_image')) {
+if (! function_exists('no_image')) {
     function no_image(): array
     {
         return once(function () {
             $no_image = app('s')->get('no_image', []);
-            if (!isset($no_image['source'])) {
+            if (! isset($no_image['source'])) {
                 $no_image['source'] = '/no-image.webp';
             }
             $no_image['source'] = validateImage($no_image['source']);
@@ -50,38 +50,39 @@ if (!function_exists('no_image')) {
         });
     }
 }
-if (!function_exists('logo')) {
+if (! function_exists('logo')) {
     function logo(): array
     {
         $logo = app('s')->get('branding.logo', no_image());
         if (is_array($logo)) {
             return validateImage($logo);
         }
+
         return MediaResource::make($logo)->toArray(request());
     }
 }
 
-if (!function_exists('company_name')) {
+if (! function_exists('company_name')) {
     function company_name(): string
     {
         return app('s')->get('company_name', config('app.name'));
     }
 }
-if (!function_exists('host')) {
+if (! function_exists('host')) {
     function host(): string
     {
         return url('/');
     }
 }
 
-if (!function_exists('hostname')) {
+if (! function_exists('hostname')) {
     function hostname(): string
     {
-        return once(fn() => Page::query()->first()->name ?? __('Hostname'));
+        return once(fn () => Page::query()->first()->name ?? __('Hostname'));
     }
 }
 
-if (!function_exists('language_routes')) {
+if (! function_exists('language_routes')) {
     function language_routes(): array
     {
         $routes = [];
@@ -125,7 +126,7 @@ if (!function_exists('language_routes')) {
     }
 }
 
-if (!function_exists('format_bytes')) {
+if (! function_exists('format_bytes')) {
     function format_bytes(int $bytes, int $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];

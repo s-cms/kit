@@ -28,6 +28,7 @@ class GetMeta
             return [$value['name'] => $value['url']['url']];
         });
         app('microdata')->add(BreadcrumbsMicrodata::make()->handle($formattedBreadcrumbs->toArray()));
+
         return app('microdata')->get();
     }
 
@@ -42,7 +43,7 @@ class GetMeta
         if (blank($twitterUsername)) {
             $twitterUsername = company_name();
         }
-        if (!str_contains($twitterUsername, '@')) {
+        if (! str_contains($twitterUsername, '@')) {
             $twitterUsername = '@' . $twitterUsername;
         }
         $titlePrefix = app('s')->get('title.prefix') ?? '';
@@ -52,6 +53,7 @@ class GetMeta
         $canonical = url()->current();
         $title = $titlePrefix . $page->title . $titleSuffix;
         $description = $descriptionPrefix . $page->description . $descriptionSuffix;
+
         return [
             'title' => $title,
             'description' => $description,

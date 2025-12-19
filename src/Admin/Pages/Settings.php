@@ -30,7 +30,7 @@ class Settings extends SettingsPage
         return __('kit::admin.settings');
     }
 
-    public static function getNavigationGroup(): string|UnitEnum|null
+    public static function getNavigationGroup(): string | UnitEnum | null
     {
         return NavigationGroup::System;
     }
@@ -43,7 +43,7 @@ class Settings extends SettingsPage
         ];
     }
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::Cog6Tooth;
+    protected static string | BackedEnum | null $navigationIcon = Heroicon::Cog6Tooth;
 
     /**
      * @var array<string, mixed> | null
@@ -81,7 +81,7 @@ class Settings extends SettingsPage
     public function save(): void
     {
         $data = $this->form->getState();
-        if (!$data['is_multi_lang']) {
+        if (! $data['is_multi_lang']) {
             $data['additional_languages'] = [];
             $data['front_languages'] = [];
         }

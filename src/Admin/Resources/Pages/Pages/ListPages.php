@@ -115,7 +115,7 @@ class ListPages extends ListRecords
         return __('kit::admin.pages');
     }
 
-    public function getHeading(): string|Htmlable
+    public function getHeading(): string | Htmlable
     {
         return __('kit::admin.pages');
     }
@@ -123,13 +123,13 @@ class ListPages extends ListRecords
     public function getTabs(): array
     {
         return [
-            'top_level' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('depth', 0)),
-            'pages' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('type', 'page')),
-            'categories' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('type', 'category')),
+            'top_level' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('depth', 0)),
+            'pages' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'page')),
+            'categories' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'category')),
             'scheduled' => Tab::make()->modifyQueryUsing(
-                fn(Builder $query) => $query->where('status', PageStatus::Scheduled),
+                fn (Builder $query) => $query->where('status', PageStatus::Scheduled),
             ),
-            'draft' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('status', PageStatus::Draft)),
+            'draft' => Tab::make()->modifyQueryUsing(fn (Builder $query) => $query->where('status', PageStatus::Draft)),
             'all' => Tab::make(),
         ];
     }

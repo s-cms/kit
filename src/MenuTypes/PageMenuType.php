@@ -48,7 +48,7 @@ class PageMenuType implements MenuTypeInterface
             });
     }
 
-    public function getLinkFromItem(mixed $item): string|array
+    public function getLinkFromItem(mixed $item): string | array
     {
         return Page::find($item['url'] ?? 0)?->route() ?? url('/');
     }
