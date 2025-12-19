@@ -51,7 +51,7 @@ class ReviewBlockData extends Tool
 
         $block = Block::find($validated['id']);
 
-        if (!$block) {
+        if (! $block) {
             return Response::text('Block not found');
         }
 
@@ -66,18 +66,18 @@ class ReviewBlockData extends Tool
         ];
 
         // Get transformed data
-        if (!empty($validated['language'])) {
+        if (! empty($validated['language'])) {
             // Single language
             $result['transformed_data'] = $block->getTransformedData($validated['language']);
 
-            if (!empty($validated['include_raw'])) {
+            if (! empty($validated['include_raw'])) {
                 $result['raw_data'] = $block->getTranslation('data', $validated['language'], false);
             }
         } else {
             // All locales
             $result['transformed_data'] = $block->getTransformedDataForAllLocales();
 
-            if (!empty($validated['include_raw'])) {
+            if (! empty($validated['include_raw'])) {
                 $result['raw_data'] = $block->getTranslations('data');
             }
         }
