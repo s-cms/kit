@@ -15,7 +15,7 @@ class OrganizationMicrodata
             '@type' => 'Organization',
             'name' => company_name(),
             'url' => url('/'),
-            'logo' => logo()['source'],
+            'logo' => logo()['src'] ?? '',
         ];
     }
 }

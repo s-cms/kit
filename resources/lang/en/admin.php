@@ -142,7 +142,8 @@ return [
     'check_for_updates' => 'Check for Updates',
     'update_now' => 'Update Now',
     'confirm_update' => 'Confirm Update',
-    'confirm_update_description' => 'This will update your system to the latest version. Please ensure you have a backup before proceeding.',
+    'confirm_update_description' =>
+        'This will update your system to the latest version. Please ensure you have a backup before proceeding.',
     'update_check_completed' => 'Update check completed',
     'update_check_failed' => 'Failed to check for updates',
     'update_started' => 'Update Started',
@@ -164,7 +165,8 @@ return [
     // Asset update translations
     'update_assets' => 'Update Assets',
     'confirm_asset_update' => 'Confirm Asset Update',
-    'confirm_asset_update_description' => 'This will run "npm ci" and "npm run build" to update your frontend assets. This may take several minutes.',
+    'confirm_asset_update_description' =>
+        'This will run "npm ci" and "npm run build" to update your frontend assets. This may take several minutes.',
     'asset_update_validation_failed' => 'Asset Update Validation Failed',
     'asset_update_completed' => 'Assets Updated',
     'asset_update_completed_message' => 'Frontend assets have been successfully updated.',
@@ -202,7 +204,8 @@ return [
     'show_from' => 'Show From',
     'show_until' => 'Show Until',
     'heading_type' => 'Heading Type',
-    'categories_helper_text' => 'You can select categories to display items from or leave it empty to display items from all categories',
+    'categories_helper_text' =>
+        'You can select categories to display items from or leave it empty to display items from all categories',
     'division' => 'Division',
     'division_category' => 'Division Category',
     'phone' => 'Phone',
@@ -255,9 +258,11 @@ return [
     'change_published_date' => 'Change Published Date',
     'child_default_blocks' => 'Default Blocks for Children',
     'default_blocks_for_child_pages' => 'Default Blocks for Child Pages',
-    'default_blocks_for_child_pages_helper' => 'These blocks will be automatically attached to new child pages created under this category',
+    'default_blocks_for_child_pages_helper' =>
+        'These blocks will be automatically attached to new child pages created under this category',
     'default_blocks_for_child_categories' => 'Default Blocks for Child Categories',
-    'default_blocks_for_child_categories_helper' => 'These blocks will be automatically attached to new child categories created under this category',
+    'default_blocks_for_child_categories_helper' =>
+        'These blocks will be automatically attached to new child categories created under this category',
     'clone_page' => 'Clone Page',
     'page_cloned_successfully' => 'Page cloned successfully',
     'preview_page' => 'Preview Page',
@@ -282,16 +287,19 @@ return [
     'force_apply' => 'Force Apply',
     'force_apply_template_to_pages' => 'Force Apply Template to Child Pages',
     'force_apply_template_to_categories' => 'Force Apply Template to Child Categories',
-    'force_apply_template_description' => 'This will replace all existing blocks on child pages with the template blocks. This action cannot be undone.',
+    'force_apply_template_description' =>
+        'This will replace all existing blocks on child pages with the template blocks. This action cannot be undone.',
     'template_applied_successfully' => 'Template applied successfully',
     'template_applied_to_count' => 'Template applied to :count pages',
     'make_template' => 'Make Template',
-    'make_template_description' => 'Create a template from the current page blocks. You can later apply this template to other pages.',
+    'make_template_description' =>
+        'Create a template from the current page blocks. You can later apply this template to other pages.',
     'template_name' => 'Template Name',
     'template_name_already_exists' => 'A template with this name already exists. Please choose a different name.',
     'template_created_successfully' => 'Template created successfully',
     'apply_template' => 'Apply Template',
-    'apply_template_description' => 'This will replace all existing blocks on this page with the selected template blocks. This action cannot be undone.',
+    'apply_template_description' =>
+        'This will replace all existing blocks on this page with the selected template blocks. This action cannot be undone.',
     'select_template' => 'Select Template',
 
     // Media Library
@@ -339,7 +347,8 @@ return [
     'image_fetched' => 'Image fetched successfully',
     'select_from_existing' => 'Select from existing',
     'regenerate_responsive_images' => 'Regenerate Responsive Images',
-    'regenerate_responsive_images_description' => 'This will regenerate all responsive image sizes for this media file. Old responsive images will be deleted and new ones will be generated based on the original file.',
+    'regenerate_responsive_images_description' =>
+        'This will regenerate all responsive image sizes for this media file. Old responsive images will be deleted and new ones will be generated based on the original file.',
     'regenerate' => 'Regenerate',
     'responsive_images_regenerated' => 'Responsive images have been successfully regenerated',
     'failed_to_regenerate_responsive_images' => 'Failed to regenerate responsive images',
@@ -351,4 +360,7 @@ return [
     'tag_type_helper' => 'Optional: group tags by type (e.g., blog, product, category)',
     'tag_slug_helper' => 'URL-friendly version of the tag name',
     'usage_count' => 'Usage Count',
+    'apple_touch_icon' => 'Apple Touch Icon',
+    'twitter_name' => 'Twitter Name',
+    'social' => 'Social',
 ];

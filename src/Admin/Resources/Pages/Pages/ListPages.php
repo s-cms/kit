@@ -5,14 +5,17 @@ namespace SmartCms\Kit\Admin\Resources\Pages\Pages;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
 use SmartCms\Kit\Models\Page;
+use SmartCms\Kit\Support\Contracts\PageStatus;
 
 class ListPages extends ListRecords
 {
@@ -112,8 +115,22 @@ class ListPages extends ListRecords
         return __('kit::admin.pages');
     }
 
-    public function getHeading(): string | Htmlable
+    public function getHeading(): string|Htmlable
     {
         return __('kit::admin.pages');
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'top_level' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('depth', 0)),
+            'pages' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('type', 'page')),
+            'categories' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('type', 'category')),
+            'scheduled' => Tab::make()->modifyQueryUsing(
+                fn(Builder $query) => $query->where('status', PageStatus::Scheduled),
+            ),
+            'draft' => Tab::make()->modifyQueryUsing(fn(Builder $query) => $query->where('status', PageStatus::Draft)),
+            'all' => Tab::make(),
+        ];
     }
 }

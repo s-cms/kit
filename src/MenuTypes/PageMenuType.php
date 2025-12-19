@@ -24,7 +24,15 @@ class PageMenuType implements MenuTypeInterface
     public function getSchema(): Field
     {
         return Select::make('url')
-            ->options(Page::query()->where('status', PageStatus::Published->value)->where('parent_id', null)->where('is_root', false)->pluck('name', 'id'))->live()->afterStateUpdated(function (string $state, $livewire, Component $component): void {
+            ->options(
+                Page::query()
+                    ->where('status', PageStatus::Published->value)
+                    ->where('parent_id', null)
+                    ->where('is_root', false)
+                    ->pluck('name', 'id'),
+            )
+            ->live()
+            ->afterStateUpdated(function (string $state, $livewire, Component $component): void {
                 $statePath = $component->getStatePath();
                 $statePath = explode('.', $statePath);
                 array_shift($statePath);
@@ -32,14 +40,15 @@ class PageMenuType implements MenuTypeInterface
                 $statePath = implode('.', $statePath);
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
-                    if ($page) {
+                    // @todo - Fix for relation managers
+                    if ($page && property_exists($livewire, 'data')) {
                         $livewire->data = data_set($livewire->data, $statePath, $page->name);
                     }
                 }
             });
     }
 
-    public function getLinkFromItem(mixed $item): string | array
+    public function getLinkFromItem(mixed $item): string|array
     {
         return Page::find($item['url'] ?? 0)?->route() ?? url('/');
     }

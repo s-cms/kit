@@ -10,6 +10,7 @@ use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use SmartCms\Kit\Forms\Components\MediaPicker;
 use SmartCms\Lang\Models\Language;
 use SmartCms\Support\Admin\Components\Forms\ImageUpload;
 
@@ -23,45 +24,77 @@ class GeneralForm
                 ->required(),
             Select::make('main_language')
                 ->label(__('kit::admin.main_language'))
-                ->live()->afterStateUpdated(function (mixed $state, Set $set, Get $get): void {
+                ->live()
+                ->afterStateUpdated(function (
+                    mixed $state,
+                    Set $set,
+                    Get $get,
+                ): void {
                     $additionalLanguages = $get('additional_languages') ?? [];
                     $frontLanguages = $get('front_languages') ?? [];
-                    $set('additional_languages', array_filter($additionalLanguages, fn ($language): bool => $language !== $state));
-                    $set('front_languages', array_filter($frontLanguages, fn ($language): bool => $language !== $state));
+                    $set(
+                        'additional_languages',
+                        array_filter(
+                            $additionalLanguages,
+                            fn($language): bool => $language !== $state,
+                        ),
+                    );
+                    $set(
+                        'front_languages',
+                        array_filter(
+                            $frontLanguages,
+                            fn($language): bool => $language !== $state,
+                        ),
+                    );
                 })
                 ->options(Language::query()->pluck('name', 'id')->toArray())
                 ->required(),
             Toggle::make('is_multi_lang')
                 ->label(__('kit::admin.is_multi_lang'))
-                ->required()->live(),
+                ->required()
+                ->live(),
             Select::make('additional_languages')
                 ->label(__('kit::admin.additional_languages'))
                 ->options(function (Get $get) {
                     $mainLanguage = $get('main_language');
 
-                    return Language::query()->where('id', '!=', $mainLanguage)->pluck('name', 'id')->toArray();
+                    return Language::query()
+                        ->where('id', '!=', $mainLanguage)
+                        ->pluck('name', 'id')
+                        ->toArray();
                 })
                 ->multiple()
                 ->live()
-                ->required()->hidden(fn ($get): bool => ! $get('is_multi_lang')),
+                ->required()
+                ->hidden(fn($get): bool => !$get('is_multi_lang')),
             Select::make('front_languages')
                 ->label(__('kit::admin.front_languages'))
                 ->options(function ($get) {
                     $mainLanguage = $get('main_language');
 
-                    return Language::query()->whereIn('id', $get('additional_languages') ?? [])->where('id', '!=', $mainLanguage)->pluck('name', 'id')->toArray();
+                    return Language::query()
+                        ->whereIn('id', $get('additional_languages') ?? [])
+                        ->where('id', '!=', $mainLanguage)
+                        ->pluck('name', 'id')
+                        ->toArray();
                 })
                 ->live()
                 ->multiple()
-                ->required()->hidden(fn ($get): bool => ! $get('is_multi_lang')),
+                ->required()
+                ->hidden(fn($get): bool => !$get('is_multi_lang')),
             Flex::make([
-                ImageUpload::make('branding.logo', 'branding', __('kit::admin.logo')),
-                FileUpload::make('branding.favicon')->disk('public')
-                    ->image()
-                    ->imagePreviewHeight('150')
-                    ->maxSize(1024)
-                    ->getUploadedFileNameForStorageUsing(fn ($file): string => 'favicon.ico'),
-                ImageUpload::make('no_image', 'no_image', __('kit::admin.no_image')),
+                MediaPicker::make('branding.logo')->label(
+                    __('kit::admin.logo'),
+                ),
+                MediaPicker::make('branding.favicon')->label(
+                    __('kit::admin.favicon'),
+                ),
+                MediaPicker::make('branding.apple_touch_icon')->label(
+                    __('kit::admin.apple_touch_icon'),
+                ),
+                MediaPicker::make('branding.no_image')->label(
+                    __('kit::admin.no_image'),
+                ),
             ])->columns(2),
         ]);
     }

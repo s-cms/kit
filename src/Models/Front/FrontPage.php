@@ -16,8 +16,8 @@ class FrontPage extends Page
     public static $staticCasts = [
         'settings' => 'array',
         'metadata' => 'array',
-        'image' => ImageCast::class,
-        'banner' => ImageCast::class,
+        // 'image' => ImageCast::class,
+        // 'banner' => ImageCast::class,
     ];
 
     protected static function booted(): void
@@ -46,15 +46,13 @@ class FrontPage extends Page
         return new Attribute(
             get: function () {
                 // Only categories can have category children
-                if (! $this->canHaveChildren()) {
+                if (!$this->canHaveChildren()) {
                     return FrontPage::query()->where('id', 0);
                 }
 
                 // Return direct child categories
-                return FrontPage::query()
-                    ->where('parent_id', $this->id)
-                    ->where('type', 'category');
-            }
+                return FrontPage::query()->where('parent_id', $this->id)->where('type', 'category');
+            },
         );
     }
 
@@ -67,10 +65,8 @@ class FrontPage extends Page
         return new Attribute(
             get: function () {
                 // Return direct children that are not categories
-                return FrontPage::query()
-                    ->where('parent_id', $this->id)
-                    ->where('type', '!=', 'category');
-            }
+                return FrontPage::query()->where('parent_id', $this->id)->where('type', '!=', 'category');
+            },
         );
     }
 
@@ -82,21 +78,19 @@ class FrontPage extends Page
         return new Attribute(
             get: function () {
                 return $this->descendants();
-            }
+            },
         );
     }
 
     public function breadcrumbs(): Attribute
     {
-        return new Attribute(
-            get: fn (): array => $this->getBreadcrumbs(),
-        );
+        return new Attribute(get: fn(): array => $this->getBreadcrumbs());
     }
 
     public function url(): Attribute
     {
         return new Attribute(
-            get: fn (): array => [
+            get: fn(): array => [
                 'title' => $this->name,
                 'is_external' => false,
                 'url' => $this->route(),
@@ -109,18 +103,6 @@ class FrontPage extends Page
      */
     public function shallowAugmentedArrayKeys(): array
     {
-        return [
-            'id',
-            'name',
-            'slug',
-            'type',
-            'url',
-            'breadcrumbs',
-            'image',
-            'banner',
-            'title',
-            'heading',
-            'summary',
-        ];
+        return ['id', 'name', 'slug', 'type', 'url', 'breadcrumbs', 'image', 'banner', 'title', 'heading', 'summary'];
     }
 }

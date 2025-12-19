@@ -22,12 +22,17 @@ class BreadcrumbsMicrodata
                 ],
             ],
         ];
+        $position = 1;
         foreach ($breadcrumbs as $key => $breadcrumb) {
+            if ($breadcrumb == host()) {
+                continue;
+            }
+            $position++;
             $microdata['itemListElement'][] = [
                 '@type' => 'ListItem',
-                'position' => $key + 1,
-                'name' => $breadcrumb['name'] ?? hostname(),
-                'item' => $breadcrumb['link'] ?? url('/'),
+                'position' => $position,
+                'name' => $key,
+                'item' => $breadcrumb,
             ];
         }
 
