@@ -76,6 +76,7 @@ class SmartCmsServer extends Server
         \SmartCms\Kit\Mcp\Tools\GetPageBlocks::class,
         \SmartCms\Kit\Mcp\Tools\GetBlockSchema::class,
         \SmartCms\Kit\Mcp\Tools\GetBlock::class,
+        \SmartCms\Kit\Mcp\Tools\ReviewBlockData::class,
 
         // // Site Configuration
         \SmartCms\Kit\Mcp\Tools\GetLanguages::class,
