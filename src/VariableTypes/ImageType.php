@@ -32,12 +32,21 @@ class ImageType implements VariableTypeInterface
 
     public function getSchema(string $name): Field | Component
     {
-        return MediaPicker::make($name)
+        return MediaPicker::make($name . '.id')
             ->label('Image');
     }
 
     public function getValue(mixed $value): mixed
     {
-        return MediaResource::make($value)->toArray(request());
+        $id = $value['id'] ?? null;
+        if (!is_array($value) && is_string($value)) {
+            $id = $value;
+        }
+
+        if (!$id) {
+            return $this->getDefaultValue();
+        }
+
+        return MediaResource::make($id)->toArray(request());
     }
 }
