@@ -39,11 +39,11 @@ class ImageType implements VariableTypeInterface
     public function getValue(mixed $value): mixed
     {
         $id = $value['id'] ?? null;
-        if (!is_array($value) && is_string($value)) {
+        if (! is_array($value) && is_string($value)) {
             $id = $value;
         }
 
-        if (!$id) {
+        if (! $id) {
             return $this->getDefaultValue();
         }
 
