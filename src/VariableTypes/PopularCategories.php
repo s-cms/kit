@@ -7,7 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Group;
-use SmartCms\Kit\Http\Resources\CategoryPageResource;
+use SmartCms\Kit\Http\Resources\FrontPageResource;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Models\Pages\CategoryPage;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
@@ -28,7 +28,7 @@ class PopularCategories implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return CategoryPage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new CategoryPageResource($item))->toArray(request()));
+        return CategoryPage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
@@ -63,6 +63,6 @@ class PopularCategories implements VariableTypeInterface
             ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
             ->orderBy('views', 'desc')
             ->get()
-            ->map(fn ($item): array => (new CategoryPageResource($item))->toArray(request()));
+            ->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 }

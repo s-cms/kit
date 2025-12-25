@@ -33,10 +33,9 @@ class PageTransformer
             'keywords' => $page->keywords,
             'published_at' => $page?->published_at?->format('Y-m-d H:i:s') ?? now()->format('Y-m-d H:i:s'),
             'views' => $page->views,
-            // 'settings' => $page->settings,
-            // 'layout_settings' => $page->layout_settings,
-            'is_root' => $page->is_root,
-            'depth' => $page->depth,
+            'settings' => $page->settings,
+            'meta' => $page->meta ?? [],
+            'tags' => $page->tags->where('type', 'tag')->pluck('name')->toArray(),
         ];
 
         // Create transformation context

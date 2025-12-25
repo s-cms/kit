@@ -14,20 +14,26 @@ class MediaController
     {
         $media = Media::find($id);
 
-        if (! $media) {
-            return response()->json([
-                'error' => 'Media not found',
-            ], 404);
+        if (!$media) {
+            return response()->json(
+                [
+                    'error' => 'Media not found',
+                ],
+                404,
+            );
         }
 
-        if (! $media->isImage()) {
-            return response()->json([
-                'error' => 'Media is not an image',
-            ], 400);
+        if (!$media->isImage()) {
+            return response()->json(
+                [
+                    'error' => 'Media is not an image',
+                ],
+                400,
+            );
         }
 
         // Get alt text for current language
-        $alt = $media->alt[current_lang()] ?? $media->alt['alt'] ?? '';
+        $alt = $media->alt[current_lang()] ?? ($media->alt['alt'] ?? '');
 
         return response()->json([
             'alt' => $alt,

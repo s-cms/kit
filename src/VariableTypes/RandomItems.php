@@ -8,7 +8,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
-use SmartCms\Kit\Http\Resources\SimplePageResource;
+use SmartCms\Kit\Http\Resources\FrontPageResource;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Models\Pages\SimplePage;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
@@ -29,7 +29,7 @@ class RandomItems implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
+        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
@@ -89,6 +89,6 @@ class RandomItems implements VariableTypeInterface
             ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
             ->inRandomOrder();
 
-        return $query->get()->map(fn ($item): array => (new SimplePageResource($item))->toArray(request()));
+        return $query->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 }
