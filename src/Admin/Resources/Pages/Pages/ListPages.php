@@ -61,6 +61,7 @@ class ListPages extends ListRecords
                         ->placeholder(__('kit::admin.no_parent')),
                 ])
                 ->action(function (array $data): void {
+                    $data['status'] = PageStatus::Draft;
                     Page::query()->create($data);
                 }),
         ];
