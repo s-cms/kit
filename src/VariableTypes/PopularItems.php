@@ -28,7 +28,7 @@ class PopularItems implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
+        return SimplePage::query()->with('tags')->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
@@ -59,6 +59,7 @@ class PopularItems implements VariableTypeInterface
         $categories = $value['categories'] ?? [];
 
         $query = SimplePage::query()
+            ->with('tags')
             ->whereIn('parent_id', $categories)
             ->where('type', 'page')
             ->when(app()->bound('page'), function ($query) {

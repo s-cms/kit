@@ -34,4 +34,13 @@ class SimplePage extends Page
     protected static ?string $pageType = 'page';
 
     protected static ?bool $canHaveChildren = false;
+
+    /**
+     * Get the class name for polymorphic relations.
+     * Use parent Page class to maintain compatibility with existing tags and other polymorphic relations.
+     */
+    public function getMorphClass(): string
+    {
+        return Page::class;
+    }
 }

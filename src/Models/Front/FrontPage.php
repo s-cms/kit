@@ -105,4 +105,13 @@ class FrontPage extends Page
     {
         return ['id', 'name', 'slug', 'type', 'url', 'breadcrumbs', 'image', 'banner', 'title', 'heading', 'summary'];
     }
+
+    /**
+     * Get the class name for polymorphic relations.
+     * Use parent Page class to maintain compatibility with existing tags and other polymorphic relations.
+     */
+    public function getMorphClass(): string
+    {
+        return Page::class;
+    }
 }

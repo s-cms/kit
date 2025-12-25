@@ -29,7 +29,7 @@ class LatestItems implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return SimplePage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
+        return SimplePage::query()->with('tags')->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
@@ -73,6 +73,7 @@ class LatestItems implements VariableTypeInterface
         $categories = $value['categories'] ?? [];
 
         $query = SimplePage::query()
+            ->with('tags')
             ->when(is_array($categories) && count($categories) > 0, function ($query) use ($categories) {
                 // Filter by specific categories
                 $query->whereIn('parent_id', $categories);

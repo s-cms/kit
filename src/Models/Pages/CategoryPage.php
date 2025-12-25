@@ -37,4 +37,13 @@ class CategoryPage extends Page
     protected static ?string $pageType = 'category';
 
     protected static ?bool $canHaveChildren = true;
+
+    /**
+     * Get the class name for polymorphic relations.
+     * Use parent Page class to maintain compatibility with existing tags and other polymorphic relations.
+     */
+    public function getMorphClass(): string
+    {
+        return Page::class;
+    }
 }

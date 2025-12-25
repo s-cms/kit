@@ -28,7 +28,7 @@ class LatestCategories implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return CategoryPage::query()->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
+        return CategoryPage::query()->with('tags')->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 
     public function getSchema(string $name): Field | Component
@@ -59,6 +59,7 @@ class LatestCategories implements VariableTypeInterface
         }
 
         return CategoryPage::query()
+            ->with('tags')
             ->where('parent_id', $parentId)
             ->limit($value['limit'] ?? self::DEFAULT_LIMIT)
             ->orderBy('published_at', 'desc')
