@@ -14,7 +14,7 @@ class MediaController
     {
         $media = Media::find($id);
 
-        if (!$media) {
+        if (! $media) {
             return response()->json(
                 [
                     'error' => 'Media not found',
@@ -23,7 +23,7 @@ class MediaController
             );
         }
 
-        if (!$media->isImage()) {
+        if (! $media->isImage()) {
             return response()->json(
                 [
                     'error' => 'Media is not an image',
