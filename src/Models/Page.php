@@ -20,9 +20,6 @@ use SmartCms\Support\Traits\HasStatus;
 use SmartCms\TemplateBuilder\Models\Layout;
 use SmartCms\TemplateBuilder\Traits\HasLayout;
 use SmartCms\TemplateBuilder\Traits\HasTemplate;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Tags\HasTags;
 use Spatie\Translatable\HasTranslations;
 
@@ -59,7 +56,7 @@ use Spatie\Translatable\HasTranslations;
  * @property-read array $breadcrumbs The breadcrumbs for this page.
  * @property-read \Illuminate\Database\Eloquent\Collection $children Child pages.
  */
-class Page extends Model implements HasMedia
+class Page extends Model
 {
     use HasAugmentations;
     use HasBlocks;
@@ -75,21 +72,8 @@ class Page extends Model implements HasMedia
     use HasTags;
     use HasTemplate;
     use HasTranslations;
-    use InteractsWithMedia;
 
     protected $guarded = [];
-
-    public function registerMediaConversions(?Media $media = null): void
-    {
-        // Create WebP version matching original dimensions for responsive images
-        // This conversion maintains original size but converts format to WebP
-        if ($media && in_array(strtolower($media->extension), ['jpg', 'jpeg', 'png'])) {
-            $this->addMediaConversion('original-webp')
-                ->nonQueued()
-                ->format('webp')
-                ->quality(90);
-        }
-    }
 
     /**
      * The page type for this model.
