@@ -30,7 +30,6 @@ class TagForm
                         TextInput::make('slug.' . main_lang())
                             ->label(__('kit::admin.slug'))
                             ->required()
-                            ->unique(ignoreRecord: true)
                             ->helperText(__('kit::admin.tag_slug_helper')),
                         TextInput::make('type')
                             ->label(__('kit::admin.tag_type'))
