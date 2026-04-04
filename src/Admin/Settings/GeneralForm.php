@@ -2,6 +2,7 @@
 
 namespace SmartCms\Kit\Admin\Settings;
 
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -9,6 +10,8 @@ use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Illuminate\Support\HtmlString;
+use SmartCms\Kit\Actions\Support\CleanUnusedTranslationKeys;
 use SmartCms\Kit\Forms\Components\MediaPicker;
 use SmartCms\Lang\Models\Language;
 
@@ -51,6 +54,26 @@ class GeneralForm
                 ->label(__('kit::admin.is_multi_lang'))
                 ->required()
                 ->live(),
+            Placeholder::make('unused_languages_warning')
+                ->hiddenLabel()
+                ->content(fn (): HtmlString => new HtmlString(
+                    '<div class="text-sm text-danger-600 dark:text-danger-400">'
+                    . __('kit::admin.unused_languages_warning')
+                    . '</div>'
+                ))
+                ->visible(function (Get $get): bool {
+                    if ($get('is_multi_lang')) {
+                        return false;
+                    }
+
+                    $mainLang = Language::query()->where('id', $get('main_language'))->value('slug');
+
+                    if (! $mainLang) {
+                        return false;
+                    }
+
+                    return (new CleanUnusedTranslationKeys)->hasUnusedKeys([$mainLang]);
+                }),
             Select::make('additional_languages')
                 ->label(__('kit::admin.additional_languages'))
                 ->options(function (Get $get) {
@@ -78,7 +101,6 @@ class GeneralForm
                 })
                 ->live()
                 ->multiple()
-                ->required()
                 ->hidden(fn ($get): bool => ! $get('is_multi_lang')),
             Flex::make([
                 MediaPicker::make('branding.logo')->label(

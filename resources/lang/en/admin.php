@@ -359,4 +359,12 @@ return [
     'rename_translation_key_heading' => 'Rename Translation Key',
     'rename_translation_key_description' => 'The content language key ":old" will be renamed to ":new". All existing content will be preserved under the new key. If you want to keep translations for both languages, enable multilingual mode first, add the language, fill in the content, then switch the default language.',
     'rename_translation_key_confirm' => 'Rename',
+
+    // Unused languages cleanup
+    'unused_languages_warning' => 'The database contains content in inactive languages. This may slow down database performance.',
+    'clean_unused_languages' => 'Clean Unused Languages',
+    'clean_unused_languages_heading' => 'Clean Unused Languages',
+    'clean_unused_languages_description' => 'This will permanently remove all content in inactive languages from the database. This action cannot be undone.',
+    'clean_unused_languages_confirm' => 'Clean',
+    'clean_unused_languages_done' => ':count records cleaned successfully.',
 ];

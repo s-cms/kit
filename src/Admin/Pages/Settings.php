@@ -7,6 +7,7 @@ use Filament\Actions\Action;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use SmartCms\Kit\Actions\Support\CleanUnusedTranslationKeys;
 use SmartCms\Kit\Actions\Support\RenameTranslationKey;
 use SmartCms\Kit\Admin\Enums\NavigationGroup;
 use SmartCms\Kit\Admin\Settings\BrandingForm;
@@ -75,7 +76,40 @@ class Settings extends SettingsPage
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            $this->getCleanUnusedLanguagesAction(),
+        ];
+    }
+
+    protected function getCleanUnusedLanguagesAction(): Action
+    {
+        return Action::make('cleanUnusedLanguages')
+            ->label(__('kit::admin.clean_unused_languages'))
+            ->color('danger')
+            ->requiresConfirmation()
+            ->modalHeading(__('kit::admin.clean_unused_languages_heading'))
+            ->modalDescription(__('kit::admin.clean_unused_languages_description'))
+            ->modalSubmitActionLabel(__('kit::admin.clean_unused_languages_confirm'))
+            ->action(function (): void {
+                $activeLanguages = $this->getActiveLanguageSlugs();
+                $updated = CleanUnusedTranslationKeys::run($activeLanguages);
+
+                $this->getSavedNotification()
+                    ?->title(__('kit::admin.clean_unused_languages_done', ['count' => $updated]))
+                    ->send();
+            })
+            ->visible(fn (): bool => (new CleanUnusedTranslationKeys)->hasUnusedKeys($this->getActiveLanguageSlugs()));
+    }
+
+    protected function getActiveLanguageSlugs(): array
+    {
+        return Language::query()
+            ->where(function ($query) {
+                $query->where('is_default', true)
+                    ->orWhere('is_admin_active', true);
+            })
+            ->pluck('slug')
+            ->toArray();
     }
 
     public bool $pendingRename = false;

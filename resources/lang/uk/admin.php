@@ -87,4 +87,12 @@ return [
     'rename_translation_key_heading' => 'Перейменування ключа мови',
     'rename_translation_key_description' => 'Ключ мови контенту ":old" буде перейменовано на ":new". Весь існуючий контент буде збережено під новим ключем. Якщо ви хочете зберегти переклади для обох мов, спочатку увімкніть мультимовність, додайте мову, заповніть контент, а потім змініть мову за замовчуванням.',
     'rename_translation_key_confirm' => 'Перейменувати',
+
+    // Unused languages cleanup
+    'unused_languages_warning' => 'В базі даних є контент на неактивних мовах. Це може сповільнювати роботу бази даних.',
+    'clean_unused_languages' => 'Очистити невикористані мови',
+    'clean_unused_languages_heading' => 'Очистити невикористані мови',
+    'clean_unused_languages_description' => 'Це безповоротно видалить весь контент на неактивних мовах з бази даних. Цю дію неможливо скасувати.',
+    'clean_unused_languages_confirm' => 'Очистити',
+    'clean_unused_languages_done' => ':count записів успішно очищено.',
 ];
