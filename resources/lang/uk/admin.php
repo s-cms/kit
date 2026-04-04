@@ -82,4 +82,9 @@ return [
     'regenerate' => 'Регенерувати',
     'responsive_images_regenerated' => 'Адаптивні зображення успішно регенеровано',
     'failed_to_regenerate_responsive_images' => 'Не вдалося регенерувати адаптивні зображення',
+
+    // Language key rename
+    'rename_translation_key_heading' => 'Перейменування ключа мови',
+    'rename_translation_key_description' => 'Ключ мови контенту ":old" буде перейменовано на ":new". Весь існуючий контент буде збережено під новим ключем. Якщо ви хочете зберегти переклади для обох мов, спочатку увімкніть мультимовність, додайте мову, заповніть контент, а потім змініть мову за замовчуванням.',
+    'rename_translation_key_confirm' => 'Перейменувати',
 ];

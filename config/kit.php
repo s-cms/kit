@@ -85,6 +85,20 @@ return [
     */
     'max_page_depth' => 5,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Additional Translatable Models
+    |--------------------------------------------------------------------------
+    |
+    | Additional models with translatable JSON fields that should be processed
+    | during language key operations (rename, cleanup).
+    | Page and Block are always included by default.
+    |
+    */
+    'translatable_models' => [
+        \SmartCms\Kit\Models\Tag::class,
+    ],
+
     'updates' => [
         'enabled' => env('KIT_UPDATES_ENABLED', true),
         'github_repository' => 's-cms/kit',

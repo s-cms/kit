@@ -354,4 +354,9 @@ return [
     'apple_touch_icon' => 'Apple Touch Icon',
     'twitter_name' => 'Twitter Name',
     'social' => 'Social',
+
+    // Language key rename
+    'rename_translation_key_heading' => 'Rename Translation Key',
+    'rename_translation_key_description' => 'The content language key ":old" will be renamed to ":new". All existing content will be preserved under the new key. If you want to keep translations for both languages, enable multilingual mode first, add the language, fill in the content, then switch the default language.',
+    'rename_translation_key_confirm' => 'Rename',
 ];

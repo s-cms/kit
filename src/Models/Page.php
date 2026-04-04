@@ -342,7 +342,9 @@ class Page extends Model
             $page->updated_by = auth()?->id();
 
             // Update published_at only when status changes to 'published'
-            if ($page->isDirty('status') && $page->status?->value === 'published') {
+            $status = $page->status;
+            $statusValue = $status instanceof PageStatus ? $status->value : $status;
+            if ($page->isDirty('status') && $statusValue === 'published') {
                 $page->published_at = now();
             }
         });

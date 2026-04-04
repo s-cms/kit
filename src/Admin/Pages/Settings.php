@@ -3,11 +3,11 @@
 namespace SmartCms\Kit\Admin\Pages;
 
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
+use SmartCms\Kit\Actions\Support\RenameTranslationKey;
 use SmartCms\Kit\Admin\Enums\NavigationGroup;
 use SmartCms\Kit\Admin\Settings\BrandingForm;
 use SmartCms\Kit\Admin\Settings\GeneralForm;
@@ -78,6 +78,12 @@ class Settings extends SettingsPage
         return [];
     }
 
+    public bool $pendingRename = false;
+
+    public ?string $pendingOldLang = null;
+
+    public ?string $pendingNewLang = null;
+
     public function save(): void
     {
         $data = $this->form->getState();
@@ -86,25 +92,78 @@ class Settings extends SettingsPage
             $data['front_languages'] = [];
         }
         $this->form->fill($data);
+
+        $oldDefaultLang = main_lang();
+        $newDefaultLangId = $data['main_language'];
+        $newDefaultLang = Language::query()->where('id', $newDefaultLangId)->value('slug');
+        $isMultiLang = (bool) $data['is_multi_lang'];
+        $defaultLanguageChanged = $newDefaultLangId != main_lang_id();
+
+        if ($defaultLanguageChanged && ! $isMultiLang) {
+            $renameAction = new RenameTranslationKey;
+
+            if ($renameAction->needsRename($oldDefaultLang, $newDefaultLang)) {
+                $this->pendingRename = true;
+                $this->pendingOldLang = $oldDefaultLang;
+                $this->pendingNewLang = $newDefaultLang;
+                $this->mountAction('confirmRenameTranslationKey');
+
+                return;
+            }
+        }
+
+        $this->persistSettings($data, $newDefaultLangId);
+    }
+
+    public function confirmRenameTranslationKeyAction(): Action
+    {
+        return Action::make('confirmRenameTranslationKey')
+            ->requiresConfirmation()
+            ->modalHeading(__('kit::admin.rename_translation_key_heading'))
+            ->modalDescription(__('kit::admin.rename_translation_key_description', [
+                'old' => $this->pendingOldLang ?? '',
+                'new' => $this->pendingNewLang ?? '',
+            ]))
+            ->modalSubmitActionLabel(__('kit::admin.rename_translation_key_confirm'))
+            ->action(function (): void {
+                RenameTranslationKey::run($this->pendingOldLang, $this->pendingNewLang);
+
+                $data = $this->form->getState();
+                if (! $data['is_multi_lang']) {
+                    $data['additional_languages'] = [];
+                    $data['front_languages'] = [];
+                }
+                $newDefaultLangId = $data['main_language'];
+                $this->persistSettings($data, $newDefaultLangId);
+                $this->resetPendingRename();
+            })
+            ->modalCancelAction(fn (Action $action) => $action->action(fn () => $this->resetPendingRename()));
+    }
+
+    protected function persistSettings(array $data, int $newDefaultLangId): void
+    {
         parent::save();
+        $this->syncLanguages($newDefaultLangId, $data);
+    }
+
+    protected function resetPendingRename(): void
+    {
+        $this->pendingRename = false;
+        $this->pendingOldLang = null;
+        $this->pendingNewLang = null;
+    }
+
+    protected function syncLanguages(int $newDefaultLangId, array $data): void
+    {
         Language::query()
-            ->where('id', $data['main_language'])
+            ->where('id', $newDefaultLangId)
             ->update([
                 'is_default' => true,
                 'is_admin_active' => true,
                 'is_frontend_active' => true,
             ]);
-        if ($data['main_language'] != main_lang_id()) {
-            Language::query()
-                ->where('id', main_lang_id())
-                ->update([
-                    'is_default' => false,
-                    'is_admin_active' => false,
-                    'is_frontend_active' => false,
-                ]);
-        }
         Language::query()
-            ->where('id', '!=', $data['main_language'])
+            ->where('id', '!=', $newDefaultLangId)
             ->update([
                 'is_default' => false,
                 'is_admin_active' => false,
@@ -124,9 +183,5 @@ class Settings extends SettingsPage
                 'is_admin_active' => true,
                 'is_frontend_active' => true,
             ]);
-        // $favicon = $this->form->getState()['branding']['favicon'] ?? null;
-        // if ($favicon) {
-        //     File::copy(Storage::disk('public')->path($favicon), public_path('favicon.ico'));
-        // }
     }
 }
