@@ -432,4 +432,7 @@ return [
     'copy_and_save' => 'Копіювати і зберегти',
     'status' => 'Статус',
     'inactive' => 'Неактивний',
+    'change_status' => 'Змінити статус',
+    'status_changed' => 'Статус змінено для :count сторінок.',
+    'cannot_delete_system_page' => 'Неможливо видалити системну сторінку.',
 ];

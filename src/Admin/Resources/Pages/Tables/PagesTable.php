@@ -198,6 +198,48 @@ class PagesTable
                 ...Page::getAugmentedHeaderActions(),
             ])
             ->toolbarActions([
+                \Filament\Actions\BulkActionGroup::make([
+                    \Filament\Actions\BulkAction::make('change_status')
+                        ->label(__('kit::admin.change_status'))
+                        ->icon('heroicon-o-arrow-path')
+                        ->schema([
+                            \Filament\Forms\Components\Select::make('status')
+                                ->label(__('support::admin.status'))
+                                ->options([
+                                    'published' => __('kit::admin.published'),
+                                    'draft' => __('kit::admin.draft'),
+                                ])
+                                ->required(),
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data): void {
+                            $records->each(fn (Page $page) => $page->update(['status' => $data['status']]));
+
+                            Notification::make()
+                                ->success()
+                                ->title(__('kit::admin.status_changed', ['count' => $records->count()]))
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                    \Filament\Actions\DeleteBulkAction::make()
+                        ->before(function (\Filament\Actions\DeleteBulkAction $action, \Illuminate\Database\Eloquent\Collection $records): void {
+                            foreach ($records as $record) {
+                                if ($record->children()->count() > 0) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title(__('kit::admin.cannot_delete_pages_with_children'))
+                                        ->send();
+                                    $action->halt();
+                                }
+                                if ($record->is_system) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title(__('kit::admin.cannot_delete_system_page'))
+                                        ->send();
+                                    $action->halt();
+                                }
+                            }
+                        }),
+                ]),
                 // Add augmented toolbar actions from augmentations
                 ...Page::getAugmentedToolbarActions(),
             ]);

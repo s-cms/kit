@@ -441,4 +441,7 @@ return [
     'copy_and_save' => 'Kopieren und speichern',
     'status' => 'Status',
     'inactive' => 'Inaktiv',
+    'change_status' => 'Status ändern',
+    'status_changed' => 'Status für :count Seiten geändert.',
+    'cannot_delete_system_page' => 'Systemseite kann nicht gelöscht werden.',
 ];

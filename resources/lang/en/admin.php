@@ -441,4 +441,7 @@ return [
     'copy_and_save' => 'Copy and Save',
     'status' => 'Status',
     'inactive' => 'Inactive',
+    'change_status' => 'Change Status',
+    'status_changed' => 'Status changed for :count pages.',
+    'cannot_delete_system_page' => 'Cannot delete system page.',
 ];
