@@ -25,7 +25,7 @@ class FormType implements VariableTypeInterface
         return new Form;
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return Select::make($name)->label(__('kit::admin.form'))->options(Form::query()->pluck('name', 'id'));
     }

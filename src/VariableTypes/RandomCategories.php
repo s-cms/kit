@@ -31,12 +31,14 @@ class RandomCategories implements VariableTypeInterface
         return CategoryPage::query()->with('tags')->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
+        $lang = $language ?? main_lang();
+
         return Group::make([
             Select::make($name . '.parent_id')
                 ->label(__('kit::admin.parent_category'))
-                ->options(Page::query()->where('type', 'category')->pluck('name', 'id'))
+                ->options(Page::query()->where('type', 'category')->get()->mapWithKeys(fn (Page $page) => [$page->id => $page->getTranslation('name', $lang)]))
                 ->required()
                 ->helperText(__('kit::admin.select_parent_for_categories')),
             TextInput::make($name . '.limit')

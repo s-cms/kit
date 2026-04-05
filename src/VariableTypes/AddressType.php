@@ -24,7 +24,7 @@ class AddressType implements VariableTypeInterface
         return '123 Main St, Anytown, USA';
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return Select::make($name)->options(collect(app('s')->get('company_info.addresses', []))->pluck('value'));
     }

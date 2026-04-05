@@ -20,9 +20,10 @@ class DivisionCategoryMenyType extends PageMenuType
         return __('kit::admin.subcategory');
     }
 
-    public function getSchema(): Field
+    public function getSchema(?string $language = null): Field
     {
-        // Get all categories that have category children
+        $lang = $language ?? main_lang();
+
         $parentCategories = Page::query()
             ->where('status', PageStatus::Published->value)
             ->where('type', 'category')
@@ -33,19 +34,20 @@ class DivisionCategoryMenyType extends PageMenuType
 
         return Select::make('url')
             ->options($parentCategories->mapWithKeys(fn ($parent) => [
-                $parent->name => Page::query()
+                $parent->getTranslation('name', $lang) => Page::query()
                     ->where('status', PageStatus::Published->value)
                     ->where('type', 'category')
                     ->where('parent_id', $parent->id)
-                    ->pluck('name', 'id')
+                    ->get()
+                    ->mapWithKeys(fn (Page $page) => [$page->id => $page->getTranslation('name', $lang)])
                     ->toArray(),
             ]))
             ->live()
-            ->afterStateUpdated(function (string $state, Set $set): void {
+            ->afterStateUpdated(function (string $state, Set $set) use ($lang): void {
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
                     if ($page) {
-                        $set('title', $page->name);
+                        $set('title', $page->getTranslation('name', $lang));
                     }
                 }
             });

@@ -29,7 +29,7 @@ class HeadingType implements VariableTypeInterface
         ];
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return Grid::make()->schema([
             Grid::make(2)->columnSpanFull()->schema([

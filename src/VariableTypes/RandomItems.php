@@ -32,12 +32,14 @@ class RandomItems implements VariableTypeInterface
         return SimplePage::query()->with('tags')->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
+        $lang = $language ?? main_lang();
+
         return Group::make([
             Select::make($name . '.parent_id')
                 ->label(__('kit::admin.parent_category'))
-                ->options(Page::query()->where('type', 'category')->pluck('name', 'id'))
+                ->options(Page::query()->where('type', 'category')->get()->mapWithKeys(fn (Page $page) => [$page->id => $page->getTranslation('name', $lang)]))
                 ->required()
                 ->live()
                 ->helperText(__('kit::admin.select_parent_for_items')),
@@ -46,7 +48,8 @@ class RandomItems implements VariableTypeInterface
                 ->options(fn (Get $get) => Page::query()
                     ->where('type', 'category')
                     ->where('parent_id', $get($name . '.parent_id') ?? 0)
-                    ->pluck('name', 'id'))
+                    ->get()
+                    ->mapWithKeys(fn (Page $page) => [$page->id => $page->getTranslation('name', $lang)]))
                 ->live()
                 ->multiple()
                 ->visible(fn (Get $get) => $get($name . '.parent_id'))

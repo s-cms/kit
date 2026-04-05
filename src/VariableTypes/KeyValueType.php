@@ -26,7 +26,7 @@ class KeyValueType implements VariableTypeInterface
         ];
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return KeyValue::make($name);
     }

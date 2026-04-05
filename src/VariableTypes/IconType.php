@@ -26,7 +26,7 @@ class IconType implements VariableTypeInterface
         return svg('heroicon-o-' . Heroicon::BugAnt->value);
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         $options = collect(LucideIcon::cases())->mapWithKeys(function (LucideIcon $icon): array {
             $iconHtml = \Filament\Support\generate_icon_html($icon)->toHtml();

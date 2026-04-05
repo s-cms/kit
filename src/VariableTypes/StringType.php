@@ -24,7 +24,7 @@ class StringType implements VariableTypeInterface
         return 'Default text';
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return TextInput::make($name);
     }

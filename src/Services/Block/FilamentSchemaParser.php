@@ -159,7 +159,7 @@ class FilamentSchemaParser
         // Handle custom inputType metadata (including custom variable types)
         if (isset($schema['inputType'])) {
             $type = $this->registry->get($schema['inputType']);
-            $typeSchema = $type->getSchema($fullName) ?? null;
+            $typeSchema = $type->getSchema($fullName, $language) ?? null;
             if ($typeSchema) {
                 return Fieldset::make('Custom type')
                     ->label($schema['description'] ?? Str::title($name))
@@ -170,7 +170,7 @@ class FilamentSchemaParser
 
         // Try to parse using custom variable types from registry
         // Check if the type matches a registered variable type name
-        $customField = $this->tryParseCustomVariableType($fullName, $schema, $required);
+        $customField = $this->tryParseCustomVariableType($fullName, $schema, $required, $language);
         if ($customField !== null) {
             return $customField;
         }
@@ -228,10 +228,10 @@ class FilamentSchemaParser
     /**
      * Parse custom inputType metadata
      */
-    protected function parseCustomInputType(string $name, array $schema, bool $required): mixed
+    protected function parseCustomInputType(string $name, array $schema, bool $required, ?string $language = null): mixed
     {
         // Check if it's a registered custom variable type
-        $customField = $this->tryParseCustomVariableType($name, $schema, $required);
+        $customField = $this->tryParseCustomVariableType($name, $schema, $required, $language);
         if ($customField !== null) {
             return $customField;
         }
@@ -252,20 +252,20 @@ class FilamentSchemaParser
      * @param  bool  $required  Whether the field is required
      * @return mixed Filament component or null if no custom type found
      */
-    protected function tryParseCustomVariableType(string $name, array $schema, bool $required): mixed
+    protected function tryParseCustomVariableType(string $name, array $schema, bool $required, ?string $language = null): mixed
     {
         // Priority 1: Check if inputType matches a registered variable type
         $inputType = $schema['inputType'] ?? null;
 
         if ($inputType && $variableType = $this->registry->get($inputType)) {
-            return $this->buildCustomVariableTypeComponent($name, $variableType, $required);
+            return $this->buildCustomVariableTypeComponent($name, $variableType, $required, $language);
         }
 
         // Priority 2: Check if the standard type field matches a registered variable type
         $type = $schema['type'] ?? null;
 
         if ($type && $variableType = $this->registry->get($type)) {
-            return $this->buildCustomVariableTypeComponent($name, $variableType, $required);
+            return $this->buildCustomVariableTypeComponent($name, $variableType, $required, $language);
         }
 
         return null;
@@ -279,9 +279,9 @@ class FilamentSchemaParser
      * @param  bool  $required  Whether the field is required
      * @return mixed Filament component
      */
-    protected function buildCustomVariableTypeComponent(string $name, mixed $variableType, bool $required): mixed
+    protected function buildCustomVariableTypeComponent(string $name, mixed $variableType, bool $required, ?string $language = null): mixed
     {
-        $component = $variableType->getSchema($name);
+        $component = $variableType->getSchema($name, $language);
 
         // Apply default value from the variable type
         $defaultValue = $variableType->getDefaultValue();
