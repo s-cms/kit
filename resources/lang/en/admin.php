@@ -426,4 +426,8 @@ return [
     'new_contact_form_submission' => 'New contact form submission!',
     'view_in_admin' => 'View in admin panel',
     'test_notification_message' => 'Hello, this is a test notification.',
+
+    // Misc UI
+    'or' => 'Or',
+    'block_data' => 'Block Data',
 ];

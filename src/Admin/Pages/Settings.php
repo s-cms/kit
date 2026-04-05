@@ -60,7 +60,7 @@ class Settings extends SettingsPage
     {
         return $schema
             ->components([
-                Tabs::make('Settings')
+                Tabs::make(__('kit::admin.settings'))
                     ->persistTabInQueryString()
                     ->id('settings-tabs')
                     ->schema([

@@ -72,7 +72,7 @@ class BlockForm
         }
 
         return [
-            Tabs::make('Block Data')->schema($languages->map(function (Language $lang) use ($service) {
+            Tabs::make(__('kit::admin.block_data'))->schema($languages->map(function (Language $lang) use ($service) {
                 return Tab::make($lang->name)->schema(function (Get $get) use ($service, $lang) {
                     return $service->getBlockSchema($get('type'), $lang->slug);
                 });

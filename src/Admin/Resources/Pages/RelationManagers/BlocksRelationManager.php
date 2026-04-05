@@ -335,7 +335,7 @@ class BlocksRelationManager extends RelationManager
         }
 
         return [
-            Tabs::make('Block Data')->schema(
+            Tabs::make(__('kit::admin.block_data'))->schema(
                 $languages->map(function (Language $lang) use ($service, $block) {
                     return Tab::make($lang->name)->schema(
                         $service->getBlockSchema($block->type, $lang->slug)

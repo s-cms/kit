@@ -417,4 +417,8 @@ return [
     'new_contact_form_submission' => 'Nowe zgłoszenie z formularza kontaktowego!',
     'view_in_admin' => 'Zobacz w panelu administracyjnym',
     'test_notification_message' => 'Witaj, to jest powiadomienie testowe.',
+
+    // Misc UI
+    'or' => 'Lub',
+    'block_data' => 'Dane bloku',
 ];

@@ -68,7 +68,7 @@ class MediaPicker extends Select
                             ->acceptedFileTypes(['image/*'])
                             ->maxSize(10240)
                             ->helperText(__('kit::admin.upload_or_url_required')),
-                        Text::make('Or')->weight(FontWeight::Bold)->columnSpanFull(),
+                        Text::make(__('kit::admin.or'))->weight(FontWeight::Bold)->columnSpanFull(),
                         TextInput::make('url_input')
                             ->label(__('kit::admin.image_url'))
                             ->url()

@@ -48,7 +48,7 @@ class EditSeo extends EditRecord
                 SaveAndClose::make($this, GetPageListUrl::run($this->getRecord())),
                 ViewRecord::make(),
                 DeleteAction::make(),
-            ])->link()->label('Actions')
+            ])->link()->label(__('kit::admin.actions'))
                 ->icon(\Filament\Support\Icons\Heroicon::ChevronDown)
                 ->size(\Filament\Support\Enums\Size::Small)
                 ->iconPosition(\Filament\Support\Enums\IconPosition::After)

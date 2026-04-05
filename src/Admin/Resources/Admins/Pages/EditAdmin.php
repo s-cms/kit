@@ -19,7 +19,7 @@ class EditAdmin extends EditRecord
                 SaveAction::make($this),
                 SaveAndClose::make($this, AdminResource::getUrl('index')),
                 DeleteAction::make()->hidden(fn ($record): bool => $record->id == 1),
-            ])->link()->label('Actions')
+            ])->link()->label(__('kit::admin.actions'))
                 ->icon(\Filament\Support\Icons\Heroicon::ChevronDown)
                 ->size(\Filament\Support\Enums\Size::Small)
                 ->iconPosition(\Filament\Support\Enums\IconPosition::After)

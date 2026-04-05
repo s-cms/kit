@@ -426,4 +426,8 @@ return [
     'new_contact_form_submission' => 'Neue Kontaktformular-Einsendung!',
     'view_in_admin' => 'Im Admin-Panel ansehen',
     'test_notification_message' => 'Hallo, dies ist eine Testbenachrichtigung.',
+
+    // Misc UI
+    'or' => 'Oder',
+    'block_data' => 'Blockdaten',
 ];

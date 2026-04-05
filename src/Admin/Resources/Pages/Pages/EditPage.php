@@ -329,7 +329,7 @@ class EditPage extends EditRecord
                         }),
                     ])->columns(2),
                 ]),
-            ])->link()->label('Actions')
+            ])->link()->label(__('kit::admin.actions'))
                 ->icon(Heroicon::ChevronDown)
                 ->size(Size::Small)
                 ->iconPosition(IconPosition::After)

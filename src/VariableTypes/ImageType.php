@@ -33,7 +33,7 @@ class ImageType implements VariableTypeInterface
     public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return MediaPicker::make($name . '.id')
-            ->label('Image');
+            ->label(__('kit::admin.image'));
     }
 
     public function getValue(mixed $value): mixed

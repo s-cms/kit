@@ -417,4 +417,8 @@ return [
     'new_contact_form_submission' => 'Нове повідомлення з контактної форми!',
     'view_in_admin' => 'Переглянути в адмін-панелі',
     'test_notification_message' => 'Привіт, це тестове сповіщення.',
+
+    // Misc UI
+    'or' => 'Або',
+    'block_data' => 'Дані блоку',
 ];
