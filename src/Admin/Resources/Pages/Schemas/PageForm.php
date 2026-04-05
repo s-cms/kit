@@ -84,80 +84,7 @@ class PageForm
                                 //             $record->syncTags($tagIds);
                                 //         }),
                             ]),
-                            Tabs::make('seo')->schema(
-                                app('lang')->adminLanguages()->map(function ($language) {
-                                    return Tab::make($language->name)->schema([
-                                        // Action::make('translate_with_ai')
-                                        //     ->label('Translate with AI')
-                                        //     ->icon(Heroicon::Language)
-                                        //     ->color('info')
-                                        //     ->action(function (Page $record, Set $set) use ($language) {
-                                        //         $ai = app(OpenRouterService::class);
-                                        //         $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
-                                        //         $content = $record->getTranslation('content', $language->slug);
-                                        //         $translation = $ai->translate($content, $language->slug);
-                                        //         $set('title.' . $language->slug, $translation);
-                                        //     }),
-                                        TextInput::make('title.' . $language->slug)
-                                            ->label(__('seo::admin.seo_title'))
-                                            ->required()
-                                            ->rules('string', 'max:255')
-                                            // ->characterLimit(255)
-                                            ->maxLength(255),
-                                        TextInput::make('heading.' . $language->slug)
-                                            ->label(__('seo::admin.seo_heading'))
-                                            ->hintAction(
-                                                AiAction::make('generate_heading')
-                                                    ->label('Generate Heading')
-                                                    ->action(function (Page $record, Set $set) use ($language) {
-                                                        $ai = app(OpenRouterService::class);
-                                                        $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
-                                                        $content = $record->getTranslation('content', $language->slug);
-                                                        $heading = $ai->generateHeading($title, $content);
-                                                        $set('heading.' . $language->slug, $heading);
-                                                    }),
-                                            )
-                                            ->rules('string', 'max:255')
-                                            // ->characterLimit(255)
-                                            ->maxLength(255),
-                                        Textarea::make('description.' . $language->slug)
-                                            ->label(__('seo::admin.seo_description'))
-                                            ->rules('string', 'max:255')
-                                            ->hintAction(
-                                                AiAction::make('generate_description')
-                                                    ->label('Generate Description')
-                                                    ->action(function (Page $record, Set $set) use ($language) {
-                                                        $ai = app(OpenRouterService::class);
-                                                        $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
-                                                        $content = $record->getTranslation('content', $language->slug);
-                                                        $description = $ai->generateMetaDescription($title, $content);
-                                                        $set('description.' . $language->slug, $description);
-                                                    }),
-                                            )
-                                            // ->characterLimit(255)
-                                            ->maxLength(255),
-                                        Textarea::make('summary.' . $language->slug)
-                                            ->label(__('seo::admin.seo_summary'))
-                                            ->rules('string', 'max:500')
-                                            ->hintAction(
-                                                AiAction::make('generate_summary')
-                                                    ->label('Generate Summary')
-                                                    ->action(function (Page $record, Set $set) use ($language) {
-                                                        $ai = app(OpenRouterService::class);
-                                                        $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
-                                                        $content = $record->getTranslation('content', $language->slug);
-                                                        $summary = $ai->generateSummary($title, $content);
-                                                        $set('summary.' . $language->slug, $summary);
-                                                    }),
-                                            )
-                                            ->maxLength(500),
-                                        RichEditor::make('content.' . $language->slug)
-                                            ->label(__('seo::admin.seo_content'))
-                                            // ->rules('string')
-                                            ->columnSpanFull(),
-                                    ]);
-                                })->toArray()
-                            ),
+                            ...self::buildSeoLanguageSchema(),
                             // Add augmented schema from augmentations
                             ...Page::getAugmentedSchema(),
                         ]),
@@ -165,6 +92,86 @@ class PageForm
                     ]),
                 ]
             )->columns(1);
+    }
+
+    protected static function buildSeoFieldsForLanguage($language): array
+    {
+        return [
+            TextInput::make('title.' . $language->slug)
+                ->label(__('seo::admin.seo_title'))
+                ->required()
+                ->rules('string', 'max:255')
+                ->maxLength(255),
+            TextInput::make('heading.' . $language->slug)
+                ->label(__('seo::admin.seo_heading'))
+                ->hintAction(
+                    AiAction::make('generate_heading')
+                        ->label('Generate Heading')
+                        ->action(function (Page $record, Set $set) use ($language) {
+                            $ai = app(OpenRouterService::class);
+                            $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
+                            $content = $record->getTranslation('content', $language->slug);
+                            $heading = $ai->generateHeading($title, $content);
+                            $set('heading.' . $language->slug, $heading);
+                        }),
+                )
+                ->rules('string', 'max:255')
+                ->maxLength(255),
+            Textarea::make('description.' . $language->slug)
+                ->label(__('seo::admin.seo_description'))
+                ->rules('string', 'max:255')
+                ->hintAction(
+                    AiAction::make('generate_description')
+                        ->label('Generate Description')
+                        ->action(function (Page $record, Set $set) use ($language) {
+                            $ai = app(OpenRouterService::class);
+                            $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
+                            $content = $record->getTranslation('content', $language->slug);
+                            $description = $ai->generateMetaDescription($title, $content);
+                            $set('description.' . $language->slug, $description);
+                        }),
+                )
+                ->maxLength(255),
+            Textarea::make('summary.' . $language->slug)
+                ->label(__('seo::admin.seo_summary'))
+                ->rules('string', 'max:500')
+                ->hintAction(
+                    AiAction::make('generate_summary')
+                        ->label('Generate Summary')
+                        ->action(function (Page $record, Set $set) use ($language) {
+                            $ai = app(OpenRouterService::class);
+                            $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
+                            $content = $record->getTranslation('content', $language->slug);
+                            $summary = $ai->generateSummary($title, $content);
+                            $set('summary.' . $language->slug, $summary);
+                        }),
+                )
+                ->maxLength(500),
+            RichEditor::make('content.' . $language->slug)
+                ->label(__('seo::admin.seo_content'))
+                ->columnSpanFull(),
+        ];
+    }
+
+    protected static function buildSeoLanguageSchema(): array
+    {
+        $languages = app('lang')->adminLanguages();
+
+        if ($languages->count() <= 1) {
+            return [
+                Section::make()->schema(
+                    self::buildSeoFieldsForLanguage($languages->first())
+                ),
+            ];
+        }
+
+        return [
+            Tabs::make('seo')->schema(
+                $languages->map(fn ($language) => Tab::make($language->name)->schema(
+                    self::buildSeoFieldsForLanguage($language)
+                ))->toArray()
+            ),
+        ];
     }
 
     /**

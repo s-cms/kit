@@ -239,15 +239,9 @@ class BlocksRelationManager extends RelationManager
                                 ])
                                 ->columnSpanFull()
                                 ->schema([
-                                    LeftGrid::make()->schema([
-                                        Tabs::make('Block Data')->schema(
-                                            app('lang')->adminLanguages()->map(function (Language $lang) use ($service, $block) {
-                                                return Tab::make($lang->name)->schema(
-                                                    $service->getBlockSchema($block->type, $lang->slug)
-                                                );
-                                            })->toArray()
-                                        ),
-                                    ]),
+                                    LeftGrid::make()->schema(
+                                        self::buildBlockLanguageSchema($service, $block)
+                                    ),
                                     RightGrid::make()->schema([
                                         Section::make(__('Attachment Settings'))
                                             ->schema([
@@ -325,6 +319,30 @@ class BlocksRelationManager extends RelationManager
     public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
     {
         return __('Blocks');
+    }
+
+    protected static function buildBlockLanguageSchema(BlockService $service, Block $block): array
+    {
+        $languages = app('lang')->adminLanguages();
+
+        if ($languages->count() <= 1) {
+            $lang = $languages->first();
+
+            return [
+                Section::make()
+                    ->schema($service->getBlockSchema($block->type, $lang->slug)),
+            ];
+        }
+
+        return [
+            Tabs::make('Block Data')->schema(
+                $languages->map(function (Language $lang) use ($service, $block) {
+                    return Tab::make($lang->name)->schema(
+                        $service->getBlockSchema($block->type, $lang->slug)
+                    );
+                })->toArray()
+            ),
+        ];
     }
 }
 
