@@ -432,6 +432,7 @@ return [
     'block_data' => 'Block Data',
     'top_level' => 'Top Level',
     'all' => 'All',
+    'articles' => 'Articles',
     'admin' => 'Admin',
     'block_template' => 'Block Template',
     'tag' => 'Tag',

@@ -32,7 +32,13 @@ class PagesTable
             ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('type', ['page', 'category']))
             ->columns([
                 NameColumn::make()
-                    ->getStateUsing(fn (Page $record) => $record->getTranslation('name', main_lang()))
+                    ->getStateUsing(function (Page $record) {
+                        $indent = $record->type === 'category' && $record->depth > 0
+                            ? str_repeat('— ', $record->depth) . ' '
+                            : '';
+
+                        return $indent . $record->getTranslation('name', main_lang());
+                    })
                     ->description(fn (Page $record): string => Str::limit($record->slug, 30)),
                 TextColumn::make('type')
                     ->label(__('kit::admin.type'))
@@ -49,8 +55,7 @@ class PagesTable
                     }),
                 TextColumn::make('parent.name')
                     ->label(__('kit::admin.parent'))
-                    ->formatStateUsing(fn ($state, Page $record) => $record->parent ? $record->parent->getTranslation('name', main_lang()) : '-')
-                    ->toggleable(),
+                    ->formatStateUsing(fn ($state, Page $record) => $record->parent ? $record->parent->getTranslation('name', main_lang()) : '-'),
                 SpatieTagsColumn::make('tags')
                     ->label(__('kit::admin.tags'))
                     ->limitList(3),
@@ -59,11 +64,19 @@ class PagesTable
                     ->badge()
                     ->color('gray')
                     ->toggleable(),
-                ImageColumn::make('image.source')
+                ImageColumn::make('image')
                     ->square()
-                    ->getStateUsing(fn ($record): string | array => validateImage(ltrim($record?->image['source'] ?? '', '/')))
-                    ->defaultImageUrl(no_image()['source'] ?? '')
-                    ->default(no_image()['source'])
+                    ->getStateUsing(function ($record): string {
+                        $imageId = $record->image;
+                        if ($imageId) {
+                            $media = \SmartCms\Kit\Models\Media::find($imageId);
+                            if ($media) {
+                                return $media->getUrl();
+                            }
+                        }
+
+                        return no_image_placeholder();
+                    })
                     ->toggleable(),
                 TextColumn::make('status')
                     ->badge()

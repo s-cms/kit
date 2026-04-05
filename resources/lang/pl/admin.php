@@ -423,6 +423,7 @@ return [
     'block_data' => 'Dane bloku',
     'top_level' => 'Najwyższy poziom',
     'all' => 'Wszystkie',
+    'articles' => 'Artykuły',
     'admin' => 'Administrator',
     'block_template' => 'Szablon bloku',
     'tag' => 'Tag',

@@ -124,14 +124,20 @@ class ListPages extends ListRecords
     public function getTabs(): array
     {
         return [
-            'top_level' => Tab::make()->label(__('kit::admin.top_level'))->modifyQueryUsing(fn (Builder $query) => $query->where('depth', 0)),
-            'pages' => Tab::make()->label(__('kit::admin.pages'))->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'page')),
-            'categories' => Tab::make()->label(__('kit::admin.categories'))->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'category')),
-            'scheduled' => Tab::make()->label(__('kit::admin.scheduled'))->modifyQueryUsing(
-                fn (Builder $query) => $query->where('status', PageStatus::Scheduled),
-            ),
-            'draft' => Tab::make()->label(__('kit::admin.draft'))->modifyQueryUsing(fn (Builder $query) => $query->where('status', PageStatus::Draft)),
-            'all' => Tab::make()->label(__('kit::admin.all')),
+            'pages' => Tab::make()
+                ->label(__('kit::admin.pages'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'page')->whereNull('parent_id')),
+            'categories' => Tab::make()
+                ->label(__('kit::admin.categories'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'category')),
+            'articles' => Tab::make()
+                ->label(__('kit::admin.articles'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'page')->whereNotNull('parent_id')),
+            'draft' => Tab::make()
+                ->label(__('kit::admin.draft'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', PageStatus::Draft)),
+            'all' => Tab::make()
+                ->label(__('kit::admin.all')),
         ];
     }
 }
