@@ -42,8 +42,8 @@ class NewContactFormNotification extends Notification
     {
         $formName = $this->form->prefix;
         $message = (new MailMessage)
-            ->line('🔔 New contact form submission!')
-            ->line("Form: {$formName}");
+            ->line(__('kit::admin.new_contact_form_submission'))
+            ->line(__('kit::admin.form') . ": {$formName}");
 
         if ($this->form->data && is_array($this->form->data)) {
             foreach ($this->form->data as $key => $value) {
@@ -53,7 +53,7 @@ class NewContactFormNotification extends Notification
             }
         }
 
-        return $message->action('View in admin panel', ContactFormResource::getUrl())->line('Thank you for using our application!');
+        return $message->action(__('kit::admin.view_in_admin'), ContactFormResource::getUrl());
     }
 
     public function toTelegram(object $notifiable): TelegramMessage
@@ -62,8 +62,8 @@ class NewContactFormNotification extends Notification
 
         return TelegramMessage::create()
             ->to($notifiable->telegram_id)
-            ->content("🔔 New contact form submission!\n\nForm: {$formName}")
-            ->button('View in admin panel', ContactFormResource::getUrl());
+            ->content(__('kit::admin.new_contact_form_submission') . "\n\n" . __('kit::admin.form') . ": {$formName}")
+            ->button(__('kit::admin.view_in_admin'), ContactFormResource::getUrl());
     }
 
     public function toDatabase(object $notifiable): array

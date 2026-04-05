@@ -34,7 +34,7 @@ class IconType implements VariableTypeInterface
             return [$icon->value => "<div style='display: flex; gap: 10px; align-items: center;'> $iconHtml <span class='text-sm'>{$icon->name}</span></div>"];
         });
 
-        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(fn () => str()->of("You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set")->toHtmlString());
+        return Select::make($name)->options($options)->allowHtml()->searchable()->hint(fn () => str()->of(__('kit::admin.lucide_icon_hint'))->toHtmlString());
     }
 
     public function getValue(mixed $value): mixed

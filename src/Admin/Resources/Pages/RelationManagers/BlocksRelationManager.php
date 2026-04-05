@@ -243,7 +243,7 @@ class BlocksRelationManager extends RelationManager
                                         self::buildBlockLanguageSchema($service, $block)
                                     ),
                                     RightGrid::make()->schema([
-                                        Section::make(__('Attachment Settings'))
+                                        Section::make(__('kit::admin.attachment_settings'))
                                             ->schema([
                                                 Forms\Components\Toggle::make('status')
                                                     ->label(__('Active'))

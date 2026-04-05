@@ -397,4 +397,24 @@ return [
 
     // UI hints
     'lucide_icon_hint' => "Możesz użyć dowolnej ikony z zestawu <a href='https://lucide.dev' target='_blank'>Lucide</a>",
+
+    // Schema parser
+    'custom_type' => 'Typ niestandardowy',
+    'select_an_option' => 'Wybierz opcję',
+    'target' => 'Cel',
+    'same_window' => 'To samo okno',
+    'new_window' => 'Nowe okno',
+    'parent_frame' => 'Ramka nadrzędna',
+    'top_frame' => 'Ramka główna',
+    'link_title' => 'Tytuł linku',
+    'optional_hover_text' => 'Opcjonalny tekst po najechaniu',
+    'select_page' => 'Wybierz stronę',
+
+    // Blocks relation
+    'attachment_settings' => 'Ustawienia załącznika',
+
+    // Notifications
+    'new_contact_form_submission' => 'Nowe zgłoszenie z formularza kontaktowego!',
+    'view_in_admin' => 'Zobacz w panelu administracyjnym',
+    'test_notification_message' => 'Witaj, to jest powiadomienie testowe.',
 ];

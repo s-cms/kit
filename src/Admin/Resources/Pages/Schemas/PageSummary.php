@@ -25,7 +25,7 @@ class PageSummary extends Page
         $imagePath = '';
 
         return [
-            Section::make('Status')->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
+            Section::make(__('support::admin.status'))->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
                 $status = $get('status');
 
                 return match ($status) {

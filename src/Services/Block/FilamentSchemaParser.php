@@ -161,7 +161,7 @@ class FilamentSchemaParser
             $type = $this->registry->get($schema['inputType']);
             $typeSchema = $type->getSchema($fullName, $language) ?? null;
             if ($typeSchema) {
-                return Fieldset::make('Custom type')
+                return Fieldset::make(__('kit::admin.custom_type'))
                     ->label($schema['description'] ?? Str::title($name))
                     ->columns(1)
                     ->schema([$typeSchema]);
@@ -309,7 +309,7 @@ class FilamentSchemaParser
                 ->options(array_combine($schema['enum'], $schema['enum']))
                 ->default($schema['default'] ?? null)
                 ->required($required)
-                ->placeholder('Select an option');
+                ->placeholder(__('kit::admin.select_an_option'));
         }
 
         // Handle URL format
@@ -429,7 +429,7 @@ class FilamentSchemaParser
             ->visibility('public')
             ->maxSize(5120) // 5MB
             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-            ->helperText($schema['description'] ?? 'Upload an image');
+            ->helperText($schema['description'] ?? __('kit::admin.upload_image'));
     }
 
     /**
@@ -440,26 +440,25 @@ class FilamentSchemaParser
     {
         return ComponentsGroup::make([
             TextInput::make("{$name}.url")
-                ->label('URL')
+                ->label(__('kit::admin.url'))
                 ->url()
                 ->required($required)
-                ->placeholder('https://example.com or /about')
                 ->columnSpan(2),
 
             Select::make("{$name}.target")
-                ->label('Target')
+                ->label(__('kit::admin.target'))
                 ->options([
-                    '_self' => 'Same window',
-                    '_blank' => 'New window',
-                    '_parent' => 'Parent frame',
-                    '_top' => 'Top frame',
+                    '_self' => __('kit::admin.same_window'),
+                    '_blank' => __('kit::admin.new_window'),
+                    '_parent' => __('kit::admin.parent_frame'),
+                    '_top' => __('kit::admin.top_frame'),
                 ])
                 ->default('_self')
                 ->columnSpan(1),
 
             TextInput::make("{$name}.title")
-                ->label('Link Title')
-                ->placeholder('Optional hover text')
+                ->label(__('kit::admin.link_title'))
+                ->placeholder(__('kit::admin.optional_hover_text'))
                 ->columnSpan(1),
         ])
             // ->label($schema['description'] ?? Str::title($name))
@@ -479,7 +478,7 @@ class FilamentSchemaParser
             ->searchable()
             ->preload()
             ->required($required)
-            ->placeholder('Select a page');
+            ->placeholder(__('kit::admin.select_page'));
     }
 
     /**

@@ -406,4 +406,24 @@ return [
 
     // UI hints
     'lucide_icon_hint' => "Sie können jedes Symbol aus dem <a href='https://lucide.dev' target='_blank'>Lucide</a>-Set verwenden",
+
+    // Schema parser
+    'custom_type' => 'Benutzerdefinierter Typ',
+    'select_an_option' => 'Option auswählen',
+    'target' => 'Ziel',
+    'same_window' => 'Gleiches Fenster',
+    'new_window' => 'Neues Fenster',
+    'parent_frame' => 'Übergeordneter Frame',
+    'top_frame' => 'Oberer Frame',
+    'link_title' => 'Link-Titel',
+    'optional_hover_text' => 'Optionaler Hover-Text',
+    'select_page' => 'Seite auswählen',
+
+    // Blocks relation
+    'attachment_settings' => 'Anhang-Einstellungen',
+
+    // Notifications
+    'new_contact_form_submission' => 'Neue Kontaktformular-Einsendung!',
+    'view_in_admin' => 'Im Admin-Panel ansehen',
+    'test_notification_message' => 'Hallo, dies ist eine Testbenachrichtigung.',
 ];

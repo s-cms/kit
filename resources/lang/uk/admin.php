@@ -397,4 +397,24 @@ return [
 
     // UI hints
     'lucide_icon_hint' => "Ви можете використовувати будь-яку іконку з набору <a href='https://lucide.dev' target='_blank'>Lucide</a>",
+
+    // Schema parser
+    'custom_type' => 'Власний тип',
+    'select_an_option' => 'Оберіть варіант',
+    'target' => 'Ціль',
+    'same_window' => 'Те саме вікно',
+    'new_window' => 'Нове вікно',
+    'parent_frame' => 'Батьківський фрейм',
+    'top_frame' => 'Верхній фрейм',
+    'link_title' => 'Назва посилання',
+    'optional_hover_text' => 'Текст при наведенні (необов\'язково)',
+    'select_page' => 'Оберіть сторінку',
+
+    // Blocks relation
+    'attachment_settings' => 'Налаштування прикріплення',
+
+    // Notifications
+    'new_contact_form_submission' => 'Нове повідомлення з контактної форми!',
+    'view_in_admin' => 'Переглянути в адмін-панелі',
+    'test_notification_message' => 'Привіт, це тестове сповіщення.',
 ];
