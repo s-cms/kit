@@ -96,17 +96,17 @@ class Profile extends EditProfile
                 ])->columns(1),
                 Tab::make(__('kit::admin.password'))->schema([
                     TextInput::make('old_password')
-                        ->label('Current Password')
+                        ->label(__('kit::admin.current_password'))
                         ->password()
                         ->required(fn ($get): bool => filled($get('password')))
-                        ->dehydrated(false) // Do not save to DB
+                        ->dehydrated(false)
                         ->rule(fn (): \Closure => function ($attribute, $value, $fail): void {
                             /**
                              * @var Admin $user
                              */
                             $user = auth()->user();
                             if (! Hash::check($value, $user->password)) {
-                                $fail('The current password is incorrect.');
+                                $fail(__('kit::admin.current_password_incorrect'));
                             }
                         }),
                     $this->getPasswordFormComponent(),

@@ -34,14 +34,14 @@ class BlockForm
                     ->schema([
                         LeftGrid::make()->schema([
                             ...self::buildBlockLanguageSchema($service),
-                            Text::make('Select section type in sidebar first')->columnSpanFull()->visible(fn (callable $get) => empty($get('type'))),
+                            Text::make(__('kit::admin.select_section_type_first'))->columnSpanFull()->visible(fn (callable $get) => empty($get('type'))),
                         ]),
                         RightGrid::make()->schema([
                             Section::make()
                                 ->schema([
                                     TextInput::make('title')->required(),
                                     Select::make('type')
-                                        ->label('Section Type')
+                                        ->label(__('kit::admin.section_type'))
                                         ->options($service->getBlocksTypes())
                                         ->required()
                                         ->reactive()

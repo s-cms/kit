@@ -367,4 +367,43 @@ return [
     'clean_unused_languages_description' => 'This will permanently remove all content in inactive languages from the database. This action cannot be undone.',
     'clean_unused_languages_confirm' => 'Clean',
     'clean_unused_languages_done' => ':count records cleaned successfully.',
+
+    // Profile
+    'current_password' => 'Current Password',
+    'current_password_incorrect' => 'The current password is incorrect.',
+
+    // AI & SEO actions
+    'generate_seo_fields' => 'Generate SEO Fields',
+    'generate_seo_fields_heading' => 'Generate SEO Fields with AI',
+    'generate_seo_fields_description' => 'This will use AI to generate meta description, heading, and summary based on the page title and content.',
+    'seo_fields_generated' => 'SEO fields generated successfully',
+    'seo_fields_generated_body' => 'Meta description, heading, and summary have been generated.',
+    'seo_fields_failed' => 'Failed to generate SEO fields',
+    'translate_to_all_languages' => 'Translate to All Languages',
+    'translate_content_heading' => 'Translate Content',
+    'translate_content_description' => 'This will translate all fields to other configured languages. Only empty fields will be filled.',
+    'content_translated' => 'Content translated successfully',
+    'content_translated_body' => 'Translated :count fields to other languages.',
+    'translation_failed' => 'Translation failed',
+    'seo_health_check' => 'SEO Health Check',
+    'seo_health_check_heading' => 'SEO Health Check Report',
+    'seo_health_check_description' => 'Comprehensive SEO analysis with AI-powered improvement suggestions',
+    'social_media_preview' => 'Social Media Preview',
+    'social_media_preview_heading' => 'Social Media Preview',
+    'social_media_preview_description' => 'Preview how your page will appear when shared on social media',
+    'close' => 'Close',
+    'generate_heading' => 'Generate Heading',
+    'generate_description' => 'Generate Description',
+    'generate_summary' => 'Generate Summary',
+
+    // Block form
+    'select_section_type_first' => 'Select section type in sidebar first',
+    'section_type' => 'Section Type',
+
+    // Widgets
+    'percent_used' => ':percent% used',
+    'not_installed' => 'Not installed',
+
+    // UI hints
+    'lucide_icon_hint' => "You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set",
 ];

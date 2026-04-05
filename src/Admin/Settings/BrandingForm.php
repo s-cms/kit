@@ -39,13 +39,7 @@ class BrandingForm
                             ->options($icons)
                             ->allowHtml()
                             ->searchable()
-                            ->hint(
-                                fn () => str()
-                                    ->of(
-                                        "You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set",
-                                    )
-                                    ->toHtmlString(),
-                            ),
+                            ->hint(fn () => str()->of(__('kit::admin.lucide_icon_hint'))->toHtmlString()),
                         MediaPicker::make('image')->label(__('kit::admin.image')),
                     ]),
                 ])

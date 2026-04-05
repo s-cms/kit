@@ -139,12 +139,12 @@ class EditPage extends EditRecord
                         $this->redirect(PageResource::getUrl('edit', ['record' => $clone]));
                     }),
                 Action::make('generate_seo')
-                    ->label('Generate SEO Fields')
+                    ->label(__('kit::admin.generate_seo_fields'))
                     ->icon(Heroicon::Sparkles)
                     ->color('success')
                     ->requiresConfirmation()
-                    ->modalHeading('Generate SEO Fields with AI')
-                    ->modalDescription('This will use OpenRouter AI to generate meta description, keywords, and summary based on the page title and content.')
+                    ->modalHeading(__('kit::admin.generate_seo_fields_heading'))
+                    ->modalDescription(__('kit::admin.generate_seo_fields_description'))
                     ->visible(fn () => app(OpenRouterService::class)->isConfigured())
                     ->action(function (Page $record): void {
                         $ai = app(OpenRouterService::class);
@@ -175,24 +175,24 @@ class EditPage extends EditRecord
 
                             Notification::make()
                                 ->success()
-                                ->title('SEO fields generated successfully')
-                                ->body('Meta description, keywords, and summary have been generated.')
+                                ->title(__('kit::admin.seo_fields_generated'))
+                                ->body(__('kit::admin.seo_fields_generated_body'))
                                 ->send();
                         } catch (\Exception $e) {
                             Notification::make()
                                 ->danger()
-                                ->title('Failed to generate SEO fields')
+                                ->title(__('kit::admin.seo_fields_failed'))
                                 ->body($e->getMessage())
                                 ->send();
                         }
                     }),
                 Action::make('translate_content')
-                    ->label('Translate to All Languages')
+                    ->label(__('kit::admin.translate_to_all_languages'))
                     ->icon(Heroicon::Language)
                     ->color('info')
                     ->requiresConfirmation()
-                    ->modalHeading('Translate Content')
-                    ->modalDescription('This will translate all fields to other configured languages. Only empty fields will be filled.')
+                    ->modalHeading(__('kit::admin.translate_content_heading'))
+                    ->modalDescription(__('kit::admin.translate_content_description'))
                     ->visible(fn () => app(OpenRouterService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
                     ->action(function (Page $record): void {
                         $ai = app(OpenRouterService::class);
@@ -212,26 +212,26 @@ class EditPage extends EditRecord
 
                             Notification::make()
                                 ->success()
-                                ->title('Content translated successfully')
-                                ->body("Translated {$updatedCount} fields to other languages.")
+                                ->title(__('kit::admin.content_translated'))
+                                ->body(__('kit::admin.content_translated_body', ['count' => $updatedCount]))
                                 ->send();
                         } catch (\Exception $e) {
                             Notification::make()
                                 ->danger()
-                                ->title('Translation failed')
+                                ->title(__('kit::admin.translation_failed'))
                                 ->body($e->getMessage())
                                 ->send();
                         }
                     }),
                 Action::make('seo_health_check')
-                    ->label('SEO Health Check')
+                    ->label(__('kit::admin.seo_health_check'))
                     ->icon(Heroicon::ChartBar)
                     ->color('warning')
-                    ->modalHeading('SEO Health Check Report')
-                    ->modalDescription('Comprehensive SEO analysis with AI-powered improvement suggestions')
+                    ->modalHeading(__('kit::admin.seo_health_check_heading'))
+                    ->modalDescription(__('kit::admin.seo_health_check_description'))
                     ->modalWidth('3xl')
                     ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Close')
+                    ->modalCancelActionLabel(__('kit::admin.close'))
                     ->schema(function (Page $record): array {
                         // Run SEO analysis with AI suggestions
                         $aiEnabled = app(OpenRouterService::class)->isConfigured();
@@ -249,14 +249,14 @@ class EditPage extends EditRecord
                         ];
                     }),
                 Action::make('social_media_preview')
-                    ->label('Social Media Preview')
+                    ->label(__('kit::admin.social_media_preview'))
                     ->icon(Heroicon::Share)
                     ->color('info')
-                    ->modalHeading('Social Media Preview')
-                    ->modalDescription('Preview how your page will appear when shared on social media')
+                    ->modalHeading(__('kit::admin.social_media_preview_heading'))
+                    ->modalDescription(__('kit::admin.social_media_preview_description'))
                     ->modalWidth('3xl')
                     ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Close')
+                    ->modalCancelActionLabel(__('kit::admin.close'))
                     ->schema(function (Page $record): array {
                         // Generate social media previews
                         $preview = new SocialMediaPreview($record);

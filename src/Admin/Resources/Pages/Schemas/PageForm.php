@@ -106,7 +106,7 @@ class PageForm
                 ->label(__('seo::admin.seo_heading'))
                 ->hintAction(
                     AiAction::make('generate_heading')
-                        ->label('Generate Heading')
+                        ->label(__('kit::admin.generate_heading'))
                         ->action(function (Page $record, Set $set) use ($language) {
                             $ai = app(OpenRouterService::class);
                             $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
@@ -122,7 +122,7 @@ class PageForm
                 ->rules('string', 'max:255')
                 ->hintAction(
                     AiAction::make('generate_description')
-                        ->label('Generate Description')
+                        ->label(__('kit::admin.generate_description'))
                         ->action(function (Page $record, Set $set) use ($language) {
                             $ai = app(OpenRouterService::class);
                             $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
@@ -137,7 +137,7 @@ class PageForm
                 ->rules('string', 'max:500')
                 ->hintAction(
                     AiAction::make('generate_summary')
-                        ->label('Generate Summary')
+                        ->label(__('kit::admin.generate_summary'))
                         ->action(function (Page $record, Set $set) use ($language) {
                             $ai = app(OpenRouterService::class);
                             $title = $record->getTranslation('title', $language->slug) ?? $record->getTranslation('name', $language->slug);
