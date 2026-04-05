@@ -421,4 +421,14 @@ return [
     // Misc UI
     'or' => 'Lub',
     'block_data' => 'Dane bloku',
+    'top_level' => 'Najwyższy poziom',
+    'all' => 'Wszystkie',
+    'admin' => 'Administrator',
+    'block_template' => 'Szablon bloku',
+    'tag' => 'Tag',
+    'active_only' => 'Tylko aktywne',
+    'inactive_only' => 'Tylko nieaktywne',
+    'copy_and_save' => 'Kopiuj i zapisz',
+    'status' => 'Status',
+    'inactive' => 'Nieaktywny',
 ];

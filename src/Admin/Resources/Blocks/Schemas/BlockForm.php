@@ -39,7 +39,7 @@ class BlockForm
                         RightGrid::make()->schema([
                             Section::make()
                                 ->schema([
-                                    TextInput::make('title')->required(),
+                                    TextInput::make('title')->label(__('kit::admin.title'))->required(),
                                     Select::make('type')
                                         ->label(__('kit::admin.section_type'))
                                         ->options($service->getBlocksTypes())
@@ -47,7 +47,7 @@ class BlockForm
                                         ->reactive()
                                         ->disabledOn('edit')
                                         ->afterStateUpdated(fn ($state, callable $set) => $set('data', [])),
-                                    Toggle::make('status')->default(true),
+                                    Toggle::make('status')->label(__('kit::admin.status'))->default(true),
                                 ]),
                         ]),
                     ]),

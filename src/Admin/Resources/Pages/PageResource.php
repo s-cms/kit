@@ -33,6 +33,16 @@ class PageResource extends Resource
         return __('kit::admin.pages');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('kit::admin.page');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('kit::admin.pages');
+    }
+
     public static function getNavigationBadge(): ?string
     {
         return Page::query()->whereIn('type', ['page', 'category'])->count();

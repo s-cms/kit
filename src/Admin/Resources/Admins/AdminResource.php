@@ -35,6 +35,16 @@ class AdminResource extends Resource
         return __('kit::admin.admins');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('kit::admin.admin');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('kit::admin.admins');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return AdminForm::configure($schema);

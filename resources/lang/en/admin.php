@@ -430,4 +430,14 @@ return [
     // Misc UI
     'or' => 'Or',
     'block_data' => 'Block Data',
+    'top_level' => 'Top Level',
+    'all' => 'All',
+    'admin' => 'Admin',
+    'block_template' => 'Block Template',
+    'tag' => 'Tag',
+    'active_only' => 'Active only',
+    'inactive_only' => 'Inactive only',
+    'copy_and_save' => 'Copy and Save',
+    'status' => 'Status',
+    'inactive' => 'Inactive',
 ];
