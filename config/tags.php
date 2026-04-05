@@ -1,5 +1,7 @@
 <?php
 
+use SmartCms\Kit\Models\Tag;
+
 return [
     /*
      * The given function generates a URL friendly "slug" from the tag name property before saving it.
@@ -9,7 +11,7 @@ return [
     /*
      * The fully qualified class name of the tag model.
      */
-    'tag_model' => \SmartCms\Kit\Models\Tag::class,
+    'tag_model' => Tag::class,
 
     /*
      * The name of the table to use for the tags.

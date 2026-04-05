@@ -5,6 +5,7 @@ namespace SmartCms\Kit\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use SmartCms\Kit\Contracts\UpdateServiceInterface;
+use SmartCms\Kit\Services\UpdateErrorHandler;
 use Symfony\Component\Process\Process;
 
 class Update extends Command
@@ -158,7 +159,7 @@ class Update extends Command
         if (! $process->isSuccessful()) {
             $this->error('❌ Composer update failed!');
 
-            $errorDetails = \SmartCms\Kit\Services\UpdateErrorHandler::handleComposerError(
+            $errorDetails = UpdateErrorHandler::handleComposerError(
                 $process->getErrorOutput(),
                 $process->getExitCode()
             );

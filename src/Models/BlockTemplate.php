@@ -2,6 +2,7 @@
 
 namespace SmartCms\Kit\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use SmartCms\Kit\Support\Traits\HasBlocks;
@@ -14,7 +15,7 @@ use SmartCms\Kit\Support\Traits\HasBlocks;
  * @property string|null $type The page type this template is for (page, category, or custom types). Null means universal.
  * @property \DateTime $created_at The date and time when the model was created.
  * @property \DateTime $updated_at The date and time when the model was last updated.
- * @property-read \Illuminate\Database\Eloquent\Collection $blocks The blocks in this template.
+ * @property-read Collection $blocks The blocks in this template.
  */
 class BlockTemplate extends Model
 {

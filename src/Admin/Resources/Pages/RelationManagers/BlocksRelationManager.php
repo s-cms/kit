@@ -316,7 +316,7 @@ class BlocksRelationManager extends RelationManager
             ]);
     }
 
-    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('kit::admin.blocks');
     }

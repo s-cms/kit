@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use SmartCms\Kit\Models\Page;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\SmartCms\Kit\Models\Page>
+ * @extends Factory<Page>
  */
 class PageFactory extends Factory
 {

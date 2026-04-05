@@ -151,5 +151,5 @@ it('fails to review non-existent block', function () {
         $tool->handle(new Request([
             'id' => 999999,
         ]));
-    })->toThrow(\Exception::class);
+    })->toThrow(Exception::class);
 });

@@ -66,7 +66,7 @@ it('handles unknown composer errors gracefully', function (): void {
 });
 
 it('can handle github rate limit errors', function (): void {
-    $exception = new \Exception('GitHub API rate limit exceeded. Resets at: 2024-01-15 10:00:00');
+    $exception = new Exception('GitHub API rate limit exceeded. Resets at: 2024-01-15 10:00:00');
 
     $result = UpdateErrorHandler::handleGithubError($exception);
 
@@ -76,7 +76,7 @@ it('can handle github rate limit errors', function (): void {
 });
 
 it('can handle github connection errors', function (): void {
-    $exception = new \Exception('Unable to connect to GitHub API. Please check your internet connection.');
+    $exception = new Exception('Unable to connect to GitHub API. Please check your internet connection.');
 
     $result = UpdateErrorHandler::handleGithubError($exception);
     expect($result['type'])->toBe('connection_error');
@@ -87,7 +87,7 @@ it('can handle github connection errors', function (): void {
 });
 
 it('can handle github repository not found errors', function (): void {
-    $exception = new \Exception('Repository not found. Please check the repository configuration.');
+    $exception = new Exception('Repository not found. Please check the repository configuration.');
 
     $result = UpdateErrorHandler::handleGithubError($exception);
 

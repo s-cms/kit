@@ -10,8 +10,10 @@ use Filament\Schemas\Components\Text;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Services\MediaLibraryService;
+use Spatie\Image\Image;
 
 class MediaPicker extends Select
 {
@@ -97,7 +99,7 @@ class MediaPicker extends Select
                         $baseName = pathinfo($tempPath, PATHINFO_FILENAME);
                     }
                     $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
-                    $slug = \Illuminate\Support\Str::slug($baseName);
+                    $slug = Str::slug($baseName);
                     $hash = substr(md5($file), 0, 8);
                     $fileName = $slug . '-' . $hash . '.' . $extension;
 
@@ -115,7 +117,7 @@ class MediaPicker extends Select
                     $dimensions = [];
                     if (str_starts_with($mimeType, 'image/')) {
                         try {
-                            $image = \Spatie\Image\Image::load($fullPath);
+                            $image = Image::load($fullPath);
                             $dimensions = [
                                 'width' => $image->getWidth(),
                                 'height' => $image->getHeight(),

@@ -2,12 +2,14 @@
 
 namespace SmartCms\Kit\Support\Augmentation\Concerns;
 
+use Filament\Tables\Columns\Column;
+
 trait ModifiesTableColumns
 {
     /**
      * Get admin table columns.
      *
-     * @return array<\Filament\Tables\Columns\Column>
+     * @return array<Column>
      */
     public static function getColumns(): array
     {

@@ -20,7 +20,7 @@ class MediaResource extends JsonResource
             $media = Media::find($this->resource);
         } else {
             /**
-             * @var \SmartCms\Kit\Models\Media $media
+             * @var Media $media
              */
             $media = $this->resource;
         }

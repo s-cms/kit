@@ -38,7 +38,7 @@ it('shows up to date message when no updates available', function (): void {
 
 it('handles update service errors gracefully during check', function (): void {
     $mockUpdateService = Mockery::mock(UpdateServiceInterface::class);
-    $mockUpdateService->shouldReceive('getCurrentVersion')->andThrow(new \Exception('Service error'));
+    $mockUpdateService->shouldReceive('getCurrentVersion')->andThrow(new Exception('Service error'));
 
     $this->app->instance(UpdateServiceInterface::class, $mockUpdateService);
 

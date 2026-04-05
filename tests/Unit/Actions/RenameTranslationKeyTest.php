@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use SmartCms\Kit\Actions\Support\RenameTranslationKey;
 use SmartCms\Kit\Models\Block;
 use SmartCms\Kit\Models\Page;

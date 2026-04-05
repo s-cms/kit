@@ -6,12 +6,15 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use SmartCms\Kit\Admin\Resources\Media\MediaResource;
 use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Services\MediaLibraryService;
+use Spatie\Image\Image;
 
 class ListMedia extends ListRecords
 {
@@ -70,7 +73,7 @@ class ListMedia extends ListRecords
                         // Generate file name
                         $baseName = $data['upload_name'] ?? pathinfo($tempPath, PATHINFO_FILENAME);
                         $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
-                        $slug = \Illuminate\Support\Str::slug($baseName);
+                        $slug = Str::slug($baseName);
                         $hash = substr(md5($file), 0, 8);
                         $fileName = $slug . '-' . $hash . '.' . $extension;
 
@@ -88,7 +91,7 @@ class ListMedia extends ListRecords
                         $dimensions = [];
                         if (str_starts_with($mimeType, 'image/')) {
                             try {
-                                $image = \Spatie\Image\Image::load($fullPath);
+                                $image = Image::load($fullPath);
                                 $dimensions = [
                                     'width' => $image->getWidth(),
                                     'height' => $image->getHeight(),
@@ -168,7 +171,7 @@ class ListMedia extends ListRecords
                             // Generate file name
                             $baseName = pathinfo($tempPath, PATHINFO_FILENAME);
                             $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
-                            $slug = \Illuminate\Support\Str::slug($baseName);
+                            $slug = Str::slug($baseName);
                             $hash = substr(md5($file . time()), 0, 8);
                             $fileName = $slug . '-' . $hash . '.' . $extension;
 
@@ -183,7 +186,7 @@ class ListMedia extends ListRecords
                             $dimensions = [];
                             if (str_starts_with($mimeType, 'image/')) {
                                 try {
-                                    $image = \Spatie\Image\Image::load($fullPath);
+                                    $image = Image::load($fullPath);
                                     $dimensions = [
                                         'width' => $image->getWidth(),
                                         'height' => $image->getHeight(),
@@ -219,7 +222,7 @@ class ListMedia extends ListRecords
                         }
                     }
 
-                    \Filament\Notifications\Notification::make()
+                    Notification::make()
                         ->title(__('kit::admin.images_uploaded', ['count' => $created]))
                         ->success()
                         ->send();

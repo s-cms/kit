@@ -2,6 +2,7 @@
 
 namespace SmartCms\Kit\Support\Traits;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use SmartCms\Kit\Models\Block;
 use SmartCms\Kit\Models\Blockable;
@@ -52,7 +53,7 @@ trait HasBlocks
      * Get active blocks as a collection.
      * This is a helper method that executes the query and returns results.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function getActiveBlocks()
     {

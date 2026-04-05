@@ -2,13 +2,15 @@
 
 namespace SmartCms\Kit\Support\Augmentation;
 
+use SmartCms\Kit\Support\Transformers\TransformContext;
+
 abstract class AbstractAugmentation
 {
     /**
      * Transform page data for frontend serialization.
      * This method is ALWAYS available - it's the core purpose of augmentation.
      *
-     * @param  \SmartCms\Kit\Support\Transformers\TransformContext  $context
+     * @param  TransformContext  $context
      */
     public static function transform($context): void
     {

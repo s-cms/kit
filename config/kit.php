@@ -1,5 +1,8 @@
 <?php
 
+use SmartCms\Kit\Models\Admin;
+use SmartCms\Kit\Models\Tag;
+
 // config for SmartCms/Kit
 return [
     'admins_table_name' => 'admins',
@@ -11,7 +14,7 @@ return [
         'new_contact_form' => 'kit::admin.new_contact_form',
     ],
     'register_routes' => true,
-    'auth_model' => \SmartCms\Kit\Models\Admin::class,
+    'auth_model' => Admin::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -96,7 +99,7 @@ return [
     |
     */
     'translatable_models' => [
-        \SmartCms\Kit\Models\Tag::class,
+        Tag::class,
     ],
 
     'updates' => [

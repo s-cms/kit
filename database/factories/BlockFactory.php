@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use SmartCms\Kit\Models\Block;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\SmartCms\Kit\Models\Block>
+ * @extends Factory<Block>
  */
 class BlockFactory extends Factory
 {

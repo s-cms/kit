@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use SmartCms\Kit\Models\Admin;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\SmartCms\Kit\Models\Admin>
+ * @extends Factory<Admin>
  */
 class AdminFactory extends Factory
 {

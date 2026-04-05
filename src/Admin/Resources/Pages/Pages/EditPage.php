@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Text;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 use SmartCms\Kit\Actions\Admin\GetPageListUrl;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
@@ -240,7 +241,7 @@ class EditPage extends EditRecord
                         $textContent = $analyzer->formatAsText($analysis);
 
                         return [
-                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                            Text::make(fn () => new HtmlString(
                                 '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
                                     nl2br(htmlspecialchars($textContent)) .
                                     '</div>'
@@ -269,7 +270,7 @@ class EditPage extends EditRecord
                                     Tab::make('Google')
                                         ->icon(Heroicon::MagnifyingGlass)
                                         ->schema([
-                                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                                            Text::make(fn () => new HtmlString(
                                                 $formattedPreviews['google']
                                             ))
                                                 ->columnSpanFull(),
@@ -277,13 +278,13 @@ class EditPage extends EditRecord
                                     Tab::make('Facebook')
                                         ->icon(Heroicon::AtSymbol)
                                         ->schema([
-                                            Text::make(fn () => new \Illuminate\Support\HtmlString($formattedPreviews['facebook']))
+                                            Text::make(fn () => new HtmlString($formattedPreviews['facebook']))
                                                 ->columnSpanFull(),
                                         ]),
                                     Tab::make('Twitter')
                                         ->icon(Heroicon::ChatBubbleLeft)
                                         ->schema([
-                                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                                            Text::make(fn () => new HtmlString(
                                                 $formattedPreviews['twitter']
                                             ))
                                                 ->columnSpanFull(),
@@ -291,7 +292,7 @@ class EditPage extends EditRecord
                                     Tab::make('LinkedIn')
                                         ->icon(Heroicon::Briefcase)
                                         ->schema([
-                                            Text::make(fn () => new \Illuminate\Support\HtmlString($formattedPreviews['linkedin']))
+                                            Text::make(fn () => new HtmlString($formattedPreviews['linkedin']))
                                                 ->columnSpanFull(),
                                         ]),
                                 ])

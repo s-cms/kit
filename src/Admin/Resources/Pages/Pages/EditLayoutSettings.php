@@ -2,11 +2,15 @@
 
 namespace SmartCms\Kit\Admin\Resources\Pages\Pages;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\IconPosition;
+use Filament\Support\Enums\Size;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use SmartCms\Kit\Actions\Admin\GetPageListUrl;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
@@ -52,15 +56,15 @@ class EditLayoutSettings extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\ActionGroup::make([
+            ActionGroup::make([
                 SaveAction::make($this),
                 SaveAndClose::make($this, GetPageListUrl::run($this->getRecord())),
                 ViewRecord::make(),
                 DeleteAction::make(),
             ])->link()->label(__('kit::admin.actions'))
-                ->icon(\Filament\Support\Icons\Heroicon::ChevronDown)
-                ->size(\Filament\Support\Enums\Size::Small)
-                ->iconPosition(\Filament\Support\Enums\IconPosition::After)
+                ->icon(Heroicon::ChevronDown)
+                ->size(Size::Small)
+                ->iconPosition(IconPosition::After)
                 ->color('primary'),
         ];
     }

@@ -32,7 +32,7 @@ class SocialsType implements VariableTypeInterface
                 'image' => 'https://www.facebook.com/favicon.ico',
             ],
         ])->map(
-            fn ($item): \Illuminate\Support\Fluent => new Fluent([
+            fn ($item): Fluent => new Fluent([
                 'name' => $item['name'],
                 'url' => [
                     'title' => $item['name'],

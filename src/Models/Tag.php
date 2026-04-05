@@ -17,7 +17,6 @@ use Spatie\Tags\Tag as BaseTag;
  */
 class Tag extends BaseTag
 {
-
     /**
      * The attributes that are mass assignable.
      */

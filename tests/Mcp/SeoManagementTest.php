@@ -60,7 +60,7 @@ it('validates field lengths', function () {
         'id' => $page->id,
         'meta_title' => str_repeat('a', 256), // Exceeds 255 char limit
         'language' => 'en',
-    ])))->toThrow(\Exception::class);
+    ])))->toThrow(Exception::class);
 });
 
 it('can update partial seo fields', function () {
@@ -105,7 +105,7 @@ it('fails to update seo for nonexistent page', function () {
         'id' => 999999,
         'meta_title' => 'Test',
         'language' => 'en',
-    ])))->toThrow(\Exception::class);
+    ])))->toThrow(Exception::class);
 });
 
 it('works without language parameter', function () {

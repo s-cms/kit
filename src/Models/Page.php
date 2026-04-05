@@ -4,6 +4,9 @@ namespace SmartCms\Kit\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -50,9 +53,9 @@ use Spatie\Translatable\HasTranslations;
  * @property int $created_by The user who created the model.
  * @property int $updated_by The user who updated the model.
  * @property bool $is_index Is index page.
- * @property-read \SmartCms\TemplateBuilder\Models\Layout|null $layout The layout used by this page.
- * @property-read \SmartCms\Kit\Models\Page|null $parent The parent page.
- * @property-read \SmartCms\Kit\Models\Page|null $root The root page (deprecated).
+ * @property-read Layout|null $layout The layout used by this page.
+ * @property-read Page|null $parent The parent page.
+ * @property-read Page|null $root The root page (deprecated).
  * @property-read array $breadcrumbs The breadcrumbs for this page.
  * @property-read \Illuminate\Database\Eloquent\Collection $children Child pages.
  */
@@ -162,17 +165,17 @@ class Page extends Model
         return $this->id && $this->id !== 1;
     }
 
-    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
-    public function children(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
     }
 
-    public function root(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function root(): BelongsTo
     {
         return $this->belongsTo(self::class, 'root_id');
     }
@@ -202,7 +205,7 @@ class Page extends Model
     /**
      * Get all ancestors (parents, grandparents, etc.)
      */
-    public function ancestors(): \Illuminate\Support\Collection
+    public function ancestors(): Collection
     {
         $ancestors = collect();
         $current = $this->parent;
@@ -218,7 +221,7 @@ class Page extends Model
     /**
      * Get all descendants (children, grandchildren, etc.)
      */
-    public function descendants(): \Illuminate\Support\Collection
+    public function descendants(): Collection
     {
         $descendants = collect();
 

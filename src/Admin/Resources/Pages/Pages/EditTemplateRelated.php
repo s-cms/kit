@@ -2,6 +2,7 @@
 
 namespace SmartCms\Kit\Admin\Resources\Pages\Pages;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -11,6 +12,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\IconPosition;
+use Filament\Support\Enums\Size;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
@@ -25,6 +29,7 @@ use SmartCms\Support\Admin\Components\Tables\SortingColumn;
 use SmartCms\Support\Admin\Components\Tables\StatusColumn;
 use SmartCms\Support\Admin\Components\Tables\UpdatedAtColumn;
 use SmartCms\TemplateBuilder\Actions\TemplateParser;
+use SmartCms\TemplateBuilder\Models\Section;
 use SmartCms\TemplateBuilder\Models\Section as ModelsSection;
 use SmartCms\TemplateBuilder\Support\TemplateTypeEnum;
 
@@ -143,7 +148,7 @@ class EditTemplateRelated extends ManageRelatedRecords
                             })
                             // ->createAnother(false)
                             ->createOptionUsing(function (array $data): int {
-                                $section = \SmartCms\TemplateBuilder\Models\Section::query()->create($data);
+                                $section = Section::query()->create($data);
 
                                 return $section->id;
                             })
@@ -170,15 +175,15 @@ class EditTemplateRelated extends ManageRelatedRecords
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\ActionGroup::make([
+            ActionGroup::make([
                 SaveAction::make($this),
                 SaveAndClose::make($this, GetPageListUrl::run($this->getRecord())),
                 ViewRecord::make(),
                 DeleteAction::make(),
             ])->link()->label(__('kit::admin.actions'))
-                ->icon(\Filament\Support\Icons\Heroicon::ChevronDown)
-                ->size(\Filament\Support\Enums\Size::Small)
-                ->iconPosition(\Filament\Support\Enums\IconPosition::After)
+                ->icon(Heroicon::ChevronDown)
+                ->size(Size::Small)
+                ->iconPosition(IconPosition::After)
                 ->color('primary'),
         ];
     }
