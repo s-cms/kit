@@ -469,4 +469,10 @@ return [
     'moving_items' => ':count Elemente verschieben — zum Zielordner navigieren',
     'media_moved' => ':count Elemente erfolgreich verschoben.',
     'cannot_delete_system_folder' => 'Systemordner kann nicht gelöscht werden.',
+    'generate_responsive' => 'Responsive Bilder generieren',
+    'process_unprocessed' => ':count unverarbeitete Bilder verarbeiten',
+    'confirm_process_all' => 'Dies generiert responsive Bilder für alle unverarbeiteten Medien. Dies kann eine Weile dauern.',
+    'media_processed' => ':count Bilder verarbeitet.',
+    'scan_disk' => 'Datenträger scannen',
+    'scan_completed' => ':count neue Dateien gefunden und registriert.',
 ];

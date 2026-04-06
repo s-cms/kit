@@ -469,4 +469,10 @@ return [
     'moving_items' => 'Moving :count items — navigate to target folder',
     'media_moved' => ':count items moved successfully.',
     'cannot_delete_system_folder' => 'Cannot delete system folder.',
+    'generate_responsive' => 'Generate Responsive Images',
+    'process_unprocessed' => 'Process :count unprocessed images',
+    'confirm_process_all' => 'This will generate responsive images for all unprocessed media. This may take a while.',
+    'media_processed' => ':count images processed.',
+    'scan_disk' => 'Scan Disk',
+    'scan_completed' => ':count new files found and registered.',
 ];

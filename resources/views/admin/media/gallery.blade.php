@@ -80,6 +80,26 @@
                     <input type="file" accept="{{ \SmartCms\Kit\Admin\Resources\Media\Pages\ListMedia::getAcceptAttribute($currentTab) }}" multiple wire:model="uploadFiles" style="display: none;" />
                 </label>
 
+                {{-- Process All --}}
+                @if($currentTab === 'images' && $this->getUnprocessedCount() > 0)
+                    <button type="button" wire:click="processAll" wire:confirm="{{ __('kit::admin.confirm_process_all') }}"
+                        style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; color: #92400e; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; cursor: pointer;">
+                        <svg style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182M2.985 19.644l3.181-3.182" />
+                        </svg>
+                        {{ __('kit::admin.process_unprocessed', ['count' => $this->getUnprocessedCount()]) }}
+                    </button>
+                @endif
+
+                {{-- Scan Disk --}}
+                <button type="button" wire:click="scanDisk"
+                    style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; color: #374151; background: white; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer;">
+                    <svg style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    {{ __('kit::admin.scan_disk') }}
+                </button>
+
                 {{-- New Folder --}}
                 <div x-data="{ showInput: false }">
                     <template x-if="!showInput">
@@ -201,7 +221,7 @@
                                 </svg>
                             </button>
                             <div style="aspect-ratio: 1; cursor: pointer;"
-                                @click="openEdit(@js(['id' => $item->id, 'name' => $item->name, 'url' => $item->getUrl(), 'alt' => $item->alt ?? [], 'width' => $item->width, 'height' => $item->height, 'size' => $item->size, 'mime_type' => $item->mime_type]))">
+                                @click="openEdit(@js(['id' => $item->id, 'name' => $item->name, 'url' => $item->getUrl(), 'alt' => $item->alt ?? [], 'width' => $item->width, 'height' => $item->height, 'size' => $item->size, 'mime_type' => $item->mime_type, 'has_responsive' => !empty($item->responsive_images)]))">
                                 @if(str_starts_with($item->mime_type, 'image/'))
                                     <img src="{{ $item->getUrl() }}" alt="{{ $item->name }}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" />
                                 @elseif(str_starts_with($item->mime_type, 'video/'))
@@ -271,7 +291,19 @@
                                         <input type="text" x-model="editAlt[lang.slug]" style="width: 100%; padding: 8px 12px; font-size: 14px; border: 1px solid #d1d5db; border-radius: 8px; background: white; color: #111827; outline: none; box-sizing: border-box;" />
                                     </div>
                                 </template>
-                                <div style="display: flex; gap: 8px; margin-top: auto; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+                                {{-- Process button for images --}}
+                                <template x-if="editItem?.mime_type?.startsWith('image/') && editItem?.mime_type !== 'image/svg+xml'">
+                                    <button type="button"
+                                        @click="$wire.processMedia(editItem.id); editItem = null;"
+                                        style="width: 100%; padding: 8px; font-size: 13px; font-weight: 500; border-radius: 8px; cursor: pointer; margin-top: auto;"
+                                        :style="editItem?.has_responsive ? 'color: #374151; background: #f3f4f6; border: 1px solid #d1d5db;' : 'color: #92400e; background: #fef3c7; border: 1px solid #fbbf24;'"
+                                    >
+                                        <span x-show="!editItem?.has_responsive">{{ __('kit::admin.generate_responsive') }}</span>
+                                        <span x-show="editItem?.has_responsive" style="display:none;">{{ __('kit::admin.regenerate_responsive_images') }}</span>
+                                    </button>
+                                </template>
+
+                                <div style="display: flex; gap: 8px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
                                     <button type="button" @click="saveEdit()" :style="saving ? 'opacity: 0.5; pointer-events: none;' : ''"
                                         style="flex: 1; padding: 8px; font-size: 14px; font-weight: 500; color: white; background: var(--primary-600, #2563eb); border: none; border-radius: 8px; cursor: pointer;">
                                         <span x-show="!saving">{{ __('kit::admin.save') }}</span><span x-show="saving" style="display: none;">...</span>
@@ -286,7 +318,27 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 24px;">{{ $media->links() }}</div>
+                @if($media->hasPages())
+                    <div style="margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                        @if($media->onFirstPage())
+                            <span style="padding: 8px 12px; font-size: 14px; color: #9ca3af; border: 1px solid #e5e7eb; border-radius: 6px;">←</span>
+                        @else
+                            <button type="button" wire:click="previousPage" style="padding: 8px 12px; font-size: 14px; color: #374151; background: white; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;">←</button>
+                        @endif
+                        @foreach($media->getUrlRange(max(1, $media->currentPage() - 2), min($media->lastPage(), $media->currentPage() + 2)) as $page => $url)
+                            @if($page == $media->currentPage())
+                                <span style="padding: 8px 12px; font-size: 14px; color: white; background: var(--primary-600, #2563eb); border-radius: 6px; font-weight: 500;">{{ $page }}</span>
+                            @else
+                                <button type="button" wire:click="gotoPage({{ $page }})" style="padding: 8px 12px; font-size: 14px; color: #374151; background: white; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;">{{ $page }}</button>
+                            @endif
+                        @endforeach
+                        @if($media->hasMorePages())
+                            <button type="button" wire:click="nextPage" style="padding: 8px 12px; font-size: 14px; color: #374151; background: white; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;">→</button>
+                        @else
+                            <span style="padding: 8px 12px; font-size: 14px; color: #9ca3af; border: 1px solid #e5e7eb; border-radius: 6px;">→</span>
+                        @endif
+                    </div>
+                @endif
             @elseif(count($folders) === 0)
                 <div style="text-align: center; padding: 64px 0; color: #6b7280;">
                     <svg style="width: 48px; height: 48px; margin: 0 auto 12px; color: #d1d5db;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

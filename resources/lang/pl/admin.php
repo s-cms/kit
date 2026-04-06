@@ -460,4 +460,10 @@ return [
     'moving_items' => 'Przenoszenie :count elementów — przejdź do folderu docelowego',
     'media_moved' => ':count elementów przeniesionych.',
     'cannot_delete_system_folder' => 'Nie można usunąć folderu systemowego.',
+    'generate_responsive' => 'Generuj obrazy responsywne',
+    'process_unprocessed' => 'Przetwórz :count nieprzetworzonych obrazów',
+    'confirm_process_all' => 'To wygeneruje obrazy responsywne dla wszystkich nieprzetworzonych mediów. To może chwilę potrwać.',
+    'media_processed' => ':count obrazów przetworzonych.',
+    'scan_disk' => 'Skanuj dysk',
+    'scan_completed' => ':count nowych plików znalezionych i zarejestrowanych.',
 ];

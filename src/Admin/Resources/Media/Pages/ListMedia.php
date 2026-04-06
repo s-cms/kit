@@ -246,6 +246,130 @@ class ListMedia extends ListRecords
             ->send();
     }
 
+    public function processMedia(int $id): void
+    {
+        $media = Media::find($id);
+        if (! $media || ! $media->isImage() || $media->mime_type === 'image/svg+xml') {
+            return;
+        }
+
+        $service = app(\SmartCms\Kit\Services\ImageProcessingService::class);
+        $service->processImage($media);
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.responsive_images_regenerated'))
+            ->send();
+    }
+
+    public function processAll(): void
+    {
+        $service = app(\SmartCms\Kit\Services\ImageProcessingService::class);
+        $count = 0;
+
+        Media::query()
+            ->where('mime_type', 'like', 'image/%')
+            ->where('mime_type', '!=', 'image/svg+xml')
+            ->where(function ($q) {
+                $q->whereNull('responsive_images')
+                    ->orWhere('responsive_images', '[]')
+                    ->orWhere('responsive_images', '');
+            })
+            ->chunkById(50, function ($items) use ($service, &$count) {
+                foreach ($items as $media) {
+                    $service->processImage($media);
+                    $count++;
+                }
+            });
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.media_processed', ['count' => $count]))
+            ->send();
+    }
+
+    public function getUnprocessedCount(): int
+    {
+        return Media::query()
+            ->where('mime_type', 'like', 'image/%')
+            ->where('mime_type', '!=', 'image/svg+xml')
+            ->where(function ($q) {
+                $q->whereNull('responsive_images')
+                    ->orWhere('responsive_images', '[]')
+                    ->orWhere('responsive_images', '');
+            })
+            ->count();
+    }
+
+    public function scanDisk(): void
+    {
+        $disk = Storage::disk(config('kit.media.disk', 'public'));
+        $fullPath = $this->getFullPath();
+        $found = 0;
+
+        $files = $disk->files($fullPath);
+
+        foreach ($files as $filePath) {
+            $fileName = basename($filePath);
+
+            // Skip responsive image variants (e.g. image___w_340.webp)
+            if (preg_match('/___w_\d+\./', $fileName)) {
+                continue;
+            }
+
+            // Skip hidden files
+            if (str_starts_with($fileName, '.')) {
+                continue;
+            }
+
+            $exists = Media::where('path', $fullPath)
+                ->where('file_name', $fileName)
+                ->exists();
+
+            if ($exists) {
+                continue;
+            }
+
+            $absolutePath = $disk->path($filePath);
+            $mimeType = $disk->mimeType($filePath);
+            $size = $disk->size($filePath);
+
+            $dimensions = [];
+            if (str_starts_with($mimeType, 'image/') && $mimeType !== 'image/svg+xml') {
+                try {
+                    $image = \Spatie\Image\Image::load($absolutePath);
+                    $dimensions = [
+                        'width' => $image->getWidth(),
+                        'height' => $image->getHeight(),
+                    ];
+                } catch (\Exception $e) {
+                }
+            }
+
+            Media::create([
+                'file_name' => $fileName,
+                'name' => pathinfo($fileName, PATHINFO_FILENAME),
+                'disk' => config('kit.media.disk', 'public'),
+                'path' => $fullPath,
+                'mime_type' => $mimeType,
+                'size' => $size,
+                'width' => $dimensions['width'] ?? null,
+                'height' => $dimensions['height'] ?? null,
+                'alt' => [],
+                'conversions' => [],
+                'responsive_images' => [],
+                'custom_properties' => [],
+            ]);
+
+            $found++;
+        }
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.scan_completed', ['count' => $found]))
+            ->send();
+    }
+
     public function deleteSelected(): void
     {
         $media = Media::whereIn('id', $this->selected)->get();
