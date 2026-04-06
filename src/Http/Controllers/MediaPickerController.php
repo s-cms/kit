@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Http;
 use SmartCms\Kit\Services\MediaLibraryService;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use SmartCms\Kit\Models\Media;
 
 class MediaPickerController extends Controller
 {
@@ -167,9 +167,7 @@ class MediaPickerController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Media::query()
-            ->where('collection_name', config('kit.media.collection_name'))
-            ->latest();
+        $query = Media::query()->latest();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -178,20 +176,49 @@ class MediaPickerController extends Controller
             });
         }
 
-        $media = $query->limit(20)->get();
+        $media = $query->limit(24)->get();
 
         return response()->json([
             'success' => true,
-            'media' => $media->map(function ($item) {
-                $imageArray = $item->toImageArray();
-
+            'media' => $media->map(function (Media $item) {
                 return [
                     'id' => $item->id,
                     'name' => $item->name,
-                    'thumb_url' => $item->getUrl('thumb'),
-                    'image' => $imageArray,
+                    'url' => $item->getUrl(),
+                    'alt_translations' => $item->alt ?? [],
+                    'mime_type' => $item->mime_type,
                 ];
             }),
         ]);
+    }
+
+    /**
+     * Update media name and alt text
+     */
+    public function update(Request $request): JsonResponse
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'name' => 'nullable|string|max:255',
+            'alt' => 'nullable|array',
+            'alt.*' => 'nullable|string|max:255',
+        ]);
+
+        $media = Media::find($request->input('id'));
+        if (! $media) {
+            return response()->json(['success' => false, 'message' => 'Media not found'], 404);
+        }
+
+        if ($request->has('name')) {
+            $media->name = $request->input('name');
+        }
+
+        if ($request->has('alt')) {
+            $media->alt = $request->input('alt');
+        }
+
+        $media->save();
+
+        return response()->json(['success' => true]);
     }
 }

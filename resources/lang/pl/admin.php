@@ -435,4 +435,9 @@ return [
     'change_status' => 'Zmień status',
     'status_changed' => 'Status zmieniony dla :count stron.',
     'cannot_delete_system_page' => 'Nie można usunąć strony systemowej.',
+
+    // Media picker
+    'add_image' => 'Dodaj obraz',
+    'change' => 'Zmień',
+    'uploading' => 'Przesyłanie',
 ];

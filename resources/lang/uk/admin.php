@@ -435,4 +435,9 @@ return [
     'change_status' => 'Змінити статус',
     'status_changed' => 'Статус змінено для :count сторінок.',
     'cannot_delete_system_page' => 'Неможливо видалити системну сторінку.',
+
+    // Media picker
+    'add_image' => 'Додати зображення',
+    'change' => 'Змінити',
+    'uploading' => 'Завантаження',
 ];

@@ -444,4 +444,9 @@ return [
     'change_status' => 'Change Status',
     'status_changed' => 'Status changed for :count pages.',
     'cannot_delete_system_page' => 'Cannot delete system page.',
+
+    // Media picker
+    'add_image' => 'Add Image',
+    'change' => 'Change',
+    'uploading' => 'Uploading',
 ];

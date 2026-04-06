@@ -12,4 +12,5 @@ Route::prefix('admin/media-picker')
         Route::get('/unsplash/search', [MediaPickerController::class, 'unsplashSearch'])->name('admin.media-picker.unsplash.search');
         Route::post('/unsplash/download', [MediaPickerController::class, 'unsplashDownload'])->name('admin.media-picker.unsplash.download');
         Route::get('/library', [MediaPickerController::class, 'library'])->name('admin.media-picker.library');
+        Route::post('/update', [MediaPickerController::class, 'update'])->name('admin.media-picker.update');
     });

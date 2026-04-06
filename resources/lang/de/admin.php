@@ -444,4 +444,9 @@ return [
     'change_status' => 'Status ändern',
     'status_changed' => 'Status für :count Seiten geändert.',
     'cannot_delete_system_page' => 'Systemseite kann nicht gelöscht werden.',
+
+    // Media picker
+    'add_image' => 'Bild hinzufügen',
+    'change' => 'Ändern',
+    'uploading' => 'Hochladen',
 ];
