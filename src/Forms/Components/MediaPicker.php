@@ -94,7 +94,7 @@ class MediaPicker extends Field
         $hash = substr(md5($fileContent), 0, 8);
         $fileName = $slug . '-' . $hash . '.' . $extension;
 
-        $path = config('kit.media.collection_name', 'library') . '/' . date('Y/m');
+        $path = config('kit.media.collection_name', 'library');
 
         Storage::disk($disk)->put($path . '/' . $fileName, $fileContent);
         Storage::disk($disk)->delete($tempPath);
