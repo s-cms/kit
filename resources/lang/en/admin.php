@@ -354,4 +354,90 @@ return [
     'apple_touch_icon' => 'Apple Touch Icon',
     'twitter_name' => 'Twitter Name',
     'social' => 'Social',
+
+    // Language key rename
+    'rename_translation_key_heading' => 'Rename Translation Key',
+    'rename_translation_key_description' => 'The content language key ":old" will be renamed to ":new". All existing content will be preserved under the new key. If you want to keep translations for both languages, enable multilingual mode first, add the language, fill in the content, then switch the default language.',
+    'rename_translation_key_confirm' => 'Rename',
+
+    // Unused languages cleanup
+    'unused_languages_warning' => 'The database contains content in inactive languages. This may slow down database performance.',
+    'clean_unused_languages' => 'Clean Unused Languages',
+    'clean_unused_languages_heading' => 'Clean Unused Languages',
+    'clean_unused_languages_description' => 'This will permanently remove all content in inactive languages from the database. This action cannot be undone.',
+    'clean_unused_languages_confirm' => 'Clean',
+    'clean_unused_languages_done' => ':count records cleaned successfully.',
+
+    // Profile
+    'current_password' => 'Current Password',
+    'current_password_incorrect' => 'The current password is incorrect.',
+
+    // AI & SEO actions
+    'generate_seo_fields' => 'Generate SEO Fields',
+    'generate_seo_fields_heading' => 'Generate SEO Fields with AI',
+    'generate_seo_fields_description' => 'This will use AI to generate meta description, heading, and summary based on the page title and content.',
+    'seo_fields_generated' => 'SEO fields generated successfully',
+    'seo_fields_generated_body' => 'Meta description, heading, and summary have been generated.',
+    'seo_fields_failed' => 'Failed to generate SEO fields',
+    'translate_to_all_languages' => 'Translate to All Languages',
+    'translate_content_heading' => 'Translate Content',
+    'translate_content_description' => 'This will translate all fields to other configured languages. Only empty fields will be filled.',
+    'content_translated' => 'Content translated successfully',
+    'content_translated_body' => 'Translated :count fields to other languages.',
+    'translation_failed' => 'Translation failed',
+    'seo_health_check' => 'SEO Health Check',
+    'seo_health_check_heading' => 'SEO Health Check Report',
+    'seo_health_check_description' => 'Comprehensive SEO analysis with AI-powered improvement suggestions',
+    'social_media_preview' => 'Social Media Preview',
+    'social_media_preview_heading' => 'Social Media Preview',
+    'social_media_preview_description' => 'Preview how your page will appear when shared on social media',
+    'close' => 'Close',
+    'generate_heading' => 'Generate Heading',
+    'generate_description' => 'Generate Description',
+    'generate_summary' => 'Generate Summary',
+
+    // Block form
+    'select_section_type_first' => 'Select section type in sidebar first',
+    'section_type' => 'Section Type',
+
+    // Widgets
+    'percent_used' => ':percent% used',
+    'not_installed' => 'Not installed',
+
+    // UI hints
+    'lucide_icon_hint' => "You can use any icon from <a href='https://lucide.dev' target='_blank'>Lucide</a> set",
+
+    // Schema parser
+    'custom_type' => 'Custom type',
+    'select_an_option' => 'Select an option',
+    'target' => 'Target',
+    'same_window' => 'Same window',
+    'new_window' => 'New window',
+    'parent_frame' => 'Parent frame',
+    'top_frame' => 'Top frame',
+    'link_title' => 'Link Title',
+    'optional_hover_text' => 'Optional hover text',
+    'select_page' => 'Select a page',
+
+    // Blocks relation
+    'attachment_settings' => 'Attachment Settings',
+
+    // Notifications
+    'new_contact_form_submission' => 'New contact form submission!',
+    'view_in_admin' => 'View in admin panel',
+    'test_notification_message' => 'Hello, this is a test notification.',
+
+    // Misc UI
+    'or' => 'Or',
+    'block_data' => 'Block Data',
+    'top_level' => 'Top Level',
+    'all' => 'All',
+    'admin' => 'Admin',
+    'block_template' => 'Block Template',
+    'tag' => 'Tag',
+    'active_only' => 'Active only',
+    'inactive_only' => 'Inactive only',
+    'copy_and_save' => 'Copy and Save',
+    'status' => 'Status',
+    'inactive' => 'Inactive',
 ];

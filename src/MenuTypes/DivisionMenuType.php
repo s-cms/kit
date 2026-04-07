@@ -20,19 +20,25 @@ class DivisionMenuType extends PageMenuType
         return __('kit::admin.category');
     }
 
-    public function getSchema(): Field
+    public function getSchema(?string $language = null): Field
     {
+        $lang = $language ?? main_lang();
+
         return Select::make('url')
-            ->options(Page::query()
-                ->where('status', PageStatus::Published->value)
-                ->where('type', 'category')
-                ->pluck('name', 'id'))
+            ->options(
+                Page::query()
+                    ->where('status', PageStatus::Published->value)
+                    ->where('type', 'category')
+                    ->get()
+                    ->mapWithKeys(fn (Page $page) => [$page->id => $page->getTranslation('name', $lang)])
+                    ->toArray(),
+            )
             ->live()
-            ->afterStateUpdated(function (string $state, Set $set): void {
+            ->afterStateUpdated(function (string $state, Set $set) use ($lang): void {
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
                     if ($page) {
-                        $set('title', $page->name);
+                        $set('title', $page->getTranslation('name', $lang));
                     }
                 }
             });

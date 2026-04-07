@@ -81,7 +81,7 @@ class HealthCheck extends StatsOverviewWidget
 
         return [
             Stat::make(__('kit::admin.memory_usage'), "{$used} MB / {$total} MB")
-                ->description("$percent% used")
+                ->description(__('kit::admin.percent_used', ['percent' => $percent]))
                 ->chart([$percent, $percent, $percent])
                 ->color($percent > 80 ? 'danger' : 'success'),
         ];

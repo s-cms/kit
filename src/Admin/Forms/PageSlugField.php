@@ -3,6 +3,7 @@
 namespace SmartCms\Kit\Admin\Forms;
 
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Str;
 use SmartCms\Support\Admin\Components\Forms\SlugField;
 
 class PageSlugField
@@ -13,7 +14,7 @@ class PageSlugField
             ->readOnly()
             ->unique(config('kit.pages_table_name'), 'slug', modifyRuleUsing: function ($rule, $get, $set) {
                 if (blank($get('slug'))) {
-                    $set('slug', \Illuminate\Support\Str::slug($get('name')[main_lang()]));
+                    $set('slug', Str::slug($get('name')[main_lang()]));
                 }
 
                 return $rule;

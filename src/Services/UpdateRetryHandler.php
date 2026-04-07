@@ -2,6 +2,7 @@
 
 namespace SmartCms\Kit\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -103,7 +104,7 @@ class UpdateRetryHandler
         return $this->baseDelay * 2 ** ($attempt - 1);
     }
 
-    public function getNextRetryTime(string $operationId): ?\Carbon\Carbon
+    public function getNextRetryTime(string $operationId): ?Carbon
     {
         $retryCount = $this->getRetryCount($operationId);
 
@@ -120,7 +121,7 @@ class UpdateRetryHandler
     {
         $nextRetryTime = $this->getNextRetryTime($operationId);
 
-        if (! $nextRetryTime instanceof \Carbon\Carbon) {
+        if (! $nextRetryTime instanceof Carbon) {
             return false;
         }
 

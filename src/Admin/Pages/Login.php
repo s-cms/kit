@@ -11,6 +11,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Illuminate\Validation\ValidationException;
+use SmartCms\Kit\Contracts\UpdateCheckerInterface;
 
 class Login extends PagesLogin
 {
@@ -79,7 +80,7 @@ class Login extends PagesLogin
         }
 
         try {
-            $updateChecker = app(\SmartCms\Kit\Contracts\UpdateCheckerInterface::class);
+            $updateChecker = app(UpdateCheckerInterface::class);
             $updateChecker->checkOnLogin();
         } catch (\Exception) {
             // Silently fail - update checking should not interrupt login

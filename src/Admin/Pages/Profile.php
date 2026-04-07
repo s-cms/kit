@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use NotificationChannels\Telegram\TelegramUpdates;
 use SmartCms\Kit\Models\Admin;
 
@@ -40,7 +41,7 @@ class Profile extends EditProfile
                         ])
                         ->default('en')
                         ->required(),
-                    TextInput::make('telegram_token')->disabled()->hidden()->formatStateUsing(fn ($get) => \Illuminate\Support\Str::random(32)),
+                    TextInput::make('telegram_token')->disabled()->hidden()->formatStateUsing(fn ($get) => Str::random(32)),
                     Section::make(__('kit::admin.telegram'))->schema([
                         TextInput::make('telegram_id')
                             ->label(__('kit::admin.telegram_chat_id'))
@@ -96,17 +97,17 @@ class Profile extends EditProfile
                 ])->columns(1),
                 Tab::make(__('kit::admin.password'))->schema([
                     TextInput::make('old_password')
-                        ->label('Current Password')
+                        ->label(__('kit::admin.current_password'))
                         ->password()
                         ->required(fn ($get): bool => filled($get('password')))
-                        ->dehydrated(false) // Do not save to DB
+                        ->dehydrated(false)
                         ->rule(fn (): \Closure => function ($attribute, $value, $fail): void {
                             /**
                              * @var Admin $user
                              */
                             $user = auth()->user();
                             if (! Hash::check($value, $user->password)) {
-                                $fail('The current password is incorrect.');
+                                $fail(__('kit::admin.current_password_incorrect'));
                             }
                         }),
                     $this->getPasswordFormComponent(),
@@ -122,7 +123,7 @@ class Profile extends EditProfile
 
     public function getNotificationsSchema($channel): array
     {
-        return collect(config('kit.notifications'))->map(fn ($value, $key): \Filament\Forms\Components\Toggle => Toggle::make("notifications.{$channel}.{$key}")->label(__($value))->default(true))->toArray();
+        return collect(config('kit.notifications'))->map(fn ($value, $key): Toggle => Toggle::make("notifications.{$channel}.{$key}")->label(__($value))->default(true))->toArray();
     }
 
     public function afterSave(): void

@@ -32,7 +32,7 @@ class VersionsWidget extends StatsOverviewWidget
     {
         $node = trim(shell_exec('node -v'));
         if (blank($node)) {
-            $node = 'Not installed';
+            $node = __('kit::admin.not_installed');
         }
 
         return [

@@ -37,15 +37,14 @@ class TestNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('Hello, this is a test notification')
-            ->line('Thank you for using our application!');
+            ->line(__('kit::admin.test_notification_message'));
     }
 
     public function toTelegram(object $notifiable): TelegramMessage
     {
         return TelegramMessage::create()
             ->to($notifiable->telegram_id)
-            ->content('Hello, this is a test notification');
+            ->content(__('kit::admin.test_notification_message'));
     }
 
     /**

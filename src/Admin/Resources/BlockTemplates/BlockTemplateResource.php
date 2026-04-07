@@ -34,6 +34,16 @@ class BlockTemplateResource extends Resource
         return __('kit::admin.block_templates');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('kit::admin.block_template');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('kit::admin.block_templates');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return BlockTemplateForm::configure($schema);

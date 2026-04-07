@@ -24,7 +24,7 @@ class FileType implements VariableTypeInterface
         return asset('favicon.ico');
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return FileUpload::make($name)->label(__('kit::admin.file'))->rules([
             'mimes:pdf,doc,docx,xls,xlsx,csv,xml,json,zip',

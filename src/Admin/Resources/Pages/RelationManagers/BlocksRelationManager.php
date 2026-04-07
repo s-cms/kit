@@ -38,27 +38,27 @@ class BlocksRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('block_id')
-                    ->label(__('Block'))
+                    ->label(__('kit::admin.block'))
                     ->options(fn () => Block::query()->pluck('title', 'id'))
                     ->required()
                     ->searchable()
                     ->preload(),
 
                 Forms\Components\Toggle::make('status')
-                    ->label(__('Active'))
+                    ->label(__('kit::admin.active'))
                     ->default(true)
                     ->required(),
 
                 Forms\Components\DateTimePicker::make('show_from')
-                    ->label(__('Show From'))
+                    ->label(__('kit::admin.show_from'))
                     ->nullable(),
 
                 Forms\Components\DateTimePicker::make('show_until')
-                    ->label(__('Show Until'))
+                    ->label(__('kit::admin.show_until'))
                     ->nullable(),
 
                 Forms\Components\TextInput::make('sorting')
-                    ->label(__('Sorting'))
+                    ->label(__('support::admin.sorting'))
                     ->numeric()
                     ->default(0)
                     ->required(),
@@ -72,31 +72,31 @@ class BlocksRelationManager extends RelationManager
             ->reorderable('sorting')
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label(__('Block'))
+                    ->label(__('kit::admin.block'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label(__('Type'))
+                    ->label(__('kit::admin.type'))
                     ->badge()
                     ->searchable(),
 
                 Tables\Columns\ToggleColumn::make('status')
-                    ->label(__('Active')),
+                    ->label(__('kit::admin.active')),
 
                 Tables\Columns\TextColumn::make('sorting')
-                    ->label(__('Sorting'))
+                    ->label(__('support::admin.sorting'))
                     ->badge()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('show_from')
-                    ->label(__('Show From'))
+                    ->label(__('kit::admin.show_from'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('show_until')
-                    ->label(__('Show Until'))
+                    ->label(__('kit::admin.show_until'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
@@ -104,10 +104,10 @@ class BlocksRelationManager extends RelationManager
             ->defaultSort('sorting', 'asc')
             ->filters([
                 Tables\Filters\TernaryFilter::make('blockables.status')
-                    ->label(__('Active'))
+                    ->label(__('kit::admin.active'))
                     ->boolean()
-                    ->trueLabel(__('Active only'))
-                    ->falseLabel(__('Inactive only'))
+                    ->trueLabel(__('kit::admin.active_only'))
+                    ->falseLabel(__('kit::admin.inactive_only'))
                     ->native(false),
             ])
             ->headerActions([
@@ -195,19 +195,19 @@ class BlocksRelationManager extends RelationManager
                             ->getOptionLabelUsing(fn ($value): ?string => Block::find($value)?->title),
 
                         Forms\Components\Toggle::make('status')
-                            ->label(__('Active'))
+                            ->label(__('kit::admin.active'))
                             ->default(true),
 
                         Forms\Components\DateTimePicker::make('show_from')
-                            ->label(__('Show From'))
+                            ->label(__('kit::admin.show_from'))
                             ->nullable(),
 
                         Forms\Components\DateTimePicker::make('show_until')
-                            ->label(__('Show Until'))
+                            ->label(__('kit::admin.show_until'))
                             ->nullable(),
 
                         Forms\Components\TextInput::make('sorting')
-                            ->label(__('Sorting'))
+                            ->label(__('support::admin.sorting'))
                             ->numeric()
                             ->default(0),
                     ]),
@@ -239,30 +239,24 @@ class BlocksRelationManager extends RelationManager
                                 ])
                                 ->columnSpanFull()
                                 ->schema([
-                                    LeftGrid::make()->schema([
-                                        Tabs::make('Block Data')->schema(
-                                            app('lang')->adminLanguages()->map(function (Language $lang) use ($service, $block) {
-                                                return Tab::make($lang->name)->schema(
-                                                    $service->getBlockSchema($block->type, $lang->slug)
-                                                );
-                                            })->toArray()
-                                        ),
-                                    ]),
+                                    LeftGrid::make()->schema(
+                                        self::buildBlockLanguageSchema($service, $block)
+                                    ),
                                     RightGrid::make()->schema([
-                                        Section::make(__('Attachment Settings'))
+                                        Section::make(__('kit::admin.attachment_settings'))
                                             ->schema([
                                                 Forms\Components\Toggle::make('status')
-                                                    ->label(__('Active'))
+                                                    ->label(__('kit::admin.active'))
                                                     ->default(true)
                                                     ->required(),
                                                 Forms\Components\DateTimePicker::make('show_from')
-                                                    ->label(__('Show From'))
+                                                    ->label(__('kit::admin.show_from'))
                                                     ->nullable(),
                                                 Forms\Components\DateTimePicker::make('show_until')
-                                                    ->label(__('Show Until'))
+                                                    ->label(__('kit::admin.show_until'))
                                                     ->nullable(),
                                                 Forms\Components\TextInput::make('sorting')
-                                                    ->label(__('Sorting'))
+                                                    ->label(__('support::admin.sorting'))
                                                     ->numeric()
                                                     ->default(0)
                                                     ->required(),
@@ -273,7 +267,7 @@ class BlocksRelationManager extends RelationManager
                     })
                     ->extraModalFooterActions([
                         Action::make('copyAndSave')
-                            ->label(__('Copy and Save'))
+                            ->label(__('kit::admin.copy_and_save'))
                             ->cancelParentActions()
                             ->action(function (Model $record, Action $action, RelationManager $livewire, array $mountedActions) {
                                 $block = Block::find($record->id);
@@ -308,7 +302,7 @@ class BlocksRelationManager extends RelationManager
                             })
                             ->color('success'),
                         Action::make('cancel')
-                            ->label(__('Cancel'))
+                            ->label(__('kit::admin.cancel'))
                             ->action(fn (EditAction $action) => $action->cancel())
                             ->color('gray'),
                     ])
@@ -322,9 +316,33 @@ class BlocksRelationManager extends RelationManager
             ]);
     }
 
-    public static function getTitle(\Illuminate\Database\Eloquent\Model $ownerRecord, string $pageClass): string
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('Blocks');
+        return __('kit::admin.blocks');
+    }
+
+    protected static function buildBlockLanguageSchema(BlockService $service, Block $block): array
+    {
+        $languages = app('lang')->adminLanguages();
+
+        if ($languages->count() <= 1) {
+            $lang = $languages->first();
+
+            return [
+                Section::make()
+                    ->schema($service->getBlockSchema($block->type, $lang->slug)),
+            ];
+        }
+
+        return [
+            Tabs::make(__('kit::admin.block_data'))->schema(
+                $languages->map(function (Language $lang) use ($service, $block) {
+                    return Tab::make($lang->name)->schema(
+                        $service->getBlockSchema($block->type, $lang->slug)
+                    );
+                })->toArray()
+            ),
+        ];
     }
 }
 

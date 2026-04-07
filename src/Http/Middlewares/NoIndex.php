@@ -4,6 +4,7 @@ namespace SmartCms\Kit\Http\Middlewares;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 
 /**
@@ -16,7 +17,7 @@ class NoIndex
      *
      * @param  Request  $request  The request to handle.
      * @param  Closure  $next  The next middleware to handle.
-     * @return \Illuminate\Http\Response The response.
+     * @return Response The response.
      */
     public function handle(Request $request, Closure $next)
     {

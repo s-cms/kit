@@ -2,6 +2,12 @@
 
 namespace SmartCms\Kit\Support\Augmentation;
 
+use Filament\Forms\Components\Component;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Columns\Column;
+use Filament\Tables\Filters\Filter;
 use SmartCms\Kit\Support\Augmentation\Concerns\ModifiesBulkActions;
 use SmartCms\Kit\Support\Augmentation\Concerns\ModifiesFormSchema;
 use SmartCms\Kit\Support\Augmentation\Concerns\ModifiesHeaderActions;
@@ -12,6 +18,7 @@ use SmartCms\Kit\Support\Augmentation\Concerns\ModifiesRelationManagers;
 use SmartCms\Kit\Support\Augmentation\Concerns\ModifiesTableColumns;
 use SmartCms\Kit\Support\Augmentation\Concerns\ModifiesTableFilters;
 use SmartCms\Kit\Support\Augmentation\Concerns\ModifiesToolbarActions;
+use SmartCms\Kit\Support\Transformers\TransformContext;
 
 trait HasAugmentations
 {
@@ -90,7 +97,7 @@ trait HasAugmentations
     /**
      * Get all admin form schema components from augmentations.
      *
-     * @return array<\Filament\Forms\Components\Component>
+     * @return array<Component>
      */
     public static function getAugmentedSchema(): array
     {
@@ -108,7 +115,7 @@ trait HasAugmentations
     /**
      * Get all admin table columns from augmentations.
      *
-     * @return array<\Filament\Tables\Columns\Column>
+     * @return array<Column>
      */
     public static function getAugmentedColumns(): array
     {
@@ -126,7 +133,7 @@ trait HasAugmentations
     /**
      * Get all admin table filters from augmentations.
      *
-     * @return array<\Filament\Tables\Filters\Filter>
+     * @return array<Filter>
      */
     public static function getAugmentedFilters(): array
     {
@@ -144,7 +151,7 @@ trait HasAugmentations
     /**
      * Get all admin table record actions from augmentations (Filament 4).
      *
-     * @return array<\Filament\Tables\Actions\Action>
+     * @return array<Action>
      */
     public static function getAugmentedRecordActions(): array
     {
@@ -162,7 +169,7 @@ trait HasAugmentations
     /**
      * Get all admin table header actions from augmentations (Filament 4).
      *
-     * @return array<\Filament\Tables\Actions\Action>
+     * @return array<Action>
      */
     public static function getAugmentedHeaderActions(): array
     {
@@ -180,7 +187,7 @@ trait HasAugmentations
     /**
      * Get all admin table toolbar actions from augmentations (Filament 4).
      *
-     * @return array<\Filament\Tables\Actions\Action>
+     * @return array<Action>
      */
     public static function getAugmentedToolbarActions(): array
     {
@@ -198,7 +205,7 @@ trait HasAugmentations
     /**
      * Get all admin table bulk actions from augmentations.
      *
-     * @return array<\Filament\Tables\Actions\BulkAction>
+     * @return array<BulkAction>
      */
     public static function getAugmentedBulkActions(): array
     {
@@ -216,7 +223,7 @@ trait HasAugmentations
     /**
      * Get all relation managers from augmentations.
      *
-     * @return array<class-string<\Filament\Resources\RelationManagers\RelationManager>>
+     * @return array<class-string<RelationManager>>
      */
     public static function getAugmentedRelationManagers(): array
     {
@@ -235,7 +242,7 @@ trait HasAugmentations
      * Apply all augmentation transformations to the context.
      * Transform is ALWAYS available (in base AbstractAugmentation).
      *
-     * @param  \SmartCms\Kit\Support\Transformers\TransformContext  $context
+     * @param  TransformContext  $context
      */
     public static function applyAugmentedTransformations($context): void
     {

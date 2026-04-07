@@ -18,16 +18,18 @@ class BlocksTable
     {
         return $table
             ->columns([
-                TextColumn::make('title')->searchable(),
-                ToggleColumn::make('status'),
-                TextColumn::make('type')->badge()->searchable(),
+                TextColumn::make('title')->label(__('kit::admin.title'))->searchable(),
+                ToggleColumn::make('status')->label(__('kit::admin.status')),
+                TextColumn::make('type')->label(__('kit::admin.type'))->badge()->searchable(),
                 TextColumn::make('created_at')
+                    ->label(__('support::admin.created_at'))
                     ->dateTime()
                     ->since()
                     ->tooltip(function (mixed $state) {
                         return Carbon::parse($state)->format('d.m.Y H:i');
                     }),
                 TextColumn::make('updated_at')
+                    ->label(__('support::admin.updated_at'))
                     ->dateTime()
                     ->since()
                     ->tooltip(function (mixed $state) {

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use SmartCms\Menu\Models\Menu;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\SmartCms\Menu\Models\Menu>
+ * @extends Factory<Menu>
  */
 class MenuFactory extends Factory
 {

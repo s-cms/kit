@@ -39,6 +39,16 @@ class TagResource extends Resource
         return __('kit::admin.tags');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('kit::admin.tag');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('kit::admin.tags');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return TagForm::configure($schema);

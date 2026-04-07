@@ -33,7 +33,7 @@ class EmailsType implements VariableTypeInterface
         ];
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return Select::make($name)->options(collect(app('s')->get('company_info.emails', []))->pluck('value'))->multiple();
     }

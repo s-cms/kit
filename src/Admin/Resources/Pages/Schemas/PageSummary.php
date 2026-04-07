@@ -25,7 +25,7 @@ class PageSummary extends Page
         $imagePath = '';
 
         return [
-            Section::make('Status')->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
+            Section::make(__('support::admin.status'))->icon(function (Get $get): Heroicon {
                 $status = $get('status');
 
                 return match ($status) {
@@ -44,7 +44,7 @@ class PageSummary extends Page
                 MediaPicker::make('image')->label(__('kit::admin.image')),
                 MediaPicker::make('banner')->label(__('kit::admin.banner')),
             ])->columns(1),
-            Section::make(__('kit::admin.indexation'))->icon(function (Get $get): \Filament\Support\Icons\Heroicon {
+            Section::make(__('kit::admin.indexation'))->icon(function (Get $get): Heroicon {
                 $index = $get('is_index') ?? true;
 
                 return match ($index) {

@@ -2,9 +2,13 @@
 
 namespace SmartCms\Kit\Admin\Resources\Pages\Pages;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\IconPosition;
+use Filament\Support\Enums\Size;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use SmartCms\Kit\Actions\Admin\GetPageListUrl;
@@ -43,15 +47,15 @@ class EditSeo extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\ActionGroup::make([
+            ActionGroup::make([
                 SaveAction::make($this),
                 SaveAndClose::make($this, GetPageListUrl::run($this->getRecord())),
                 ViewRecord::make(),
                 DeleteAction::make(),
-            ])->link()->label('Actions')
-                ->icon(\Filament\Support\Icons\Heroicon::ChevronDown)
-                ->size(\Filament\Support\Enums\Size::Small)
-                ->iconPosition(\Filament\Support\Enums\IconPosition::After)
+            ])->link()->label(__('kit::admin.actions'))
+                ->icon(Heroicon::ChevronDown)
+                ->size(Size::Small)
+                ->iconPosition(IconPosition::After)
                 ->color('primary'),
         ];
     }

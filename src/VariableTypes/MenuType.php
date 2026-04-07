@@ -25,7 +25,7 @@ class MenuType implements VariableTypeInterface
         return [];
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return Select::make($name)->options(Menu::query()->pluck('name', 'id'))->required();
     }

@@ -31,14 +31,17 @@ class PopularItems implements VariableTypeInterface
         return SimplePage::query()->with('tags')->limit(self::DEFAULT_LIMIT)->get()->map(fn ($item): array => (new FrontPageResource($item))->toArray(request()));
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
+        $lang = $language ?? main_lang();
+
         return Group::make([
             Select::make($name . '.categories')
                 ->label(__('kit::admin.filter_by_categories'))
                 ->options(Page::query()
                     ->where('type', 'category')
-                    ->pluck('name', 'id'))
+                    ->get()
+                    ->mapWithKeys(fn (Page $page) => [$page->id => $page->getTranslation('name', $lang)]))
                 ->live()
                 ->multiple()
                 ->helperText(__('kit::admin.optional_category_filter')),

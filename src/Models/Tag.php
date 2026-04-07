@@ -3,7 +3,6 @@
 namespace SmartCms\Kit\Models;
 
 use Spatie\Tags\Tag as BaseTag;
-use Spatie\Translatable\HasTranslations;
 
 /**
  * Custom Tag model with translatable name and slug
@@ -18,13 +17,6 @@ use Spatie\Translatable\HasTranslations;
  */
 class Tag extends BaseTag
 {
-    use HasTranslations;
-
-    /**
-     * The attributes that are translatable.
-     */
-    public array $translatable = ['name', 'slug'];
-
     /**
      * The attributes that are mass assignable.
      */

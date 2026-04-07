@@ -3,6 +3,27 @@
 namespace SmartCms\Kit\Mcp\Servers;
 
 use Laravel\Mcp\Server;
+use Laravel\Mcp\Server\Prompt;
+use Laravel\Mcp\Server\Tool;
+use SmartCms\Kit\Mcp\Tools\CreatePage;
+use SmartCms\Kit\Mcp\Tools\DeletePage;
+use SmartCms\Kit\Mcp\Tools\GetBlock;
+use SmartCms\Kit\Mcp\Tools\GetBlockSchema;
+use SmartCms\Kit\Mcp\Tools\GetBlockSchemas;
+use SmartCms\Kit\Mcp\Tools\GetGlobalVariables;
+use SmartCms\Kit\Mcp\Tools\GetLanguages;
+use SmartCms\Kit\Mcp\Tools\GetMenu;
+use SmartCms\Kit\Mcp\Tools\GetMenus;
+use SmartCms\Kit\Mcp\Tools\GetPage;
+use SmartCms\Kit\Mcp\Tools\GetPageBlocks;
+use SmartCms\Kit\Mcp\Tools\GetPages;
+use SmartCms\Kit\Mcp\Tools\GetVariableTypes;
+use SmartCms\Kit\Mcp\Tools\GetVariableTypeSchema;
+use SmartCms\Kit\Mcp\Tools\PublishPage;
+use SmartCms\Kit\Mcp\Tools\ReviewBlockData;
+use SmartCms\Kit\Mcp\Tools\UnpublishPage;
+use SmartCms\Kit\Mcp\Tools\UpdatePage;
+use SmartCms\Kit\Mcp\Tools\UpdatePageSeo;
 
 class SmartCmsServer extends Server
 {
@@ -62,43 +83,43 @@ class SmartCmsServer extends Server
     /**
      * The tools registered with this MCP server.
      *
-     * @var array<int, class-string<\Laravel\Mcp\Server\Tool>>
+     * @var array<int, class-string<Tool>>
      */
     protected array $tools = [
         // Variable & Type System
-        \SmartCms\Kit\Mcp\Tools\GetVariableTypes::class,
-        \SmartCms\Kit\Mcp\Tools\GetVariableTypeSchema::class,
-        \SmartCms\Kit\Mcp\Tools\GetGlobalVariables::class,
+        GetVariableTypes::class,
+        GetVariableTypeSchema::class,
+        GetGlobalVariables::class,
 
         // // Content Structure
-        \SmartCms\Kit\Mcp\Tools\GetPages::class,
-        \SmartCms\Kit\Mcp\Tools\GetPage::class,
-        \SmartCms\Kit\Mcp\Tools\GetPageBlocks::class,
-        \SmartCms\Kit\Mcp\Tools\GetBlockSchema::class,
-        \SmartCms\Kit\Mcp\Tools\GetBlock::class,
-        \SmartCms\Kit\Mcp\Tools\ReviewBlockData::class,
+        GetPages::class,
+        GetPage::class,
+        GetPageBlocks::class,
+        GetBlockSchema::class,
+        GetBlock::class,
+        ReviewBlockData::class,
 
         // // Site Configuration
-        \SmartCms\Kit\Mcp\Tools\GetLanguages::class,
-        \SmartCms\Kit\Mcp\Tools\GetMenus::class,
-        \SmartCms\Kit\Mcp\Tools\GetMenu::class,
-        \SmartCms\Kit\Mcp\Tools\GetBlockSchemas::class,
+        GetLanguages::class,
+        GetMenus::class,
+        GetMenu::class,
+        GetBlockSchemas::class,
 
         // // Page Management (Write Operations)
-        \SmartCms\Kit\Mcp\Tools\CreatePage::class,
-        \SmartCms\Kit\Mcp\Tools\UpdatePage::class,
-        \SmartCms\Kit\Mcp\Tools\DeletePage::class,
-        \SmartCms\Kit\Mcp\Tools\PublishPage::class,
-        \SmartCms\Kit\Mcp\Tools\UnpublishPage::class,
+        CreatePage::class,
+        UpdatePage::class,
+        DeletePage::class,
+        PublishPage::class,
+        UnpublishPage::class,
 
         // // SEO
-        \SmartCms\Kit\Mcp\Tools\UpdatePageSeo::class,
+        UpdatePageSeo::class,
     ];
 
     /**
      * The resources registered with this MCP server.
      *
-     * @var array<int, class-string<\Laravel\Mcp\Server\Resource>>
+     * @var array<int, class-string<Server\Resource>>
      */
     protected array $resources = [
         //
@@ -107,7 +128,7 @@ class SmartCmsServer extends Server
     /**
      * The prompts registered with this MCP server.
      *
-     * @var array<int, class-string<\Laravel\Mcp\Server\Prompt>>
+     * @var array<int, class-string<Prompt>>
      */
     protected array $prompts = [
         //

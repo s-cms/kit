@@ -28,7 +28,7 @@ class TagForm
                                 $set('slug.' . main_lang(), $slug);
                             }),
                         TextInput::make('slug.' . main_lang())
-                            ->label(__('kit::admin.slug'))
+                            ->label(__('support::admin.slug'))
                             ->required()
                             ->helperText(__('kit::admin.tag_slug_helper')),
                         TextInput::make('type')

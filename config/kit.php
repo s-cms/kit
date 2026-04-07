@@ -1,5 +1,8 @@
 <?php
 
+use SmartCms\Kit\Models\Admin;
+use SmartCms\Kit\Models\Tag;
+
 // config for SmartCms/Kit
 return [
     'admins_table_name' => 'admins',
@@ -11,7 +14,7 @@ return [
         'new_contact_form' => 'kit::admin.new_contact_form',
     ],
     'register_routes' => true,
-    'auth_model' => \SmartCms\Kit\Models\Admin::class,
+    'auth_model' => Admin::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -84,6 +87,20 @@ return [
     |
     */
     'max_page_depth' => 5,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Additional Translatable Models
+    |--------------------------------------------------------------------------
+    |
+    | Additional models with translatable JSON fields that should be processed
+    | during language key operations (rename, cleanup).
+    | Page and Block are always included by default.
+    |
+    */
+    'translatable_models' => [
+        Tag::class,
+    ],
 
     'updates' => [
         'enabled' => env('KIT_UPDATES_ENABLED', true),

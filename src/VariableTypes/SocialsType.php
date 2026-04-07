@@ -32,7 +32,7 @@ class SocialsType implements VariableTypeInterface
                 'image' => 'https://www.facebook.com/favicon.ico',
             ],
         ])->map(
-            fn ($item): \Illuminate\Support\Fluent => new Fluent([
+            fn ($item): Fluent => new Fluent([
                 'name' => $item['name'],
                 'url' => [
                     'title' => $item['name'],
@@ -46,7 +46,7 @@ class SocialsType implements VariableTypeInterface
         );
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return Select::make($name)
             ->options(collect(app('s')->get('branding.socials', []))->pluck('name'))

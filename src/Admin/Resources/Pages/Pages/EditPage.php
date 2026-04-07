@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Text;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 use SmartCms\Kit\Actions\Admin\GetPageListUrl;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
@@ -139,12 +140,12 @@ class EditPage extends EditRecord
                         $this->redirect(PageResource::getUrl('edit', ['record' => $clone]));
                     }),
                 Action::make('generate_seo')
-                    ->label('Generate SEO Fields')
+                    ->label(__('kit::admin.generate_seo_fields'))
                     ->icon(Heroicon::Sparkles)
                     ->color('success')
                     ->requiresConfirmation()
-                    ->modalHeading('Generate SEO Fields with AI')
-                    ->modalDescription('This will use OpenRouter AI to generate meta description, keywords, and summary based on the page title and content.')
+                    ->modalHeading(__('kit::admin.generate_seo_fields_heading'))
+                    ->modalDescription(__('kit::admin.generate_seo_fields_description'))
                     ->visible(fn () => app(OpenRouterService::class)->isConfigured())
                     ->action(function (Page $record): void {
                         $ai = app(OpenRouterService::class);
@@ -175,24 +176,24 @@ class EditPage extends EditRecord
 
                             Notification::make()
                                 ->success()
-                                ->title('SEO fields generated successfully')
-                                ->body('Meta description, keywords, and summary have been generated.')
+                                ->title(__('kit::admin.seo_fields_generated'))
+                                ->body(__('kit::admin.seo_fields_generated_body'))
                                 ->send();
                         } catch (\Exception $e) {
                             Notification::make()
                                 ->danger()
-                                ->title('Failed to generate SEO fields')
+                                ->title(__('kit::admin.seo_fields_failed'))
                                 ->body($e->getMessage())
                                 ->send();
                         }
                     }),
                 Action::make('translate_content')
-                    ->label('Translate to All Languages')
+                    ->label(__('kit::admin.translate_to_all_languages'))
                     ->icon(Heroicon::Language)
                     ->color('info')
                     ->requiresConfirmation()
-                    ->modalHeading('Translate Content')
-                    ->modalDescription('This will translate all fields to other configured languages. Only empty fields will be filled.')
+                    ->modalHeading(__('kit::admin.translate_content_heading'))
+                    ->modalDescription(__('kit::admin.translate_content_description'))
                     ->visible(fn () => app(OpenRouterService::class)->isConfigured() && app('lang')->adminLanguages()->count() > 1)
                     ->action(function (Page $record): void {
                         $ai = app(OpenRouterService::class);
@@ -212,26 +213,26 @@ class EditPage extends EditRecord
 
                             Notification::make()
                                 ->success()
-                                ->title('Content translated successfully')
-                                ->body("Translated {$updatedCount} fields to other languages.")
+                                ->title(__('kit::admin.content_translated'))
+                                ->body(__('kit::admin.content_translated_body', ['count' => $updatedCount]))
                                 ->send();
                         } catch (\Exception $e) {
                             Notification::make()
                                 ->danger()
-                                ->title('Translation failed')
+                                ->title(__('kit::admin.translation_failed'))
                                 ->body($e->getMessage())
                                 ->send();
                         }
                     }),
                 Action::make('seo_health_check')
-                    ->label('SEO Health Check')
+                    ->label(__('kit::admin.seo_health_check'))
                     ->icon(Heroicon::ChartBar)
                     ->color('warning')
-                    ->modalHeading('SEO Health Check Report')
-                    ->modalDescription('Comprehensive SEO analysis with AI-powered improvement suggestions')
+                    ->modalHeading(__('kit::admin.seo_health_check_heading'))
+                    ->modalDescription(__('kit::admin.seo_health_check_description'))
                     ->modalWidth('3xl')
                     ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Close')
+                    ->modalCancelActionLabel(__('kit::admin.close'))
                     ->schema(function (Page $record): array {
                         // Run SEO analysis with AI suggestions
                         $aiEnabled = app(OpenRouterService::class)->isConfigured();
@@ -240,7 +241,7 @@ class EditPage extends EditRecord
                         $textContent = $analyzer->formatAsText($analysis);
 
                         return [
-                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                            Text::make(fn () => new HtmlString(
                                 '<div style="white-space: pre-wrap; font-family: monospace; font-size: 0.875rem; line-height: 1.5;">' .
                                     nl2br(htmlspecialchars($textContent)) .
                                     '</div>'
@@ -249,14 +250,14 @@ class EditPage extends EditRecord
                         ];
                     }),
                 Action::make('social_media_preview')
-                    ->label('Social Media Preview')
+                    ->label(__('kit::admin.social_media_preview'))
                     ->icon(Heroicon::Share)
                     ->color('info')
-                    ->modalHeading('Social Media Preview')
-                    ->modalDescription('Preview how your page will appear when shared on social media')
+                    ->modalHeading(__('kit::admin.social_media_preview_heading'))
+                    ->modalDescription(__('kit::admin.social_media_preview_description'))
                     ->modalWidth('3xl')
                     ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Close')
+                    ->modalCancelActionLabel(__('kit::admin.close'))
                     ->schema(function (Page $record): array {
                         // Generate social media previews
                         $preview = new SocialMediaPreview($record);
@@ -269,7 +270,7 @@ class EditPage extends EditRecord
                                     Tab::make('Google')
                                         ->icon(Heroicon::MagnifyingGlass)
                                         ->schema([
-                                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                                            Text::make(fn () => new HtmlString(
                                                 $formattedPreviews['google']
                                             ))
                                                 ->columnSpanFull(),
@@ -277,13 +278,13 @@ class EditPage extends EditRecord
                                     Tab::make('Facebook')
                                         ->icon(Heroicon::AtSymbol)
                                         ->schema([
-                                            Text::make(fn () => new \Illuminate\Support\HtmlString($formattedPreviews['facebook']))
+                                            Text::make(fn () => new HtmlString($formattedPreviews['facebook']))
                                                 ->columnSpanFull(),
                                         ]),
                                     Tab::make('Twitter')
                                         ->icon(Heroicon::ChatBubbleLeft)
                                         ->schema([
-                                            Text::make(fn () => new \Illuminate\Support\HtmlString(
+                                            Text::make(fn () => new HtmlString(
                                                 $formattedPreviews['twitter']
                                             ))
                                                 ->columnSpanFull(),
@@ -291,7 +292,7 @@ class EditPage extends EditRecord
                                     Tab::make('LinkedIn')
                                         ->icon(Heroicon::Briefcase)
                                         ->schema([
-                                            Text::make(fn () => new \Illuminate\Support\HtmlString($formattedPreviews['linkedin']))
+                                            Text::make(fn () => new HtmlString($formattedPreviews['linkedin']))
                                                 ->columnSpanFull(),
                                         ]),
                                 ])
@@ -329,7 +330,7 @@ class EditPage extends EditRecord
                         }),
                     ])->columns(2),
                 ]),
-            ])->link()->label('Actions')
+            ])->link()->label(__('kit::admin.actions'))
                 ->icon(Heroicon::ChevronDown)
                 ->size(Size::Small)
                 ->iconPosition(IconPosition::After)

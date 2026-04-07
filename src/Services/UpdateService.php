@@ -3,6 +3,8 @@
 namespace SmartCms\Kit\Services;
 
 use Composer\InstalledVersions;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -166,14 +168,14 @@ class UpdateService implements UpdateServiceInterface
             }
 
             return $response;
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        } catch (ConnectionException $e) {
             Log::warning('GitHub API connection failed', [
                 'url' => $url,
                 'error' => $e->getMessage(),
             ]);
 
             throw new \Exception('Unable to connect to GitHub API. Please check your internet connection.', $e->getCode(), $e);
-        } catch (\Illuminate\Http\Client\RequestException $e) {
+        } catch (RequestException $e) {
             Log::warning('GitHub API request failed', [
                 'url' => $url,
                 'error' => $e->getMessage(),

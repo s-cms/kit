@@ -39,7 +39,7 @@ class LinkType implements VariableTypeInterface
         ];
     }
 
-    public function getSchema(string $name): Field | Component
+    public function getSchema(string $name, ?string $language = null): Field | Component
     {
         return Group::make([
             // FusedGroup::make([
@@ -57,12 +57,12 @@ class LinkType implements VariableTypeInterface
                     }
                 })
                 ->required(),
-            Flex::make(function (Get $get) use ($name): array {
+            Flex::make(function (Get $get) use ($name, $language): array {
                 $type = $get($name . '.type');
                 if (! $type) {
                     return [];
                 }
-                $component = app(MenuRegistry::class)->getSchemaByType($type);
+                $component = app(MenuRegistry::class)->getSchemaByType($type, $language);
 
                 return [$component->statePath($name . '.' . $component->getName())];
             }),

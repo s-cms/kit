@@ -21,18 +21,22 @@ class PageMenuType implements MenuTypeInterface
         return __('kit::admin.page');
     }
 
-    public function getSchema(): Field
+    public function getSchema(?string $language = null): Field
     {
+        $lang = $language ?? main_lang();
+
         return Select::make('url')
             ->options(
                 Page::query()
                     ->where('status', PageStatus::Published->value)
                     ->where('parent_id', null)
                     ->where('is_root', false)
-                    ->pluck('name', 'id'),
+                    ->get()
+                    ->mapWithKeys(fn (Page $page) => [$page->id => $page->getTranslation('name', $lang)])
+                    ->toArray(),
             )
             ->live()
-            ->afterStateUpdated(function (string $state, $livewire, Component $component): void {
+            ->afterStateUpdated(function (string $state, $livewire, Component $component) use ($lang): void {
                 $statePath = $component->getStatePath();
                 $statePath = explode('.', $statePath);
                 array_shift($statePath);
@@ -40,9 +44,8 @@ class PageMenuType implements MenuTypeInterface
                 $statePath = implode('.', $statePath);
                 if ($state !== '' && $state !== '0') {
                     $page = Page::find($state);
-                    // @todo - Fix for relation managers
                     if ($page && property_exists($livewire, 'data')) {
-                        $livewire->data = data_set($livewire->data, $statePath, $page->name);
+                        $livewire->data = data_set($livewire->data, $statePath, $page->getTranslation('name', $lang));
                     }
                 }
             });

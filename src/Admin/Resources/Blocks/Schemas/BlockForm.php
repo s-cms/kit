@@ -33,29 +33,51 @@ class BlockForm
                     ->columnSpanFull()
                     ->schema([
                         LeftGrid::make()->schema([
-                            Tabs::make('Block Data')->schema(app('lang')->adminLanguages()->map(function (Language $lang) use ($service) {
-                                return Tab::make($lang->name)->schema(function (Get $get) use ($service, $lang) {
-                                    return $service->getBlockSchema($get('type'), $lang->slug);
-                                });
-                            })->toArray())
-                                ->visible(fn (callable $get) => filled($get('type'))),
-                            Text::make('Select section type in sidebar first')->columnSpanFull()->visible(fn (callable $get) => empty($get('type'))),
+                            ...self::buildBlockLanguageSchema($service),
+                            Text::make(__('kit::admin.select_section_type_first'))->columnSpanFull()->visible(fn (callable $get) => empty($get('type'))),
                         ]),
                         RightGrid::make()->schema([
                             Section::make()
                                 ->schema([
-                                    TextInput::make('title')->required(),
+                                    TextInput::make('title')->label(__('kit::admin.title'))->required(),
                                     Select::make('type')
-                                        ->label('Section Type')
+                                        ->label(__('kit::admin.section_type'))
                                         ->options($service->getBlocksTypes())
                                         ->required()
                                         ->reactive()
                                         ->disabledOn('edit')
                                         ->afterStateUpdated(fn ($state, callable $set) => $set('data', [])),
-                                    Toggle::make('status')->default(true),
+                                    Toggle::make('status')->label(__('kit::admin.status'))->default(true),
                                 ]),
                         ]),
                     ]),
             ])->columns(1);
+    }
+
+    protected static function buildBlockLanguageSchema(BlockService $service): array
+    {
+        $languages = app('lang')->adminLanguages();
+        $visibleCondition = fn (callable $get) => filled($get('type'));
+
+        if ($languages->count() <= 1) {
+            $lang = $languages->first();
+
+            return [
+                Section::make()
+                    ->schema(function (Get $get) use ($service, $lang) {
+                        return $service->getBlockSchema($get('type'), $lang->slug);
+                    })
+                    ->visible($visibleCondition),
+            ];
+        }
+
+        return [
+            Tabs::make(__('kit::admin.block_data'))->schema($languages->map(function (Language $lang) use ($service) {
+                return Tab::make($lang->name)->schema(function (Get $get) use ($service, $lang) {
+                    return $service->getBlockSchema($get('type'), $lang->slug);
+                });
+            })->toArray())
+                ->visible($visibleCondition),
+        ];
     }
 }
