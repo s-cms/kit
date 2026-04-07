@@ -3,6 +3,9 @@
 namespace SmartCms\Kit\Admin\Resources\Pages\Tables;
 
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
@@ -11,10 +14,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
+use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Actions\ViewRecord;
@@ -69,7 +74,7 @@ class PagesTable
                     ->getStateUsing(function ($record): string {
                         $imageId = $record->image;
                         if ($imageId) {
-                            $media = \SmartCms\Kit\Models\Media::find($imageId);
+                            $media = Media::find($imageId);
                             if ($media) {
                                 return $media->getUrl();
                             }
@@ -198,12 +203,12 @@ class PagesTable
                 ...Page::getAugmentedHeaderActions(),
             ])
             ->toolbarActions([
-                \Filament\Actions\BulkActionGroup::make([
-                    \Filament\Actions\BulkAction::make('change_status')
+                BulkActionGroup::make([
+                    BulkAction::make('change_status')
                         ->label(__('kit::admin.change_status'))
                         ->icon('heroicon-o-arrow-path')
                         ->schema([
-                            \Filament\Forms\Components\Select::make('status')
+                            Select::make('status')
                                 ->label(__('support::admin.status'))
                                 ->options([
                                     'published' => __('kit::admin.published'),
@@ -211,7 +216,7 @@ class PagesTable
                                 ])
                                 ->required(),
                         ])
-                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data): void {
+                        ->action(function (Collection $records, array $data): void {
                             $records->each(fn (Page $page) => $page->update(['status' => $data['status']]));
 
                             Notification::make()
@@ -220,8 +225,8 @@ class PagesTable
                                 ->send();
                         })
                         ->deselectRecordsAfterCompletion(),
-                    \Filament\Actions\DeleteBulkAction::make()
-                        ->before(function (\Filament\Actions\DeleteBulkAction $action, \Illuminate\Database\Eloquent\Collection $records): void {
+                    DeleteBulkAction::make()
+                        ->before(function (DeleteBulkAction $action, Collection $records): void {
                             foreach ($records as $record) {
                                 if ($record->children()->count() > 0) {
                                     Notification::make()

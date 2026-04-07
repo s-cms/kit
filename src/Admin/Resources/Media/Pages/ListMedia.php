@@ -4,12 +4,15 @@ namespace SmartCms\Kit\Admin\Resources\Media\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use SmartCms\Kit\Admin\Resources\Media\MediaResource;
 use SmartCms\Kit\Models\Media;
+use SmartCms\Kit\Services\ImageProcessingService;
+use Spatie\Image\Image;
 
 class ListMedia extends ListRecords
 {
@@ -253,7 +256,7 @@ class ListMedia extends ListRecords
             return;
         }
 
-        $service = app(\SmartCms\Kit\Services\ImageProcessingService::class);
+        $service = app(ImageProcessingService::class);
         $service->processImage($media);
 
         Notification::make()
@@ -264,7 +267,7 @@ class ListMedia extends ListRecords
 
     public function processAll(): void
     {
-        $service = app(\SmartCms\Kit\Services\ImageProcessingService::class);
+        $service = app(ImageProcessingService::class);
         $count = 0;
 
         Media::query()
@@ -337,7 +340,7 @@ class ListMedia extends ListRecords
             $dimensions = [];
             if (str_starts_with($mimeType, 'image/') && $mimeType !== 'image/svg+xml') {
                 try {
-                    $image = \Spatie\Image\Image::load($absolutePath);
+                    $image = Image::load($absolutePath);
                     $dimensions = [
                         'width' => $image->getWidth(),
                         'height' => $image->getHeight(),
@@ -485,7 +488,7 @@ class ListMedia extends ListRecords
 
                 if (str_starts_with($mimeType, 'image/')) {
                     try {
-                        $image = \Spatie\Image\Image::load($fullPath);
+                        $image = Image::load($fullPath);
                         $dimensions = [
                             'width' => $image->getWidth(),
                             'height' => $image->getHeight(),
@@ -511,7 +514,7 @@ class ListMedia extends ListRecords
 
                 $created++;
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Media upload failed', ['error' => $e->getMessage()]);
+                Log::error('Media upload failed', ['error' => $e->getMessage()]);
             }
         }
 

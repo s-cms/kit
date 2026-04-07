@@ -4,6 +4,7 @@ namespace SmartCms\Kit\Forms\Components;
 
 use Filament\Forms\Components\Field;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Services\MediaLibraryService;
 use Spatie\Image\Image;
@@ -90,7 +91,7 @@ class MediaPicker extends Field
 
         $baseName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $extension = $file->getClientOriginalExtension();
-        $slug = \Illuminate\Support\Str::slug($baseName);
+        $slug = Str::slug($baseName);
         $hash = substr(md5($fileContent), 0, 8);
         $fileName = $slug . '-' . $hash . '.' . $extension;
 
@@ -104,7 +105,7 @@ class MediaPicker extends Field
         $dimensions = [];
         if (str_starts_with($mimeType, 'image/')) {
             try {
-                $image = \Spatie\Image\Image::load($fullPath);
+                $image = Image::load($fullPath);
                 $dimensions = [
                     'width' => $image->getWidth(),
                     'height' => $image->getHeight(),
