@@ -18,7 +18,7 @@ class MediaLibraryService
     {
         $disk = config('kit.media.disk', 'public');
         $fileName = $this->generateFileName($file);
-        $path = $this->generatePath($collection);
+        $path = $this->generatePath($collection, $file->getMimeType());
 
         // Store the file
         Storage::disk($disk)->putFileAs($path, $file, $fileName);
@@ -89,7 +89,7 @@ class MediaLibraryService
 
         try {
             $disk = config('kit.media.disk', 'public');
-            $path = $this->generatePath($collection);
+            $path = $this->generatePath($collection, $contentType);
 
             // Store the file
             Storage::disk($disk)->put($path . '/' . $fileName, file_get_contents($tempPath));
@@ -211,11 +211,30 @@ class MediaLibraryService
     }
 
     /**
-     * Generate storage path for collection
+     * Generate storage path for collection, sub-folder by mime type group
      */
-    protected function generatePath(string $collection): string
+    protected function generatePath(string $collection, ?string $mimeType = null): string
     {
-        return $collection;
+        $typeFolder = $this->getTypeFolderForMime($mimeType);
+
+        return $collection . '/' . $typeFolder;
+    }
+
+    protected function getTypeFolderForMime(?string $mimeType): string
+    {
+        if (! $mimeType) {
+            return 'images';
+        }
+
+        if (str_starts_with($mimeType, 'image/')) {
+            return 'images';
+        }
+
+        if (str_starts_with($mimeType, 'video/')) {
+            return 'video';
+        }
+
+        return 'documents';
     }
 
     /**

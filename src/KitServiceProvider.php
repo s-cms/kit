@@ -42,7 +42,6 @@ use SmartCms\Kit\Contracts\UpdateServiceInterface;
 use SmartCms\Kit\Http\Middlewares\HtmlMinifier;
 use SmartCms\Kit\Http\Middlewares\Maintenance;
 use SmartCms\Kit\Http\Middlewares\UserIdentifierMiddleware;
-use SmartCms\Kit\MenuTypes\DivisionCategoryMenyType;
 use SmartCms\Kit\MenuTypes\DivisionMenuType;
 use SmartCms\Kit\MenuTypes\PageMenuType;
 use SmartCms\Kit\Models\Admin;
@@ -215,7 +214,6 @@ class KitServiceProvider extends PackageServiceProvider
 
         app(MenuRegistry::class)->register(PageMenuType::class);
         app(MenuRegistry::class)->register(DivisionMenuType::class);
-        app(MenuRegistry::class)->register(DivisionCategoryMenyType::class);
         ContactForm::observe(ContactFormObserver::class);
         Media::observe(MediaObserver::class);
 

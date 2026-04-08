@@ -532,4 +532,54 @@ class ListMedia extends ListRecords
     {
         $this->resetPage();
     }
+
+    public string $urlInput = '';
+
+    public function uploadFromUrl(): void
+    {
+        if (empty($this->urlInput)) {
+            return;
+        }
+
+        try {
+            $service = app(\SmartCms\Kit\Services\MediaLibraryService::class);
+            $result = $service->storeFromUrl(
+                $this->urlInput,
+                $this->getBasePath()
+            );
+
+            if (isset($result['media_id'])) {
+                $media = Media::find($result['media_id']);
+
+                // If we're in a sub-folder of the matching tab, move file there
+                if ($media && $this->currentPath) {
+                    $targetPath = $this->getFullPath();
+                    if ($media->path !== $targetPath) {
+                        $disk = Storage::disk(config('kit.media.disk', 'public'));
+                        $oldFullPath = $media->path . '/' . $media->file_name;
+                        $newFullPath = $targetPath . '/' . $media->file_name;
+
+                        if ($disk->exists($oldFullPath)) {
+                            $disk->move($oldFullPath, $newFullPath);
+                            $media->path = $targetPath;
+                            $media->save();
+                        }
+                    }
+                }
+            }
+
+            $this->urlInput = '';
+
+            Notification::make()
+                ->success()
+                ->title(__('kit::admin.images_uploaded', ['count' => 1]))
+                ->send();
+        } catch (\Exception $e) {
+            Notification::make()
+                ->danger()
+                ->title(__('kit::admin.error'))
+                ->body($e->getMessage())
+                ->send();
+        }
+    }
 }

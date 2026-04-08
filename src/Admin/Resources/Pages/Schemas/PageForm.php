@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use SmartCms\Kit\Admin\Components\Actions\AiAction;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
+use SmartCms\Kit\Admin\Resources\Pages\Tables\PagesTable;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Services\AI\OpenRouterService;
 use SmartCms\Support\Admin\Components\Layout\FormGrid;
@@ -188,30 +189,15 @@ class PageForm
      */
     protected static function getParentOptions(?Page $record): array
     {
-        $maxDepth = config('kit.max_page_depth', 5);
+        $excludeIds = [];
+        if ($record?->id) {
+            $excludeIds[] = $record->id;
+        }
+        if ($record && $record->exists) {
+            $excludeIds = array_merge($excludeIds, $record->descendants()->pluck('id')->toArray());
+        }
 
-        return Page::query()
-            ->where('id', '!=', $record?->id ?? 0) // Exclude self
-            ->where('type', 'category') // Only types that can have children
-            ->where('depth', '<', $maxDepth - 1) // Don't allow parents at max depth
-            ->orderBy('slug')
-            ->get()
-            ->mapWithKeys(function (Page $page) use ($record) {
-                // Exclude descendants if editing existing page
-                if ($record && $record->exists) {
-                    $descendantIds = $record->descendants()->pluck('id')->toArray();
-                    if (in_array($page->id, $descendantIds)) {
-                        return [];
-                    }
-                }
-
-                // Create indented name based on depth
-                $indent = str_repeat('— ', $page->depth);
-                $label = $indent . $page->name . ' (' . $page->type . ')';
-
-                return [$page->id => $label];
-            })
-            ->toArray();
+        return PagesTable::buildCategoryTreeOptions($excludeIds);
     }
 
     /**

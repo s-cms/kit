@@ -29,6 +29,7 @@ class PageMenuType implements MenuTypeInterface
             ->options(
                 Page::query()
                     ->where('status', PageStatus::Published->value)
+                    ->where('type', 'page')
                     ->where('parent_id', null)
                     ->where('is_root', false)
                     ->get()

@@ -156,13 +156,23 @@ class BlocksRelationManager extends RelationManager
                     ->label(__('kit::admin.apply_template'))
                     ->icon(Heroicon::OutlinedArrowPathRoundedSquare)
                     ->color('info')
-                    ->schema([
-                        Forms\Components\Select::make('template_id')
-                            ->label(__('kit::admin.select_template'))
-                            ->options(BlockTemplate::query()->pluck('name', 'id'))
-                            ->required()
-                            ->searchable(),
-                    ])
+                    ->schema(function (RelationManager $livewire): array {
+                        $pageType = $livewire->getOwnerRecord()->type ?? 'page';
+
+                        return [
+                            Forms\Components\Select::make('template_id')
+                                ->label(__('kit::admin.select_template'))
+                                ->options(
+                                    BlockTemplate::query()
+                                        ->where(function ($query) use ($pageType) {
+                                            $query->where('type', $pageType)->orWhereNull('type');
+                                        })
+                                        ->pluck('name', 'id')
+                                )
+                                ->required()
+                                ->searchable(),
+                        ];
+                    })
                     ->requiresConfirmation()
                     ->modalHeading(__('kit::admin.apply_template'))
                     ->modalDescription(__('kit::admin.apply_template_description'))

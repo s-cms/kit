@@ -43,20 +43,7 @@ class ListPages extends ListRecords
                         ->required(),
                     Select::make('parent_id')
                         ->label(__('kit::admin.parent_page'))
-                        ->options(function () {
-                            return Page::query()
-                                ->where('type', 'category')
-                                ->where('depth', '<', config('kit.max_page_depth', 5) - 1)
-                                ->orderBy('slug')
-                                ->get()
-                                ->mapWithKeys(function (Page $page) {
-                                    $indent = str_repeat('— ', $page->depth);
-                                    $label = $indent . $page->name . ' (' . $page->type . ')';
-
-                                    return [$page->id => $label];
-                                })
-                                ->toArray();
-                        })
+                        ->options(fn () => self::buildCategoryTreeOptions())
                         ->searchable()
                         ->placeholder(__('kit::admin.no_parent')),
                 ])
@@ -129,7 +116,23 @@ class ListPages extends ListRecords
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'page')->whereNull('parent_id')),
             'categories' => Tab::make()
                 ->label(__('kit::admin.categories'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'category')),
+                ->modifyQueryUsing(function (Builder $query) {
+                    $orderedIds = $this->getCategoryTreeOrderedIds();
+                    $query->where('type', 'category');
+                    if (! empty($orderedIds)) {
+                        $cases = [];
+                        $bindings = [];
+                        foreach ($orderedIds as $position => $id) {
+                            $cases[] = 'WHEN id = ? THEN ?';
+                            $bindings[] = $id;
+                            $bindings[] = $position;
+                        }
+                        $caseSql = '(CASE ' . implode(' ', $cases) . ' ELSE ' . count($orderedIds) . ' END)';
+                        $query->orderByRaw($caseSql, $bindings);
+                    }
+
+                    return $query;
+                }),
             'articles' => Tab::make()
                 ->label(__('kit::admin.articles'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'page')->whereNotNull('parent_id')),
@@ -139,5 +142,56 @@ class ListPages extends ListRecords
             'all' => Tab::make()
                 ->label(__('kit::admin.all')),
         ];
+    }
+
+    protected function getCategoryTreeOrderedIds(): array
+    {
+        $categories = Page::query()
+            ->where('type', 'category')
+            ->orderBy('sorting')
+            ->get(['id', 'parent_id', 'depth'])
+            ->groupBy(fn (Page $page) => $page->parent_id ?? 0);
+
+        $ordered = [];
+        $this->flattenCategoryTree($categories, 0, $ordered);
+
+        return $ordered;
+    }
+
+    protected function flattenCategoryTree($groups, $parentId, array &$ordered): void
+    {
+        $children = $groups->get($parentId, collect());
+        foreach ($children as $page) {
+            $ordered[] = $page->id;
+            $this->flattenCategoryTree($groups, $page->id, $ordered);
+        }
+    }
+
+    public static function buildCategoryTreeOptions(): array
+    {
+        $maxDepth = config('kit.max_page_depth', 5);
+        $lang = main_lang();
+
+        $categories = Page::query()
+            ->where('type', 'category')
+            ->where('depth', '<', $maxDepth - 1)
+            ->orderBy('sorting')
+            ->get()
+            ->groupBy(fn (Page $page) => $page->parent_id ?? 0);
+
+        $options = [];
+        self::appendCategoryTreeOption($categories, 0, 0, $lang, $options);
+
+        return $options;
+    }
+
+    protected static function appendCategoryTreeOption($groups, $parentId, int $depth, string $lang, array &$options): void
+    {
+        $children = $groups->get($parentId, collect());
+        foreach ($children as $page) {
+            $indent = str_repeat('— ', $depth);
+            $options[$page->id] = $indent . $page->getTranslation('name', $lang);
+            self::appendCategoryTreeOption($groups, $page->id, $depth + 1, $lang, $options);
+        }
     }
 }

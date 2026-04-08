@@ -31,6 +31,16 @@ class MediaPickerController extends Controller
                 $request->input('collection', config('kit.media.collection_name'))
             );
 
+            // Refresh from DB to get final URL after observer (WebP conversion, responsive images)
+            if (isset($image['media_id'])) {
+                $media = Media::find($image['media_id']);
+                if ($media) {
+                    $image['source'] = $media->getUrl();
+                    $image['width'] = $media->width;
+                    $image['height'] = $media->height;
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'image' => $image,
@@ -58,6 +68,15 @@ class MediaPickerController extends Controller
                 $request->input('url'),
                 $request->input('collection', config('kit.media.collection_name'))
             );
+
+            if (isset($image['media_id'])) {
+                $media = Media::find($image['media_id']);
+                if ($media) {
+                    $image['source'] = $media->getUrl();
+                    $image['width'] = $media->width;
+                    $image['height'] = $media->height;
+                }
+            }
 
             return response()->json([
                 'success' => true,
