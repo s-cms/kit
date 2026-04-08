@@ -54,6 +54,11 @@ class Block extends Model
         return config('kit.blocks_table_name');
     }
 
+    public function getFallbackLocale(): string
+    {
+        return main_lang();
+    }
+
     /**
      * Get block data with custom variable types transformed
      *
