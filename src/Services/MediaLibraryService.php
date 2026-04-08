@@ -215,7 +215,7 @@ class MediaLibraryService
      */
     protected function generatePath(string $collection): string
     {
-        return $collection . '/' . date('Y/m');
+        return $collection;
     }
 
     /**

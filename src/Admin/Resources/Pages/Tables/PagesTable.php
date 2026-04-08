@@ -3,6 +3,9 @@
 namespace SmartCms\Kit\Admin\Resources\Pages\Tables;
 
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
@@ -11,10 +14,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 use SmartCms\Kit\Admin\Forms\PageNameField;
 use SmartCms\Kit\Admin\Forms\PageSlugField;
 use SmartCms\Kit\Admin\Resources\Pages\PageResource;
+use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 use SmartCms\Support\Admin\Components\Actions\ViewRecord;
@@ -32,7 +37,13 @@ class PagesTable
             ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('type', ['page', 'category']))
             ->columns([
                 NameColumn::make()
-                    ->getStateUsing(fn (Page $record) => $record->getTranslation('name', main_lang()))
+                    ->getStateUsing(function (Page $record) {
+                        $indent = $record->type === 'category' && $record->depth > 0
+                            ? str_repeat('— ', $record->depth) . ' '
+                            : '';
+
+                        return $indent . $record->getTranslation('name', main_lang());
+                    })
                     ->description(fn (Page $record): string => Str::limit($record->slug, 30)),
                 TextColumn::make('type')
                     ->label(__('kit::admin.type'))
@@ -49,8 +60,7 @@ class PagesTable
                     }),
                 TextColumn::make('parent.name')
                     ->label(__('kit::admin.parent'))
-                    ->formatStateUsing(fn ($state, Page $record) => $record->parent ? $record->parent->getTranslation('name', main_lang()) : '-')
-                    ->toggleable(),
+                    ->formatStateUsing(fn ($state, Page $record) => $record->parent ? $record->parent->getTranslation('name', main_lang()) : '-'),
                 SpatieTagsColumn::make('tags')
                     ->label(__('kit::admin.tags'))
                     ->limitList(3),
@@ -59,11 +69,19 @@ class PagesTable
                     ->badge()
                     ->color('gray')
                     ->toggleable(),
-                ImageColumn::make('image.source')
+                ImageColumn::make('image')
                     ->square()
-                    ->getStateUsing(fn ($record): string | array => validateImage(ltrim($record?->image['source'] ?? '', '/')))
-                    ->defaultImageUrl(no_image()['source'] ?? '')
-                    ->default(no_image()['source'])
+                    ->getStateUsing(function ($record): string {
+                        $imageId = $record->image;
+                        if ($imageId) {
+                            $media = Media::find($imageId);
+                            if ($media) {
+                                return $media->getUrl();
+                            }
+                        }
+
+                        return no_image_placeholder();
+                    })
                     ->toggleable(),
                 TextColumn::make('status')
                     ->badge()
@@ -185,6 +203,48 @@ class PagesTable
                 ...Page::getAugmentedHeaderActions(),
             ])
             ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('change_status')
+                        ->label(__('kit::admin.change_status'))
+                        ->icon('heroicon-o-arrow-path')
+                        ->schema([
+                            Select::make('status')
+                                ->label(__('support::admin.status'))
+                                ->options([
+                                    'published' => __('kit::admin.published'),
+                                    'draft' => __('kit::admin.draft'),
+                                ])
+                                ->required(),
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $records->each(fn (Page $page) => $page->update(['status' => $data['status']]));
+
+                            Notification::make()
+                                ->success()
+                                ->title(__('kit::admin.status_changed', ['count' => $records->count()]))
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()
+                        ->before(function (DeleteBulkAction $action, Collection $records): void {
+                            foreach ($records as $record) {
+                                if ($record->children()->count() > 0) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title(__('kit::admin.cannot_delete_pages_with_children'))
+                                        ->send();
+                                    $action->halt();
+                                }
+                                if ($record->is_system) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title(__('kit::admin.cannot_delete_system_page'))
+                                        ->send();
+                                    $action->halt();
+                                }
+                            }
+                        }),
+                ]),
                 // Add augmented toolbar actions from augmentations
                 ...Page::getAugmentedToolbarActions(),
             ]);

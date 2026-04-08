@@ -24,20 +24,21 @@ class MediaResource extends JsonResource
              */
             $media = $this->resource;
         }
-        $defaultSrc = no_image()['source'] ?? '';
         if (! $media || ! $media instanceof Media) {
             return [
                 'alt' => '',
-                'src' => $defaultSrc,
+                'src' => '',
                 'srcset' => '',
                 'width' => 0,
                 'height' => 0,
             ];
         }
 
+        $alt = $media->alt[app()->getLocale()] ?? ($media->alt[main_lang()] ?? $media->name);
+
         return [
-            'alt' => $media->name,
-            'src' => $media->getUrl() ?? $defaultSrc,
+            'alt' => $alt,
+            'src' => $media->getUrl(),
             'srcset' => $media->getSrcset(),
             'width' => $media->width,
             'height' => $media->height,

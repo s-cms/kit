@@ -2,231 +2,534 @@
 
 namespace SmartCms\Kit\Admin\Resources\Media\Pages;
 
-use Filament\Actions\Action;
-use Filament\Actions\CreateAction;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Schemas\Components\Section;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Livewire\WithFileUploads;
 use SmartCms\Kit\Admin\Resources\Media\MediaResource;
 use SmartCms\Kit\Models\Media;
-use SmartCms\Kit\Services\MediaLibraryService;
+use SmartCms\Kit\Services\ImageProcessingService;
 use Spatie\Image\Image;
 
 class ListMedia extends ListRecords
 {
+    use WithFileUploads;
+
     protected static string $resource = MediaResource::class;
 
-    protected function getHeaderActions(): array
+    protected string $view = 'kit::admin.media.gallery';
+
+    public string $search = '';
+
+    public string $currentPath = '';
+
+    public string $mediaTab = 'images';
+
+    public array $selected = [];
+
+    public bool $moveMode = false;
+
+    public string $newFolderName = '';
+
+    public $uploadFiles = [];
+
+    protected static array $mediaTypes = [
+        'images' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp', 'image/tiff'],
+        'video' => ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-msvideo'],
+        'documents' => ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/plain'],
+    ];
+
+    public function mount(): void
     {
-        return [
-            CreateAction::make()
-                ->label(__('kit::admin.upload_image'))
-                ->icon('heroicon-o-plus')
-                ->schema([
-                    Section::make(__('kit::admin.upload'))
-                        ->schema([
-                            FileUpload::make('upload_file')
-                                ->label(__('kit::admin.image'))
-                                ->image()
-                                ->disk(config('kit.media.disk', 'public'))
-                                ->directory('temp')
-                                ->acceptedFileTypes(['image/*'])
-                                ->maxSize(10240)
-                                ->helperText(__('kit::admin.upload_or_url_required')),
+        $this->currentPath = request()->query('path', '');
+        $this->mediaTab = request()->query('tab', 'images');
+    }
 
-                            TextInput::make('upload_name')
-                                ->label(__('kit::admin.name'))
-                                ->placeholder(__('kit::admin.optional')),
-                        ]),
+    public static function getNavigationLabel(): string
+    {
+        return __('kit::admin.media_library');
+    }
 
-                    Section::make(__('kit::admin.import_from_url'))
-                        ->schema([
-                            TextInput::make('url_input')
-                                ->label(__('kit::admin.image_url'))
-                                ->url()
-                                ->placeholder('https://example.com/image.jpg')
-                                ->helperText(__('kit::admin.upload_or_url_required')),
+    public function getHeading(): string
+    {
+        return __('kit::admin.media_library');
+    }
 
-                            TextInput::make('url_name')
-                                ->label(__('kit::admin.name'))
-                                ->placeholder(__('kit::admin.optional')),
-                        ]),
-                ])
-                ->using(function (array $data): Media {
-                    $service = app(MediaLibraryService::class);
+    public function getBasePath(): string
+    {
+        return config('kit.media.collection_name', 'library');
+    }
 
-                    // Check which source was used
-                    if (! empty($data['upload_file'])) {
-                        // Handle file upload
-                        $disk = config('kit.media.disk', 'public');
-                        $tempPath = $data['upload_file'];
+    public function getTabBasePath(): string
+    {
+        return $this->getBasePath() . '/' . $this->mediaTab;
+    }
 
-                        // Get the temporary file
-                        $file = Storage::disk($disk)->get($tempPath);
-                        $mimeType = Storage::disk($disk)->mimeType($tempPath);
-                        $size = Storage::disk($disk)->size($tempPath);
+    public function getFullPath(): string
+    {
+        $base = $this->getTabBasePath();
 
-                        // Generate file name
-                        $baseName = $data['upload_name'] ?? pathinfo($tempPath, PATHINFO_FILENAME);
-                        $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
-                        $slug = Str::slug($baseName);
-                        $hash = substr(md5($file), 0, 8);
-                        $fileName = $slug . '-' . $hash . '.' . $extension;
+        return $this->currentPath ? $base . '/' . $this->currentPath : $base;
+    }
 
-                        // Generate path
-                        $path = config('kit.media.collection_name', 'library') . '/' . date('Y/m');
+    public static function getTypeFolder(string $mimeType): string
+    {
+        foreach (static::$mediaTypes as $folder => $types) {
+            if (in_array($mimeType, $types)) {
+                return $folder;
+            }
+        }
 
-                        // Move from temp to final location
-                        Storage::disk($disk)->put($path . '/' . $fileName, $file);
-                        Storage::disk($disk)->delete($tempPath);
+        return 'documents';
+    }
 
-                        // Get full path for image processing
-                        $fullPath = Storage::disk($disk)->path($path . '/' . $fileName);
+    public static function getAcceptAttribute(string $tab): string
+    {
+        return match ($tab) {
+            'images' => 'image/*',
+            'video' => 'video/*',
+            'documents' => '.pdf,.doc,.docx,.xls,.xlsx,.txt',
+            default => '*/*',
+        };
+    }
 
-                        // Extract dimensions
-                        $dimensions = [];
-                        if (str_starts_with($mimeType, 'image/')) {
-                            try {
-                                $image = Image::load($fullPath);
-                                $dimensions = [
-                                    'width' => $image->getWidth(),
-                                    'height' => $image->getHeight(),
-                                ];
-                            } catch (\Exception $e) {
-                                // Ignore dimension extraction errors
-                            }
-                        }
+    public function switchTab(string $tab): void
+    {
+        $this->mediaTab = $tab;
+        $this->currentPath = '';
+        $this->selected = [];
+        $this->moveMode = false;
+    }
 
-                        // Create media record
-                        return Media::create([
-                            'file_name' => $fileName,
-                            'name' => $baseName,
-                            'disk' => $disk,
-                            'path' => $path,
-                            'mime_type' => $mimeType,
-                            'size' => $size,
-                            'width' => $dimensions['width'] ?? null,
-                            'height' => $dimensions['height'] ?? null,
-                            'alt' => [],
-                            'conversions' => [],
-                            'responsive_images' => [],
-                            'custom_properties' => [],
-                        ]);
-                    } elseif (! empty($data['url_input'])) {
-                        // Handle URL import
-                        $result = $service->storeFromUrl(
-                            $data['url_input'],
-                            config('kit.media.collection_name', 'library'),
-                            []
-                        );
+    public function getFolders(): array
+    {
+        $disk = Storage::disk(config('kit.media.disk', 'public'));
+        $fullPath = $this->getFullPath();
 
-                        // Update name if provided
-                        if (! empty($data['url_name']) && isset($result['media_id'])) {
-                            $media = Media::find($result['media_id']);
-                            if ($media) {
-                                $media->name = $data['url_name'];
-                                $media->save();
+        if (! $disk->exists($fullPath)) {
+            $disk->makeDirectory($fullPath);
 
-                                return $media;
-                            }
-                        }
+            return [];
+        }
 
-                        return Media::find($result['media_id']);
+        return collect($disk->directories($fullPath))
+            ->map(fn (string $dir) => [
+                'name' => basename($dir),
+                'path' => str_replace($this->getTabBasePath() . '/', '', $dir),
+            ])
+            ->sortBy('name')
+            ->values()
+            ->toArray();
+    }
+
+    public function getMedia()
+    {
+        $query = Media::query()
+            ->where('path', $this->getFullPath())
+            ->latest();
+
+        if ($this->search) {
+            $query->where(function ($q) {
+                $q->where('name', 'like', "%{$this->search}%")
+                    ->orWhere('file_name', 'like', "%{$this->search}%");
+            });
+        }
+
+        return $query->paginate(24);
+    }
+
+    public function getBreadcrumbParts(): array
+    {
+        if (! $this->currentPath) {
+            return [];
+        }
+
+        $parts = explode('/', $this->currentPath);
+        $breadcrumbs = [];
+        $accumulated = '';
+
+        foreach ($parts as $part) {
+            $accumulated = $accumulated ? $accumulated . '/' . $part : $part;
+            $breadcrumbs[] = [
+                'name' => $part,
+                'path' => $accumulated,
+            ];
+        }
+
+        return $breadcrumbs;
+    }
+
+    public function navigateToFolder(string $path): void
+    {
+        $this->currentPath = $path;
+        if (! $this->moveMode) {
+            $this->selected = [];
+        }
+    }
+
+    public function navigateUp(): void
+    {
+        $parts = explode('/', $this->currentPath);
+        array_pop($parts);
+        $this->currentPath = implode('/', $parts);
+        if (! $this->moveMode) {
+            $this->selected = [];
+        }
+    }
+
+    public function createFolder(): void
+    {
+        if (empty($this->newFolderName)) {
+            return;
+        }
+
+        $disk = Storage::disk(config('kit.media.disk', 'public'));
+        $folderPath = $this->getFullPath() . '/' . Str::slug($this->newFolderName);
+
+        $disk->makeDirectory($folderPath);
+        $this->newFolderName = '';
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.folder_created'))
+            ->send();
+    }
+
+    public function isFolderEmpty(string $path): bool
+    {
+        $disk = Storage::disk(config('kit.media.disk', 'public'));
+        $fullPath = $this->getTabBasePath() . '/' . $path;
+
+        return count($disk->files($fullPath)) === 0 && count($disk->directories($fullPath)) === 0;
+    }
+
+    public function deleteFolder(string $path, bool $force = false): void
+    {
+        // Protect root type folders
+        if (in_array($path, ['images', 'video', 'documents']) || empty($path)) {
+            Notification::make()
+                ->danger()
+                ->title(__('kit::admin.cannot_delete_system_folder'))
+                ->send();
+
+            return;
+        }
+
+        $disk = Storage::disk(config('kit.media.disk', 'public'));
+        $fullPath = $this->getTabBasePath() . '/' . $path;
+
+        $files = $disk->files($fullPath);
+        $subdirs = $disk->directories($fullPath);
+
+        if ((count($files) > 0 || count($subdirs) > 0) && ! $force) {
+            Notification::make()
+                ->danger()
+                ->title(__('kit::admin.folder_not_empty'))
+                ->send();
+
+            return;
+        }
+
+        if ($force) {
+            Media::where('path', $fullPath)->each(fn ($m) => $m->deleteWithFiles());
+            foreach ($subdirs as $subdir) {
+                $subPath = str_replace($this->getTabBasePath() . '/', '', $subdir);
+                $this->deleteFolder($subPath, true);
+            }
+        }
+
+        $disk->deleteDirectory($fullPath);
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.folder_deleted'))
+            ->send();
+    }
+
+    public function processMedia(int $id): void
+    {
+        $media = Media::find($id);
+        if (! $media || ! $media->isImage() || $media->mime_type === 'image/svg+xml') {
+            return;
+        }
+
+        $service = app(ImageProcessingService::class);
+        $service->processImage($media);
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.responsive_images_regenerated'))
+            ->send();
+    }
+
+    public function processAll(): void
+    {
+        $service = app(ImageProcessingService::class);
+        $count = 0;
+
+        Media::query()
+            ->where('mime_type', 'like', 'image/%')
+            ->where('mime_type', '!=', 'image/svg+xml')
+            ->where(function ($q) {
+                $q->whereNull('responsive_images')
+                    ->orWhere('responsive_images', '[]')
+                    ->orWhere('responsive_images', '');
+            })
+            ->chunkById(50, function ($items) use ($service, &$count) {
+                foreach ($items as $media) {
+                    $service->processImage($media);
+                    $count++;
+                }
+            });
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.media_processed', ['count' => $count]))
+            ->send();
+    }
+
+    public function getUnprocessedCount(): int
+    {
+        return Media::query()
+            ->where('mime_type', 'like', 'image/%')
+            ->where('mime_type', '!=', 'image/svg+xml')
+            ->where(function ($q) {
+                $q->whereNull('responsive_images')
+                    ->orWhere('responsive_images', '[]')
+                    ->orWhere('responsive_images', '');
+            })
+            ->count();
+    }
+
+    public function scanDisk(): void
+    {
+        $disk = Storage::disk(config('kit.media.disk', 'public'));
+        $fullPath = $this->getFullPath();
+        $found = 0;
+
+        $files = $disk->files($fullPath);
+
+        foreach ($files as $filePath) {
+            $fileName = basename($filePath);
+
+            // Skip responsive image variants (e.g. image___w_340.webp)
+            if (preg_match('/___w_\d+\./', $fileName)) {
+                continue;
+            }
+
+            // Skip hidden files
+            if (str_starts_with($fileName, '.')) {
+                continue;
+            }
+
+            $exists = Media::where('path', $fullPath)
+                ->where('file_name', $fileName)
+                ->exists();
+
+            if ($exists) {
+                continue;
+            }
+
+            $absolutePath = $disk->path($filePath);
+            $mimeType = $disk->mimeType($filePath);
+            $size = $disk->size($filePath);
+
+            $dimensions = [];
+            if (str_starts_with($mimeType, 'image/') && $mimeType !== 'image/svg+xml') {
+                try {
+                    $image = Image::load($absolutePath);
+                    $dimensions = [
+                        'width' => $image->getWidth(),
+                        'height' => $image->getHeight(),
+                    ];
+                } catch (\Exception $e) {
+                }
+            }
+
+            Media::create([
+                'file_name' => $fileName,
+                'name' => pathinfo($fileName, PATHINFO_FILENAME),
+                'disk' => config('kit.media.disk', 'public'),
+                'path' => $fullPath,
+                'mime_type' => $mimeType,
+                'size' => $size,
+                'width' => $dimensions['width'] ?? null,
+                'height' => $dimensions['height'] ?? null,
+                'alt' => [],
+                'conversions' => [],
+                'responsive_images' => [],
+                'custom_properties' => [],
+            ]);
+
+            $found++;
+        }
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.scan_completed', ['count' => $found]))
+            ->send();
+    }
+
+    public function deleteSelected(): void
+    {
+        $media = Media::whereIn('id', $this->selected)->get();
+
+        foreach ($media as $item) {
+            $item->deleteWithFiles();
+        }
+
+        $count = $media->count();
+        $this->selected = [];
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.media_deleted', ['count' => $count]))
+            ->send();
+    }
+
+    public function deleteSingle(int $id): void
+    {
+        $media = Media::find($id);
+        if ($media) {
+            $media->deleteWithFiles();
+
+            Notification::make()
+                ->success()
+                ->title(__('kit::admin.media_deleted', ['count' => 1]))
+                ->send();
+        }
+    }
+
+    // Move mode
+
+    public function startMove(): void
+    {
+        if (empty($this->selected)) {
+            return;
+        }
+        $this->moveMode = true;
+    }
+
+    public function cancelMove(): void
+    {
+        $this->moveMode = false;
+    }
+
+    public function moveHere(): void
+    {
+        $targetPath = $this->getFullPath();
+        $disk = Storage::disk(config('kit.media.disk', 'public'));
+        $moved = 0;
+
+        $mediaItems = Media::whereIn('id', $this->selected)->get();
+
+        foreach ($mediaItems as $media) {
+            if ($media->path === $targetPath) {
+                continue;
+            }
+
+            $oldFullPath = $media->path . '/' . $media->file_name;
+            $newFullPath = $targetPath . '/' . $media->file_name;
+
+            if ($disk->exists($oldFullPath)) {
+                $disk->move($oldFullPath, $newFullPath);
+                $media->path = $targetPath;
+                $media->save();
+                $moved++;
+            }
+        }
+
+        $this->selected = [];
+        $this->moveMode = false;
+
+        Notification::make()
+            ->success()
+            ->title(__('kit::admin.media_moved', ['count' => $moved]))
+            ->send();
+    }
+
+    // Upload
+
+    public function updatedUploadFiles(): void
+    {
+        $disk = config('kit.media.disk', 'public');
+        $created = 0;
+
+        foreach ($this->uploadFiles as $file) {
+            /** @var TemporaryUploadedFile $file */
+            try {
+                $mimeType = $file->getMimeType();
+                $typeFolder = static::getTypeFolder($mimeType);
+
+                // If uploading from a specific tab folder, use current path
+                // Otherwise auto-detect by mime type
+                if ($this->mediaTab === $typeFolder) {
+                    $path = $this->getFullPath();
+                } else {
+                    $path = $this->getBasePath() . '/' . $typeFolder;
+                }
+
+                $baseName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $slug = Str::slug($baseName);
+                if (empty($slug)) {
+                    $slug = 'file-' . time();
+                }
+                $hash = substr(md5($file->get() . time() . $created), 0, 8);
+                $fileName = $slug . '-' . $hash . '.' . $extension;
+
+                $file->storeAs($path, $fileName, $disk);
+
+                $fullPath = Storage::disk($disk)->path($path . '/' . $fileName);
+                $dimensions = [];
+
+                if (str_starts_with($mimeType, 'image/')) {
+                    try {
+                        $image = Image::load($fullPath);
+                        $dimensions = [
+                            'width' => $image->getWidth(),
+                            'height' => $image->getHeight(),
+                        ];
+                    } catch (\Exception $e) {
                     }
+                }
 
-                    throw new \Exception(__('kit::admin.upload_or_url_required'));
-                }),
+                Media::create([
+                    'file_name' => $fileName,
+                    'name' => $baseName,
+                    'disk' => $disk,
+                    'path' => $path,
+                    'mime_type' => $mimeType,
+                    'size' => $file->getSize(),
+                    'width' => $dimensions['width'] ?? null,
+                    'height' => $dimensions['height'] ?? null,
+                    'alt' => [],
+                    'conversions' => [],
+                    'responsive_images' => [],
+                    'custom_properties' => [],
+                ]);
 
-            Action::make('upload_multiple')
-                ->label(__('kit::admin.upload_multiple'))
-                ->icon('heroicon-o-photo')
-                ->schema([
-                    FileUpload::make('files')
-                        ->label(__('kit::admin.images'))
-                        ->image()
-                        ->multiple()
-                        ->disk(config('kit.media.disk', 'public'))
-                        ->directory('temp')
-                        ->acceptedFileTypes(['image/*'])
-                        ->maxSize(10240)
-                        ->maxFiles(20)
-                        ->required(),
-                ])
-                ->action(function (array $data) {
-                    $disk = config('kit.media.disk', 'public');
-                    $path = config('kit.media.collection_name', 'library') . '/' . date('Y/m');
-                    $created = 0;
+                $created++;
+            } catch (\Exception $e) {
+                Log::error('Media upload failed', ['error' => $e->getMessage()]);
+            }
+        }
 
-                    foreach ($data['files'] as $tempPath) {
-                        try {
-                            // Get the temporary file
-                            $file = Storage::disk($disk)->get($tempPath);
-                            $mimeType = Storage::disk($disk)->mimeType($tempPath);
-                            $size = Storage::disk($disk)->size($tempPath);
+        $this->uploadFiles = [];
 
-                            // Generate file name
-                            $baseName = pathinfo($tempPath, PATHINFO_FILENAME);
-                            $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
-                            $slug = Str::slug($baseName);
-                            $hash = substr(md5($file . time()), 0, 8);
-                            $fileName = $slug . '-' . $hash . '.' . $extension;
+        if ($created > 0) {
+            Notification::make()
+                ->success()
+                ->title(__('kit::admin.images_uploaded', ['count' => $created]))
+                ->send();
+        }
+    }
 
-                            // Move from temp to final location
-                            Storage::disk($disk)->put($path . '/' . $fileName, $file);
-                            Storage::disk($disk)->delete($tempPath);
-
-                            // Get full path for image processing
-                            $fullPath = Storage::disk($disk)->path($path . '/' . $fileName);
-
-                            // Extract dimensions
-                            $dimensions = [];
-                            if (str_starts_with($mimeType, 'image/')) {
-                                try {
-                                    $image = Image::load($fullPath);
-                                    $dimensions = [
-                                        'width' => $image->getWidth(),
-                                        'height' => $image->getHeight(),
-                                    ];
-                                } catch (\Exception $e) {
-                                    // Ignore dimension extraction errors
-                                }
-                            }
-
-                            // Create media record
-                            Media::create([
-                                'file_name' => $fileName,
-                                'name' => $baseName,
-                                'disk' => $disk,
-                                'path' => $path,
-                                'mime_type' => $mimeType,
-                                'size' => $size,
-                                'width' => $dimensions['width'] ?? null,
-                                'height' => $dimensions['height'] ?? null,
-                                'alt' => [],
-                                'conversions' => [],
-                                'responsive_images' => [],
-                                'custom_properties' => [],
-                            ]);
-
-                            $created++;
-                        } catch (\Exception $e) {
-                            // Skip failed uploads
-                            \Log::error('Failed to upload media from multiple upload', [
-                                'error' => $e->getMessage(),
-                                'file' => $tempPath,
-                            ]);
-                        }
-                    }
-
-                    Notification::make()
-                        ->title(__('kit::admin.images_uploaded', ['count' => $created]))
-                        ->success()
-                        ->send();
-                }),
-        ];
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
     }
 }
