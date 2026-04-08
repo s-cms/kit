@@ -65,30 +65,55 @@ class Profile extends EditProfile
                                 ->label(__('kit::admin.get_telegram_id'))
                                 ->action(function ($set, $get): void {
                                     $token = $get('telegram_token');
-                                    $updates = TelegramUpdates::create()
-                                        ->latest()
-                                        ->limit(5)
-                                        ->options([
-                                            'timeout' => 0,
-                                        ])
-                                        ->get();
-                                    if ($updates['ok']) {
-                                        $messages = $updates['result'];
-                                        foreach ($messages as $message) {
-                                            if (! isset($message['message']['text'])) {
-                                                continue;
-                                            }
-                                            $text = $message['message']['text'];
-                                            if ($text == '/start ' . $token) {
-                                                $chatId = $message['message']['chat']['id'];
-                                                $set('telegram_id', $chatId);
+                                    $found = false;
 
-                                                break;
+                                    try {
+                                        $updates = TelegramUpdates::create()
+                                            ->options([
+                                                'timeout' => 0,
+                                                'limit' => 100,
+                                            ])
+                                            ->get();
+
+                                        if (! empty($updates['ok']) && ! empty($updates['result'])) {
+                                            foreach (array_reverse($updates['result']) as $message) {
+                                                $text = $message['message']['text'] ?? null;
+                                                if (! $text) {
+                                                    continue;
+                                                }
+                                                if ($text === '/start ' . $token || $text === '/start') {
+                                                    $chatId = $message['message']['chat']['id'] ?? null;
+                                                    if ($chatId) {
+                                                        $set('telegram_id', (string) $chatId);
+                                                        $found = true;
+                                                        \Filament\Notifications\Notification::make()
+                                                            ->title(__('kit::admin.telegram_id_received'))
+                                                            ->success()
+                                                            ->send();
+
+                                                        break;
+                                                    }
+                                                }
                                             }
                                         }
+                                    } catch (\Throwable $e) {
+                                        \Filament\Notifications\Notification::make()
+                                            ->title(__('kit::admin.telegram_id_error'))
+                                            ->body($e->getMessage())
+                                            ->danger()
+                                            ->send();
+
+                                        return;
+                                    }
+
+                                    if (! $found) {
+                                        \Filament\Notifications\Notification::make()
+                                            ->title(__('kit::admin.telegram_id_not_found'))
+                                            ->body(__('kit::admin.telegram_id_not_found_hint'))
+                                            ->warning()
+                                            ->send();
                                     }
                                 })
-                                ->openUrlInNewTab()
                                 ->icon('heroicon-o-arrow-path')
                                 ->color('success'),
                         ])

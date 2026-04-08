@@ -475,4 +475,12 @@ return [
     'media_processed' => ':count Bilder verarbeitet.',
     'scan_disk' => 'Datenträger scannen',
     'scan_completed' => ':count neue Dateien gefunden und registriert.',
+
+    // Telegram
+    'test_notification_sent' => 'Testbenachrichtigung gesendet.',
+    'you_dont_have_telegram_id' => 'Sie haben keine Telegram-ID. Verbinden Sie zuerst Telegram.',
+    'telegram_id_received' => 'Telegram-ID empfangen und im Formular gespeichert. Speichern Sie die Einstellungen, um sie anzuwenden.',
+    'telegram_id_not_found' => 'Telegram-ID nicht gefunden.',
+    'telegram_id_not_found_hint' => 'Öffnen Sie den Telegram-Link, senden Sie /start an den Bot und klicken Sie dann erneut.',
+    'telegram_id_error' => 'Telegram-Updates konnten nicht abgerufen werden.',
 ];

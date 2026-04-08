@@ -475,4 +475,12 @@ return [
     'media_processed' => ':count images processed.',
     'scan_disk' => 'Scan Disk',
     'scan_completed' => ':count new files found and registered.',
+
+    // Telegram
+    'test_notification_sent' => 'Test notification sent.',
+    'you_dont_have_telegram_id' => 'You do not have a Telegram ID. Connect your Telegram first.',
+    'telegram_id_received' => 'Telegram ID received and saved to the form. Save settings to apply.',
+    'telegram_id_not_found' => 'Telegram ID not found.',
+    'telegram_id_not_found_hint' => 'Open the Telegram link, send /start to the bot, then click again.',
+    'telegram_id_error' => 'Failed to fetch Telegram updates.',
 ];

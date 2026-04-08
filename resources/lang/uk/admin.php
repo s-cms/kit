@@ -466,4 +466,12 @@ return [
     'media_processed' => ':count зображень оброблено.',
     'scan_disk' => 'Сканувати диск',
     'scan_completed' => ':count нових файлів знайдено та зареєстровано.',
+
+    // Telegram
+    'test_notification_sent' => 'Тестове сповіщення надіслано.',
+    'you_dont_have_telegram_id' => 'У вас немає Telegram ID. Спочатку підключіть Telegram.',
+    'telegram_id_received' => 'Telegram ID отримано і збережено у формі. Збережіть налаштування щоб застосувати.',
+    'telegram_id_not_found' => 'Telegram ID не знайдено.',
+    'telegram_id_not_found_hint' => 'Відкрийте посилання Telegram, надішліть /start боту, потім натисніть знову.',
+    'telegram_id_error' => 'Не вдалося отримати оновлення Telegram.',
 ];

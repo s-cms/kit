@@ -466,4 +466,12 @@ return [
     'media_processed' => ':count obrazów przetworzonych.',
     'scan_disk' => 'Skanuj dysk',
     'scan_completed' => ':count nowych plików znalezionych i zarejestrowanych.',
+
+    // Telegram
+    'test_notification_sent' => 'Powiadomienie testowe wysłane.',
+    'you_dont_have_telegram_id' => 'Nie masz identyfikatora Telegram. Najpierw połącz Telegram.',
+    'telegram_id_received' => 'Identyfikator Telegram otrzymany i zapisany w formularzu. Zapisz ustawienia, aby zastosować.',
+    'telegram_id_not_found' => 'Nie znaleziono identyfikatora Telegram.',
+    'telegram_id_not_found_hint' => 'Otwórz link Telegram, wyślij /start do bota, a następnie kliknij ponownie.',
+    'telegram_id_error' => 'Nie udało się pobrać aktualizacji Telegram.',
 ];

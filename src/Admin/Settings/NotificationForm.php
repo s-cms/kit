@@ -90,9 +90,9 @@ class NotificationForm
                     ->label(__('kit::admin.bot_username'))
                     ->required(fn ($state): bool => strlen((string) $state) > 0),
             ])->collapsible()->headerActions([
-                Action::make('test_notification')
+                Action::make('test_telegram_notification')
                     ->label(__('kit::admin.test_notification'))
-                    ->icon('heroicon-o-envelope')
+                    ->icon('heroicon-o-paper-airplane')
                     ->action(function (): void {
                         /**
                          * @var Admin $user
