@@ -474,4 +474,17 @@ return [
     'telegram_id_not_found' => 'Telegram ID не знайдено.',
     'telegram_id_not_found_hint' => 'Відкрийте посилання Telegram, надішліть /start боту, потім натисніть знову.',
     'telegram_id_error' => 'Не вдалося отримати оновлення Telegram.',
+
+    // PagesList variable type
+    'pages_list_type' => 'Тип контенту',
+    'pages_list_mode' => 'Режим',
+    'pages_list_mode_auto' => 'Автоматично',
+    'pages_list_mode_manual' => 'Ручний вибір',
+    'pages_list_select_pages' => 'Виберіть сторінки',
+    'pages_list_sort' => 'Сортування',
+    'pages_list_sort_default' => 'За замовчуванням',
+    'pages_list_sort_latest' => 'Найновіші',
+    'pages_list_sort_popular' => 'Популярні',
+    'pages_list_sort_random' => 'Випадково',
+    'pages_list_limit' => 'Кількість',
 ];

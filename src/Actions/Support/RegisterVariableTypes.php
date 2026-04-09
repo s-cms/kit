@@ -16,6 +16,7 @@ use SmartCms\Kit\VariableTypes\LatestCategories;
 use SmartCms\Kit\VariableTypes\LatestItems;
 use SmartCms\Kit\VariableTypes\LinkType;
 use SmartCms\Kit\VariableTypes\MenuType;
+use SmartCms\Kit\VariableTypes\PagesList;
 use SmartCms\Kit\VariableTypes\PhonesType;
 use SmartCms\Kit\VariableTypes\PhoneType;
 use SmartCms\Kit\VariableTypes\PopularCategories;
@@ -42,6 +43,8 @@ class RegisterVariableTypes
         $this->registry->register(SocialsType::class);
         // $this->registry->register(HeadingType::class);
         $this->registry->register(MenuType::class);
+        $this->registry->register(PagesList::class);
+        // @deprecated since 1.x — will be removed in 2.0. Use PagesList instead.
         $this->registry->register(PopularCategories::class);
         $this->registry->register(RandomCategories::class);
         $this->registry->register(PopularItems::class);

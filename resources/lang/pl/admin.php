@@ -474,4 +474,17 @@ return [
     'telegram_id_not_found' => 'Nie znaleziono identyfikatora Telegram.',
     'telegram_id_not_found_hint' => 'Otwórz link Telegram, wyślij /start do bota, a następnie kliknij ponownie.',
     'telegram_id_error' => 'Nie udało się pobrać aktualizacji Telegram.',
+
+    // PagesList variable type
+    'pages_list_type' => 'Typ zawartości',
+    'pages_list_mode' => 'Tryb',
+    'pages_list_mode_auto' => 'Automatyczny',
+    'pages_list_mode_manual' => 'Ręczny wybór',
+    'pages_list_select_pages' => 'Wybierz strony',
+    'pages_list_sort' => 'Sortowanie',
+    'pages_list_sort_default' => 'Domyślnie',
+    'pages_list_sort_latest' => 'Najnowsze',
+    'pages_list_sort_popular' => 'Popularne',
+    'pages_list_sort_random' => 'Losowe',
+    'pages_list_limit' => 'Limit',
 ];

@@ -483,4 +483,17 @@ return [
     'telegram_id_not_found' => 'Telegram-ID nicht gefunden.',
     'telegram_id_not_found_hint' => 'Öffnen Sie den Telegram-Link, senden Sie /start an den Bot und klicken Sie dann erneut.',
     'telegram_id_error' => 'Telegram-Updates konnten nicht abgerufen werden.',
+
+    // PagesList variable type
+    'pages_list_type' => 'Inhaltstyp',
+    'pages_list_mode' => 'Modus',
+    'pages_list_mode_auto' => 'Automatisch',
+    'pages_list_mode_manual' => 'Manuelle Auswahl',
+    'pages_list_select_pages' => 'Seiten auswählen',
+    'pages_list_sort' => 'Sortierung',
+    'pages_list_sort_default' => 'Standard',
+    'pages_list_sort_latest' => 'Neueste',
+    'pages_list_sort_popular' => 'Beliebt',
+    'pages_list_sort_random' => 'Zufällig',
+    'pages_list_limit' => 'Anzahl',
 ];
