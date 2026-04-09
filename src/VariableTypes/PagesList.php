@@ -208,6 +208,7 @@ class PagesList implements VariableTypeInterface
     {
         $ids = [$parentId];
         $stack = [$parentId];
+        $visited = [$parentId => true];
 
         while (! empty($stack)) {
             $current = array_pop($stack);
@@ -218,6 +219,10 @@ class PagesList implements VariableTypeInterface
                 ->all();
 
             foreach ($children as $childId) {
+                if (isset($visited[$childId])) {
+                    continue;
+                }
+                $visited[$childId] = true;
                 $ids[] = $childId;
                 $stack[] = $childId;
             }
