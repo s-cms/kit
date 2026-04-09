@@ -53,6 +53,11 @@ class MediaLibraryService
      */
     public function storeFromUrl(string $url, string $collection = 'library', array $customProperties = []): array
     {
+        // Reject non-HTTP(S) schemes to prevent file://, gopher://, etc.
+        if (! preg_match('#^https?://#i', $url)) {
+            throw new \Exception('Only HTTP(S) URLs are allowed');
+        }
+
         // Download the image
         $response = Http::timeout(30)->get($url);
 
