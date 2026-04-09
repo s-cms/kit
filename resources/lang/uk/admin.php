@@ -249,7 +249,6 @@ return [
     'no_children' => 'Немає дочірніх сторінок',
     'no_children_description' => 'Створіть дочірні сторінки, натиснувши кнопку вище',
     'view' => 'Переглянути',
-    'subcategory' => 'Підкатегорія',
     'published_at' => 'Опубліковано',
     'change_published_date' => 'Змінити дату публікації',
     'child_default_blocks' => 'Блоки за замовчуванням для дочірніх',

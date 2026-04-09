@@ -250,7 +250,6 @@ return [
     'no_children' => 'Keine Unterseiten',
     'no_children_description' => 'Erstellen Sie Unterseiten über die Schaltfläche oben',
     'view' => 'Ansehen',
-    'subcategory' => 'Unterkategorie',
     'published_at' => 'Veröffentlicht am',
     'change_published_date' => 'Veröffentlichungsdatum ändern',
     'child_default_blocks' => 'Standard-Blöcke für Unterseiten',

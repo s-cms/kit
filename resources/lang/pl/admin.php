@@ -249,7 +249,6 @@ return [
     'no_children' => 'Brak stron podrzędnych',
     'no_children_description' => 'Utwórz strony podrzędne, klikając przycisk powyżej',
     'view' => 'Podgląd',
-    'subcategory' => 'Podkategoria',
     'published_at' => 'Data publikacji',
     'change_published_date' => 'Zmień datę publikacji',
     'child_default_blocks' => 'Domyślne bloki dla podstron',

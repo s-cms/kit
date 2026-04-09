@@ -250,7 +250,6 @@ return [
     'no_children' => 'No Child Pages',
     'no_children_description' => 'Create child pages by clicking the button above',
     'view' => 'View',
-    'subcategory' => 'Subcategory',
     'published_at' => 'Published At',
     'change_published_date' => 'Change Published Date',
     'child_default_blocks' => 'Default Blocks for Children',
