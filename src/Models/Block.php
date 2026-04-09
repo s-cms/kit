@@ -157,18 +157,18 @@ class Block extends Model
      */
     protected function transformFieldValue(string $fieldName, mixed $value, mixed $variableType, array $fieldSchema): mixed
     {
-        // If value is null, return the default value from the variable type
+        // Pass null through as-is so the frontend can detect missing data and
+        // render a placeholder/error state instead of a silently defaulted block.
         if ($value === null) {
-            return $variableType->getDefaultValue();
+            return null;
         }
 
-        // Transform the value using the variable type's getValue method
         try {
             return $variableType->getValue($value);
         } catch (\Exception $e) {
             Log::warning("Failed to transform block field '{$fieldName}' in block {$this->id}: {$e->getMessage()}");
 
-            return $variableType->getDefaultValue();
+            return null;
         }
     }
 
