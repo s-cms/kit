@@ -7,6 +7,7 @@ use Filament\Auth\Pages\EditProfile;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -86,7 +87,7 @@ class Profile extends EditProfile
                                                     if ($chatId) {
                                                         $set('telegram_id', (string) $chatId);
                                                         $found = true;
-                                                        \Filament\Notifications\Notification::make()
+                                                        Notification::make()
                                                             ->title(__('kit::admin.telegram_id_received'))
                                                             ->success()
                                                             ->send();
@@ -97,7 +98,7 @@ class Profile extends EditProfile
                                             }
                                         }
                                     } catch (\Throwable $e) {
-                                        \Filament\Notifications\Notification::make()
+                                        Notification::make()
                                             ->title(__('kit::admin.telegram_id_error'))
                                             ->body($e->getMessage())
                                             ->danger()
@@ -107,7 +108,7 @@ class Profile extends EditProfile
                                     }
 
                                     if (! $found) {
-                                        \Filament\Notifications\Notification::make()
+                                        Notification::make()
                                             ->title(__('kit::admin.telegram_id_not_found'))
                                             ->body(__('kit::admin.telegram_id_not_found_hint'))
                                             ->warning()

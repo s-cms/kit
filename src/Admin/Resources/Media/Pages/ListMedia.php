@@ -12,6 +12,7 @@ use Livewire\WithFileUploads;
 use SmartCms\Kit\Admin\Resources\Media\MediaResource;
 use SmartCms\Kit\Models\Media;
 use SmartCms\Kit\Services\ImageProcessingService;
+use SmartCms\Kit\Services\MediaLibraryService;
 use Spatie\Image\Image;
 
 class ListMedia extends ListRecords
@@ -542,7 +543,7 @@ class ListMedia extends ListRecords
         }
 
         try {
-            $service = app(\SmartCms\Kit\Services\MediaLibraryService::class);
+            $service = app(MediaLibraryService::class);
             $result = $service->storeFromUrl(
                 $this->urlInput,
                 $this->getBasePath()
