@@ -30,7 +30,6 @@ use SmartCms\Kit\Components\Footer;
 use SmartCms\Kit\Components\Gtm;
 use SmartCms\Kit\Components\Header;
 use SmartCms\Kit\Components\Heading;
-use SmartCms\Kit\Components\Icon;
 use SmartCms\Kit\Components\Image;
 use SmartCms\Kit\Components\Layout;
 use SmartCms\Kit\Components\Link;
@@ -99,7 +98,7 @@ class KitServiceProvider extends PackageServiceProvider
             ->hasRoute('static')
             ->hasRoute('admin')
             ->hasViews('kit')
-            ->hasViewComponents('kit', Layout::class, Footer::class, Theme::class, Gtm::class, Header::class, PageComponent::class, Heading::class, Image::class, Link::class, Icon::class)
+            ->hasViewComponents('kit', Layout::class, Footer::class, Theme::class, Gtm::class, Header::class, PageComponent::class, Heading::class, Image::class, Link::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command
                     ->publish('images')
