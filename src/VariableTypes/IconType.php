@@ -6,7 +6,6 @@ use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Component;
-use Filament\Support\Icons\Heroicon;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
 class IconType implements VariableTypeInterface
@@ -23,7 +22,7 @@ class IconType implements VariableTypeInterface
 
     public function getDefaultValue(): mixed
     {
-        return svg('heroicon-o-' . Heroicon::BugAnt->value);
+        return null;
     }
 
     public function getSchema(string $name, ?string $language = null): Field | Component
@@ -40,11 +39,9 @@ class IconType implements VariableTypeInterface
     public function getValue(mixed $value): mixed
     {
         if (! $value || ! is_string($value)) {
-            return $this->getDefaultValue();
+            return null;
         }
 
-        return 'lucide-' . $value;
-
-        return svg('heroicon-m-' . $value);
+        return $value;
     }
 }

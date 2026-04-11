@@ -128,28 +128,12 @@ class PagesTable
                         Select::make('parent_id')
                             ->label(__('kit::admin.parent_page'))
                             ->options(function (Page $record) {
-                                $maxDepth = config('kit.max_page_depth', 5);
+                                $excludeIds = [$record->id];
+                                if ($record->exists) {
+                                    $excludeIds = array_merge($excludeIds, $record->descendants()->pluck('id')->toArray());
+                                }
 
-                                return Page::query()
-                                    ->where('id', '!=', $record->id)
-                                    ->where('type', 'category')
-                                    ->where('depth', '<', $maxDepth - 1)
-                                    ->orderBy('slug')
-                                    ->get()
-                                    ->mapWithKeys(function (Page $page) use ($record) {
-                                        // Exclude descendants
-                                        if ($record->exists) {
-                                            $descendantIds = $record->descendants()->pluck('id')->toArray();
-                                            if (in_array($page->id, $descendantIds)) {
-                                                return [];
-                                            }
-                                        }
-                                        $indent = str_repeat('— ', $page->depth);
-                                        $label = $indent . $page->name;
-
-                                        return [$page->id => $label];
-                                    })
-                                    ->toArray();
+                                return self::buildCategoryTreeOptions($excludeIds);
                             })
                             ->default(fn (Page $record) => $record->parent_id)
                             ->searchable()
@@ -248,5 +232,34 @@ class PagesTable
                 // Add augmented toolbar actions from augmentations
                 ...Page::getAugmentedToolbarActions(),
             ]);
+    }
+
+    public static function buildCategoryTreeOptions(array $excludeIds = []): array
+    {
+        $maxDepth = config('kit.max_page_depth', 5);
+        $lang = main_lang();
+
+        $categories = Page::query()
+            ->where('type', 'category')
+            ->where('depth', '<', $maxDepth - 1)
+            ->when(! empty($excludeIds), fn ($q) => $q->whereNotIn('id', $excludeIds))
+            ->orderBy('sorting')
+            ->get()
+            ->groupBy(fn (Page $page) => $page->parent_id ?? 0);
+
+        $options = [];
+        self::appendCategoryTreeOption($categories, 0, 0, $lang, $options);
+
+        return $options;
+    }
+
+    protected static function appendCategoryTreeOption($groups, $parentId, int $depth, string $lang, array &$options): void
+    {
+        $children = $groups->get($parentId, collect());
+        foreach ($children as $page) {
+            $indent = str_repeat('— ', $depth);
+            $options[$page->id] = $indent . $page->getTranslation('name', $lang);
+            self::appendCategoryTreeOption($groups, $page->id, $depth + 1, $lang, $options);
+        }
     }
 }

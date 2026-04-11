@@ -156,13 +156,23 @@ class BlocksRelationManager extends RelationManager
                     ->label(__('kit::admin.apply_template'))
                     ->icon(Heroicon::OutlinedArrowPathRoundedSquare)
                     ->color('info')
-                    ->schema([
-                        Forms\Components\Select::make('template_id')
-                            ->label(__('kit::admin.select_template'))
-                            ->options(BlockTemplate::query()->pluck('name', 'id'))
-                            ->required()
-                            ->searchable(),
-                    ])
+                    ->schema(function (RelationManager $livewire): array {
+                        $pageType = $livewire->getOwnerRecord()->type ?? 'page';
+
+                        return [
+                            Forms\Components\Select::make('template_id')
+                                ->label(__('kit::admin.select_template'))
+                                ->options(
+                                    BlockTemplate::query()
+                                        ->where(function ($query) use ($pageType) {
+                                            $query->where('type', $pageType)->orWhereNull('type');
+                                        })
+                                        ->pluck('name', 'id')
+                                )
+                                ->required()
+                                ->searchable(),
+                        ];
+                    })
                     ->requiresConfirmation()
                     ->modalHeading(__('kit::admin.apply_template'))
                     ->modalDescription(__('kit::admin.apply_template_description'))
@@ -281,7 +291,10 @@ class BlocksRelationManager extends RelationManager
 
                                 $newBlock = $block->replicate();
                                 $newBlock->title = $block->title . ' (' . $pageName . ')';
-                                $newBlock->setTranslations('data', $data['data'] ?? []);
+
+                                // Normalize Repeater UUID-keyed arrays to sequential arrays
+                                $normalizedData = self::normalizeRepeaterKeys($data['data'] ?? []);
+                                $newBlock->setTranslations('data', $normalizedData);
                                 $newBlock->save();
                                 // Get current pivot data to preserve sorting
                                 $pivotId = $record->pivot->id;
@@ -343,6 +356,36 @@ class BlocksRelationManager extends RelationManager
                 })->toArray()
             ),
         ];
+    }
+
+    /**
+     * Recursively normalize Filament Repeater UUID-keyed associative arrays
+     * into sequential arrays so frontend (Zod) schemas validate correctly.
+     */
+    public static function normalizeRepeaterKeys(mixed $value): mixed
+    {
+        if (! is_array($value)) {
+            return $value;
+        }
+
+        $isAssoc = ! array_is_list($value);
+        $allUuidKeys = $isAssoc && count($value) > 0 && array_reduce(
+            array_keys($value),
+            fn (bool $carry, $key) => $carry && is_string($key) && preg_match('/^[\w-]{20,}$/', $key) === 1,
+            true
+        );
+
+        if ($allUuidKeys) {
+            return array_values(array_map(
+                fn ($item) => self::normalizeRepeaterKeys($item),
+                $value
+            ));
+        }
+
+        return array_map(
+            fn ($item) => self::normalizeRepeaterKeys($item),
+            $value
+        );
     }
 }
 

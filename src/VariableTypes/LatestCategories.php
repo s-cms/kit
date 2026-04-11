@@ -12,6 +12,9 @@ use SmartCms\Kit\Models\Page;
 use SmartCms\Kit\Models\Pages\CategoryPage;
 use SmartCms\TemplateBuilder\Support\VariableTypeInterface;
 
+/**
+ * @deprecated since 1.x — will be removed in 2.0. Use \SmartCms\Kit\VariableTypes\PagesList instead.
+ */
 class LatestCategories implements VariableTypeInterface
 {
     public const int DEFAULT_LIMIT = 3;

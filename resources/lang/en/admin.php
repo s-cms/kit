@@ -250,7 +250,6 @@ return [
     'no_children' => 'No Child Pages',
     'no_children_description' => 'Create child pages by clicking the button above',
     'view' => 'View',
-    'subcategory' => 'Subcategory',
     'published_at' => 'Published At',
     'change_published_date' => 'Change Published Date',
     'child_default_blocks' => 'Default Blocks for Children',
@@ -475,4 +474,25 @@ return [
     'media_processed' => ':count images processed.',
     'scan_disk' => 'Scan Disk',
     'scan_completed' => ':count new files found and registered.',
+
+    // Telegram
+    'test_notification_sent' => 'Test notification sent.',
+    'you_dont_have_telegram_id' => 'You do not have a Telegram ID. Connect your Telegram first.',
+    'telegram_id_received' => 'Telegram ID received and saved to the form. Save settings to apply.',
+    'telegram_id_not_found' => 'Telegram ID not found.',
+    'telegram_id_not_found_hint' => 'Open the Telegram link, send /start to the bot, then click again.',
+    'telegram_id_error' => 'Failed to fetch Telegram updates.',
+
+    // PagesList variable type
+    'pages_list_type' => 'Content type',
+    'pages_list_mode' => 'Mode',
+    'pages_list_mode_auto' => 'Automatic',
+    'pages_list_mode_manual' => 'Manual selection',
+    'pages_list_select_pages' => 'Select pages',
+    'pages_list_sort' => 'Sort',
+    'pages_list_sort_default' => 'Default',
+    'pages_list_sort_latest' => 'Latest',
+    'pages_list_sort_popular' => 'Popular',
+    'pages_list_sort_random' => 'Random',
+    'pages_list_limit' => 'Limit',
 ];

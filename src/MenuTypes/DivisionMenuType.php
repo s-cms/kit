@@ -25,14 +25,7 @@ class DivisionMenuType extends PageMenuType
         $lang = $language ?? main_lang();
 
         return Select::make('url')
-            ->options(
-                Page::query()
-                    ->where('status', PageStatus::Published->value)
-                    ->where('type', 'category')
-                    ->get()
-                    ->mapWithKeys(fn (Page $page) => [$page->id => $page->getTranslation('name', $lang)])
-                    ->toArray(),
-            )
+            ->options($this->buildCategoriesTree($lang))
             ->live()
             ->afterStateUpdated(function (string $state, Set $set) use ($lang): void {
                 if ($state !== '' && $state !== '0') {
@@ -42,5 +35,31 @@ class DivisionMenuType extends PageMenuType
                     }
                 }
             });
+    }
+
+    protected function buildCategoriesTree(string $lang): array
+    {
+        $categories = Page::query()
+            ->where('status', PageStatus::Published->value)
+            ->where('type', 'category')
+            ->orderBy('sorting')
+            ->get()
+            ->groupBy(fn (Page $page) => $page->parent_id ?? 0);
+
+        $options = [];
+        $this->appendCategoryBranch($categories, 0, 0, $lang, $options);
+
+        return $options;
+    }
+
+    protected function appendCategoryBranch($groups, $parentId, int $depth, string $lang, array &$options): void
+    {
+        $children = $groups->get($parentId, collect());
+
+        foreach ($children as $page) {
+            $indent = str_repeat('— ', $depth);
+            $options[$page->id] = $indent . $page->getTranslation('name', $lang);
+            $this->appendCategoryBranch($groups, $page->id, $depth + 1, $lang, $options);
+        }
     }
 }

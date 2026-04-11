@@ -91,6 +91,7 @@ class KitPlugin implements Plugin
             ])
             ->renderHook(PanelsRenderHook::PAGE_END, GetVersionHtml::run())
             ->renderHook(PanelsRenderHook::HEAD_START, fn (): string => '<meta name="robots" content="noindex, nofollow" />')
+            ->favicon(fn (): string => favicon())
             ->maxContentWidth(Width::Full)
             ->font('Roboto')
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_AFTER, GetInboxButton::run())

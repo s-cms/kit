@@ -72,13 +72,59 @@
                 </div>
 
                 {{-- Upload --}}
-                <label style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; color: white; background: var(--primary-600, #2563eb); border-radius: 8px; cursor: pointer;">
+                <label style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; color: white; background: #2563eb; border: 1px solid #2563eb; border-radius: 8px; cursor: pointer;">
                     <svg style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
                     </svg>
                     {{ __('kit::admin.upload') }}
                     <input type="file" accept="{{ \SmartCms\Kit\Admin\Resources\Media\Pages\ListMedia::getAcceptAttribute($currentTab) }}" multiple wire:model="uploadFiles" style="display: none;" />
                 </label>
+
+                {{-- Upload from URL (modal trigger) --}}
+                <div x-data="{ showUrlModal: false }" style="display: inline-block;">
+                    <button type="button" @click="showUrlModal = true"
+                        style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; color: #374151; background: white; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer;">
+                        <svg style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                        </svg>
+                        {{ __('kit::admin.import_from_url') }}
+                    </button>
+
+                    {{-- URL Modal --}}
+                    <div x-show="showUrlModal" @keydown.escape.window="showUrlModal = false"
+                        :style="showUrlModal ? 'display: block; position: fixed; inset: 0; z-index: 999; padding: 16px;' : 'display: none;'">
+                        <div @click="showUrlModal = false" style="position: absolute; inset: 0; background: rgba(0,0,0,0.5);"></div>
+                        <div style="position: relative; margin: 15vh auto 0; background: white; border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); width: 100%; max-width: 520px; overflow: hidden;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
+                                <h3 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0;">{{ __('kit::admin.import_from_url') }}</h3>
+                                <button type="button" @click="showUrlModal = false" style="background: none; border: none; cursor: pointer; color: #9ca3af; padding: 4px;">
+                                    <svg style="width: 20px; height: 20px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div style="padding: 24px;">
+                                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px;">{{ __('kit::admin.image_url') }}</label>
+                                <input type="url" wire:model="urlInput"
+                                    @keydown.enter.prevent="$wire.uploadFromUrl(); showUrlModal = false"
+                                    placeholder="https://example.com/image.jpg"
+                                    style="width: 100%; padding: 10px 14px; font-size: 14px; color: #111827; background: white; border: 1px solid #d1d5db; border-radius: 8px; outline: none; box-sizing: border-box;"
+                                    onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
+                                    onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'" />
+                            </div>
+                            <div style="display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px; border-top: 1px solid #e5e7eb;">
+                                <button type="button" @click="showUrlModal = false"
+                                    style="padding: 8px 16px; font-size: 14px; font-weight: 500; color: #374151; background: white; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer;">
+                                    {{ __('kit::admin.cancel') }}
+                                </button>
+                                <button type="button" wire:click="uploadFromUrl" @click="showUrlModal = false"
+                                    style="padding: 8px 16px; font-size: 14px; font-weight: 500; color: white; background: #2563eb; border: 1px solid #2563eb; border-radius: 8px; cursor: pointer;">
+                                    {{ __('kit::admin.fetch_image') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {{-- Process All --}}
                 @if($currentTab === 'images' && $this->getUnprocessedCount() > 0)

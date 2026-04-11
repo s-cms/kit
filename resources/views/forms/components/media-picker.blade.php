@@ -18,12 +18,45 @@
             media: [],
             loading: false,
             uploading: false,
+            urlInput: '',
+            showUrlInput: false,
             preview: @js($preview),
 
             init() {
                 this.$watch('state', (value) => {
                     if (!value) this.preview = null;
                 });
+            },
+
+            async fetchFromUrl() {
+                if (!this.urlInput) return;
+                this.uploading = true;
+                try {
+                    const response = await fetch('{{ route("admin.media-picker.fetch-url") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') ?? '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ url: this.urlInput })
+                    });
+                    const data = await response.json();
+                    if (data.success && data.image?.media_id) {
+                        this.state = data.image.media_id;
+                        this.preview = {
+                            id: data.image.media_id,
+                            name: this.urlInput.split('/').pop(),
+                            url: data.image.source,
+                        };
+                        this.urlInput = '';
+                        this.showUrlInput = false;
+                        this.showModal = false;
+                    }
+                } catch(e) {
+                    console.error('URL fetch failed', e);
+                }
+                this.uploading = false;
             },
 
             async loadMedia() {
@@ -207,30 +240,60 @@
                 </div>
 
                 {{-- Toolbar --}}
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #f3f4f6;">
-                    <div style="flex: 1; position: relative;">
-                        <svg style="width: 16px; height: 16px; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
-                        <input
-                            type="text"
-                            x-model.debounce.300ms="search"
-                            @input.debounce.300ms="loadMedia()"
-                            placeholder="{{ __('kit::admin.search') }}..."
-                            style="width: 100%; padding: 8px 12px 8px 36px; font-size: 14px; border: 1px solid #d1d5db; border-radius: 8px; background: white; color: #111827; outline: none;"
-                        />
+                <div style="padding: 12px 24px; border-bottom: 1px solid #f3f4f6; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="flex: 1; position: relative;">
+                            <svg style="width: 16px; height: 16px; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            </svg>
+                            <input
+                                type="text"
+                                x-model.debounce.300ms="search"
+                                @input.debounce.300ms="loadMedia()"
+                                placeholder="{{ __('kit::admin.search') }}..."
+                                style="width: 100%; padding: 8px 12px 8px 36px; font-size: 14px; border: 1px solid #d1d5db; border-radius: 8px; background: white; color: #111827; outline: none;"
+                            />
+                        </div>
+                        <label
+                            :style="'display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 14px; font-weight: 500; color: white; background: #2563eb; border: 1px solid #2563eb; border-radius: 8px; cursor: pointer; white-space: nowrap;' + (uploading ? ' opacity: 0.5; pointer-events: none;' : '')"
+                        >
+                            <svg style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+                            </svg>
+                            <span x-show="!uploading">{{ __('kit::admin.upload') }}</span>
+                            <span x-show="uploading" style="display: none;">{{ __('kit::admin.uploading') }}...</span>
+                            <input type="file" accept="image/*" style="display: none;" @change="uploadFile($event)" :disabled="uploading" />
+                        </label>
+                        <button
+                            type="button"
+                            @click="showUrlInput = !showUrlInput"
+                            style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 14px; font-weight: 500; color: #374151; background: white; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer; white-space: nowrap;"
+                        >
+                            <svg style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                            </svg>
+                            {{ __('kit::admin.import_from_url') }}
+                        </button>
                     </div>
-                    <label
-                        style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; color: white; background: var(--primary-600, #2563eb); border-radius: 8px; cursor: pointer; transition: background 0.2s;"
-                        :style="uploading ? 'opacity: 0.5; pointer-events: none;' : ''"
-                    >
-                        <svg style="width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                        </svg>
-                        <span x-show="!uploading">{{ __('kit::admin.upload') }}</span>
-                        <span x-show="uploading" style="display: none;">{{ __('kit::admin.uploading') }}...</span>
-                        <input type="file" accept="image/*" style="display: none;" @change="uploadFile($event)" :disabled="uploading" />
-                    </label>
+                    <div x-show="showUrlInput" :style="showUrlInput ? 'display: flex; align-items: center; gap: 8px; width: 100%;' : 'display: none;'">
+                        <input
+                            type="url"
+                            x-model="urlInput"
+                            @keydown.enter.prevent="fetchFromUrl()"
+                            placeholder="https://example.com/image.jpg"
+                            style="flex: 1; padding: 10px 14px; font-size: 14px; color: #111827; background: white; border: 1px solid #d1d5db; border-radius: 8px; outline: none;"
+                            onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
+                            onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none'"
+                        />
+                        <button
+                            type="button"
+                            @click="fetchFromUrl()"
+                            :style="'padding: 10px 18px; font-size: 14px; font-weight: 500; color: white; background: #2563eb; border: 1px solid #2563eb; border-radius: 8px; cursor: pointer; white-space: nowrap;' + (uploading ? ' opacity: 0.5; pointer-events: none;' : '')"
+                        >
+                            <span x-show="!uploading">{{ __('kit::admin.fetch_image') }}</span>
+                            <span x-show="uploading" style="display: none;">{{ __('kit::admin.uploading') }}...</span>
+                        </button>
+                    </div>
                 </div>
 
                 {{-- Grid --}}

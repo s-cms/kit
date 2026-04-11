@@ -249,7 +249,6 @@ return [
     'no_children' => 'Brak stron podrzędnych',
     'no_children_description' => 'Utwórz strony podrzędne, klikając przycisk powyżej',
     'view' => 'Podgląd',
-    'subcategory' => 'Podkategoria',
     'published_at' => 'Data publikacji',
     'change_published_date' => 'Zmień datę publikacji',
     'child_default_blocks' => 'Domyślne bloki dla podstron',
@@ -466,4 +465,25 @@ return [
     'media_processed' => ':count obrazów przetworzonych.',
     'scan_disk' => 'Skanuj dysk',
     'scan_completed' => ':count nowych plików znalezionych i zarejestrowanych.',
+
+    // Telegram
+    'test_notification_sent' => 'Powiadomienie testowe wysłane.',
+    'you_dont_have_telegram_id' => 'Nie masz identyfikatora Telegram. Najpierw połącz Telegram.',
+    'telegram_id_received' => 'Identyfikator Telegram otrzymany i zapisany w formularzu. Zapisz ustawienia, aby zastosować.',
+    'telegram_id_not_found' => 'Nie znaleziono identyfikatora Telegram.',
+    'telegram_id_not_found_hint' => 'Otwórz link Telegram, wyślij /start do bota, a następnie kliknij ponownie.',
+    'telegram_id_error' => 'Nie udało się pobrać aktualizacji Telegram.',
+
+    // PagesList variable type
+    'pages_list_type' => 'Typ zawartości',
+    'pages_list_mode' => 'Tryb',
+    'pages_list_mode_auto' => 'Automatyczny',
+    'pages_list_mode_manual' => 'Ręczny wybór',
+    'pages_list_select_pages' => 'Wybierz strony',
+    'pages_list_sort' => 'Sortowanie',
+    'pages_list_sort_default' => 'Domyślnie',
+    'pages_list_sort_latest' => 'Najnowsze',
+    'pages_list_sort_popular' => 'Popularne',
+    'pages_list_sort_random' => 'Losowe',
+    'pages_list_limit' => 'Limit',
 ];

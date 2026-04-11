@@ -30,7 +30,6 @@ use SmartCms\Kit\Components\Footer;
 use SmartCms\Kit\Components\Gtm;
 use SmartCms\Kit\Components\Header;
 use SmartCms\Kit\Components\Heading;
-use SmartCms\Kit\Components\Icon;
 use SmartCms\Kit\Components\Image;
 use SmartCms\Kit\Components\Layout;
 use SmartCms\Kit\Components\Link;
@@ -42,7 +41,6 @@ use SmartCms\Kit\Contracts\UpdateServiceInterface;
 use SmartCms\Kit\Http\Middlewares\HtmlMinifier;
 use SmartCms\Kit\Http\Middlewares\Maintenance;
 use SmartCms\Kit\Http\Middlewares\UserIdentifierMiddleware;
-use SmartCms\Kit\MenuTypes\DivisionCategoryMenyType;
 use SmartCms\Kit\MenuTypes\DivisionMenuType;
 use SmartCms\Kit\MenuTypes\PageMenuType;
 use SmartCms\Kit\Models\Admin;
@@ -100,7 +98,7 @@ class KitServiceProvider extends PackageServiceProvider
             ->hasRoute('static')
             ->hasRoute('admin')
             ->hasViews('kit')
-            ->hasViewComponents('kit', Layout::class, Footer::class, Theme::class, Gtm::class, Header::class, PageComponent::class, Heading::class, Image::class, Link::class, Icon::class)
+            ->hasViewComponents('kit', Layout::class, Footer::class, Theme::class, Gtm::class, Header::class, PageComponent::class, Heading::class, Image::class, Link::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command
                     ->publish('images')
@@ -215,7 +213,6 @@ class KitServiceProvider extends PackageServiceProvider
 
         app(MenuRegistry::class)->register(PageMenuType::class);
         app(MenuRegistry::class)->register(DivisionMenuType::class);
-        app(MenuRegistry::class)->register(DivisionCategoryMenyType::class);
         ContactForm::observe(ContactFormObserver::class);
         Media::observe(MediaObserver::class);
 

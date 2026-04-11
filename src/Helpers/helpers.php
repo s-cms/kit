@@ -37,17 +37,35 @@ if (! function_exists('no_image')) {
     function no_image(): array
     {
         return once(function () {
-            $no_image = app('s')->get('no_image', []);
-            if (! isset($no_image['source']) || empty($no_image['source'])) {
-                $no_image['source'] = no_image_placeholder();
-            } else {
-                $no_image['source'] = validateImage($no_image['source']);
-            }
-            $no_image['width'] = $no_image['width'] ?? 100;
-            $no_image['height'] = $no_image['height'] ?? 100;
-            $no_image['alt'] = $no_image['alt'] ?? 'No image';
+            $stored = app('s')->get('branding.no_image') ?? app('s')->get('no_image');
 
-            return $no_image;
+            if (is_numeric($stored) || is_string($stored) && ! str_contains($stored, '/')) {
+                $resource = MediaResource::make($stored)->toArray(request());
+                if (! empty($resource['src'])) {
+                    return [
+                        'source' => $resource['src'],
+                        'width' => $resource['width'] ?? 200,
+                        'height' => $resource['height'] ?? 200,
+                        'alt' => 'No image',
+                    ];
+                }
+            }
+
+            if (is_array($stored) && ! empty($stored['source'])) {
+                return [
+                    'source' => validateImage($stored['source']),
+                    'width' => $stored['width'] ?? 200,
+                    'height' => $stored['height'] ?? 200,
+                    'alt' => $stored['alt'] ?? 'No image',
+                ];
+            }
+
+            return [
+                'source' => no_image_placeholder(),
+                'width' => 200,
+                'height' => 200,
+                'alt' => 'No image',
+            ];
         });
     }
 }
@@ -68,6 +86,24 @@ if (! function_exists('logo')) {
         }
 
         return MediaResource::make($logo)->toArray(request());
+    }
+}
+
+if (! function_exists('favicon')) {
+    function favicon(): string
+    {
+        $favicon = app('s')->get('branding.favicon');
+        if (! $favicon) {
+            return no_image()['source'] ?? no_image_placeholder();
+        }
+        if (is_array($favicon)) {
+            $resolved = validateImage($favicon);
+
+            return is_array($resolved) ? ($resolved['source'] ?? no_image()['source']) : $resolved;
+        }
+        $media = MediaResource::make($favicon)->toArray(request());
+
+        return ! empty($media['src']) ? $media['src'] : (no_image()['source'] ?? no_image_placeholder());
     }
 }
 

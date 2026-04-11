@@ -249,7 +249,6 @@ return [
     'no_children' => 'Немає дочірніх сторінок',
     'no_children_description' => 'Створіть дочірні сторінки, натиснувши кнопку вище',
     'view' => 'Переглянути',
-    'subcategory' => 'Підкатегорія',
     'published_at' => 'Опубліковано',
     'change_published_date' => 'Змінити дату публікації',
     'child_default_blocks' => 'Блоки за замовчуванням для дочірніх',
@@ -466,4 +465,25 @@ return [
     'media_processed' => ':count зображень оброблено.',
     'scan_disk' => 'Сканувати диск',
     'scan_completed' => ':count нових файлів знайдено та зареєстровано.',
+
+    // Telegram
+    'test_notification_sent' => 'Тестове сповіщення надіслано.',
+    'you_dont_have_telegram_id' => 'У вас немає Telegram ID. Спочатку підключіть Telegram.',
+    'telegram_id_received' => 'Telegram ID отримано і збережено у формі. Збережіть налаштування щоб застосувати.',
+    'telegram_id_not_found' => 'Telegram ID не знайдено.',
+    'telegram_id_not_found_hint' => 'Відкрийте посилання Telegram, надішліть /start боту, потім натисніть знову.',
+    'telegram_id_error' => 'Не вдалося отримати оновлення Telegram.',
+
+    // PagesList variable type
+    'pages_list_type' => 'Тип контенту',
+    'pages_list_mode' => 'Режим',
+    'pages_list_mode_auto' => 'Автоматично',
+    'pages_list_mode_manual' => 'Ручний вибір',
+    'pages_list_select_pages' => 'Виберіть сторінки',
+    'pages_list_sort' => 'Сортування',
+    'pages_list_sort_default' => 'За замовчуванням',
+    'pages_list_sort_latest' => 'Найновіші',
+    'pages_list_sort_popular' => 'Популярні',
+    'pages_list_sort_random' => 'Випадково',
+    'pages_list_limit' => 'Кількість',
 ];

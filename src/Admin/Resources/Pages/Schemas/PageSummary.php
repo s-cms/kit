@@ -9,7 +9,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
@@ -18,7 +17,7 @@ use SmartCms\Kit\Models\BlockTemplate;
 use SmartCms\Kit\Models\Page as ModelsPage;
 use SmartCms\Kit\Support\Contracts\PageStatus;
 
-class PageSummary extends Page
+class PageSummary
 {
     public static function make(): array
     {
