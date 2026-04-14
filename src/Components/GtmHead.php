@@ -7,14 +7,16 @@ use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
 /**
- * @deprecated since 1.x — emits both the GTM script and the noscript
- * fallback in a single slot, which only fits Blade-rendered layouts
- * where both can live together at the end of <body>. For Inertia/React
- * starters (and to match Google's recommended placement) use
- * <x-kit-gtm-head /> in <head> and <x-kit-gtm-body /> right after the
- * opening <body> tag instead. Will be removed in 2.0.
+ * Renders the Google Tag Manager bootstrap script.
+ *
+ * Per Google's install instructions this block must be placed as high
+ * in the <head> as possible so the dataLayer is initialized before any
+ * page scripts try to push events.
+ *
+ * Pair with <x-kit-gtm-body /> placed immediately after <body> open
+ * for the <noscript> fallback.
  */
-class Gtm extends Component
+class GtmHead extends Component
 {
     public ?string $gtm;
 
@@ -27,9 +29,6 @@ class Gtm extends Component
     {
         return <<<'blade'
             @if ($gtm)
-                <noscript>
-                    <iframe src="https://www.googletagmanager.com/ns.html?id={{ $gtm }}" height="0" width="0" style="display: none; visibility: hidden"></iframe>
-                </noscript>
                 <script async>
                     (function(w, d, s, l, i) {
                         w[l] = w[l] || [];
