@@ -28,6 +28,8 @@ use SmartCms\Kit\Commands\SyncBlockSchemas;
 use SmartCms\Kit\Commands\Update;
 use SmartCms\Kit\Components\Footer;
 use SmartCms\Kit\Components\Gtm;
+use SmartCms\Kit\Components\GtmBody;
+use SmartCms\Kit\Components\GtmHead;
 use SmartCms\Kit\Components\Header;
 use SmartCms\Kit\Components\Heading;
 use SmartCms\Kit\Components\Image;
@@ -98,7 +100,7 @@ class KitServiceProvider extends PackageServiceProvider
             ->hasRoute('static')
             ->hasRoute('admin')
             ->hasViews('kit')
-            ->hasViewComponents('kit', Layout::class, Footer::class, Theme::class, Gtm::class, Header::class, PageComponent::class, Heading::class, Image::class, Link::class)
+            ->hasViewComponents('kit', Layout::class, Footer::class, Theme::class, Gtm::class, GtmHead::class, GtmBody::class, Header::class, PageComponent::class, Heading::class, Image::class, Link::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command
                     ->publish('images')
